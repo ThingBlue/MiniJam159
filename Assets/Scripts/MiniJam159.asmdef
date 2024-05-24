@@ -1,0 +1,16 @@
+{
+    "name": "MiniJam159",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0f3c0a8212f3aa04ab219718b9a57984"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
