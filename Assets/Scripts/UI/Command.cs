@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace MiniJam159.UI
 {
@@ -13,19 +15,34 @@ namespace MiniJam159.UI
         BUILD
     }
 
-    public class Command : MonoBehaviour
+    public class Command : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        #region Inspector members
-
-        #endregion
+        public string tooltip;
 
         public virtual void execute()
         {
             Debug.LogWarning("Attempted to execute a null command!");
         }
+
+        public virtual void OnPointerEnter(PointerEventData eventData)
+        {
+            Debug.Log("entered");
+            TooltipManager.instance.toggleTooltip(tooltip, true);
+        }
+
+        public virtual void OnPointerExit(PointerEventData eventData)
+        {
+            Debug.Log("exited");
+            TooltipManager.instance.toggleTooltip("", false);
+        }
     }
     public class MoveCommand : Command
     {
+        private void Start()
+        {
+            tooltip = "<b>Move</b>\nMoves the selected units to target location";
+        }
+
         public override void execute()
         {
 
@@ -33,6 +50,11 @@ namespace MiniJam159.UI
     }
     public class AttackCommand : Command
     {
+        private void Start()
+        {
+            tooltip = "<b>Attack</b>\nAttacks target enemy unit";
+        }
+
         public override void execute()
         {
 
@@ -40,6 +62,11 @@ namespace MiniJam159.UI
     }
     public class HoldCommand : Command
     {
+        private void Start()
+        {
+            tooltip = "<b>Hold</b>\nSelected units will stop moving and attack enemies in range";
+        }
+
         public override void execute()
         {
 
@@ -47,6 +74,11 @@ namespace MiniJam159.UI
     }
     public class BuildCommand : Command
     {
+        private void Start()
+        {
+            tooltip = "<b>Build</b>\nOpens the build menu";
+        }
+
         public override void execute()
         {
 

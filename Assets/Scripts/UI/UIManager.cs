@@ -69,7 +69,6 @@ namespace MiniJam159.UI
 
                 // Create new button
                 GameObject newButton = Instantiate(commandButtonPrefab, commandPanel.transform);
-                Command newCommandComponent = null;
 
                 // Set button position
                 float xOffset = (i % 4) * 64.0f;
@@ -80,19 +79,19 @@ namespace MiniJam159.UI
                 switch (newCommands[i])
                 {
                     case CommandType.MOVE:
-                        newCommandComponent = newButton.AddComponent<MoveCommand>();
+                        newButton.AddComponent<MoveCommand>();
                         newButton.GetComponent<Image>().sprite = moveCommandSprite;
                         break;
                     case CommandType.ATTACK:
-                        newCommandComponent = newButton.AddComponent<AttackCommand>();
+                        newButton.AddComponent<AttackCommand>();
                         newButton.GetComponent<Image>().sprite = attackCommandSprite;
                         break;
                     case CommandType.HOLD:
-                        newCommandComponent = newButton.AddComponent<HoldCommand>();
+                        newButton.AddComponent<HoldCommand>();
                         newButton.GetComponent<Image>().sprite = holdCommandSprite;
                         break;
                     case CommandType.BUILD:
-                        newCommandComponent = newButton.AddComponent<BuildCommand>();
+                        newButton.AddComponent<BuildCommand>();
                         newButton.GetComponent<Image>().sprite = buildCommandSprite;
                         break;
                 }
