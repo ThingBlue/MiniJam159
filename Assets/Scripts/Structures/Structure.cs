@@ -8,5 +8,10 @@ namespace MiniJam159.Structures
     {
         public Vector2 position;
         public Vector2 size;
+
+        public float maxHealth;
+        public float health;
+
+        public float contructionTime;
     }
 }
