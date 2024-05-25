@@ -43,3 +43,5 @@ MonoBehaviour:
     keys: 63000000
   - name: VCommand
     keys: 76000000
+  - name: CommandUpdateTest
+    keys: 67000000

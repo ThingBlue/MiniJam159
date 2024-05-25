@@ -643,7 +643,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -680,7 +680,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 448a1332d08af3441b135deb4fa23250, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeCommands: []
+  commandPanel: {fileID: 490044869}
+  commandButtonPrefab: {fileID: 4636067017746463757, guid: b6d7fc33db7fece49b2f0e2355fdaae7, type: 3}
+  moveCommandSprite: {fileID: 21300000, guid: 95683849944b4fb4e93945933966f87d, type: 3}
+  attackCommandSprite: {fileID: 21300000, guid: 2b30954fa39e1ff409176e8484478604, type: 3}
+  holdCommandSprite: {fileID: 21300000, guid: 818d78a5e97f47b4e9db1261d96cd462, type: 3}
+  buildCommandSprite: {fileID: 21300000, guid: cf09fcd436e2c7448ba3b3f468bf1095, type: 3}
+  activeCommands: 
+  commandButtons: []
 --- !u!1 &1046527040
 GameObject:
   m_ObjectHideFlags: 0

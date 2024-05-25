@@ -44,6 +44,23 @@ namespace MiniJam159
                 newStructure.size = new Vector2(2, 3);
                 StructureManager.instance.beginPlacement(newStructure);
             }
+            if (InputManager.instance.getKeyDown("CommandUpdateTest"))
+            {
+                List<CommandType> commands = new List<CommandType>();
+                commands.Add(CommandType.MOVE);
+                commands.Add(CommandType.ATTACK);
+                commands.Add(CommandType.NULL);
+                commands.Add(CommandType.NULL);
+                commands.Add(CommandType.HOLD);
+                commands.Add(CommandType.NULL);
+                commands.Add(CommandType.NULL);
+                commands.Add(CommandType.NULL);
+                commands.Add(CommandType.BUILD);
+                commands.Add(CommandType.NULL);
+                commands.Add(CommandType.NULL);
+                commands.Add(CommandType.NULL);
+                UIManager.instance.updateCommandUI(commands);
+            }
         }
 
         private void FixedUpdate()

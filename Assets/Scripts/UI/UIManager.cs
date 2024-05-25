@@ -1,7 +1,9 @@
+using Codice.Client.Common;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 namespace MiniJam159.UI
 {
@@ -11,9 +13,17 @@ namespace MiniJam159.UI
 
         public GameObject commandPanel;
 
+        public GameObject commandButtonPrefab;
+
+        public Sprite moveCommandSprite;
+        public Sprite attackCommandSprite;
+        public Sprite holdCommandSprite;
+        public Sprite buildCommandSprite;
+
         #endregion
 
-        public List<Command> activeCommands;
+        public List<CommandType> activeCommands;
+        public List<GameObject> commandButtons;
 
         // Singleton
         public static UIManager instance;
@@ -27,14 +37,67 @@ namespace MiniJam159.UI
 
         private void Start()
         {
-            activeCommands = new List<Command>();
+            activeCommands = new List<CommandType>();
         }
 
         public void executeCommand(int index)
         {
-            if (activeCommands[index])
+            if (commandButtons[index] == null) return;
+
+            Command commandComponent = commandButtons[index].GetComponent<Command>();
+            if (commandComponent == null) return;
+
+            commandComponent.execute();
+        }
+
+        public void updateCommandUI(List<CommandType> newCommands)
+        {
+            // Clear previous command ui
+            for (int i = 0; i < commandButtons.Count; i++)
             {
-                activeCommands[index].execute();
+                Destroy(commandButtons[i]);
+            }
+
+            // Set new commands
+            activeCommands = newCommands;
+
+            // Create new ui
+            for (int i = 0; i < newCommands.Count; i++)
+            {
+                // Skip null commands
+                if (newCommands[i] == CommandType.NULL) continue;
+
+                // Create new button
+                GameObject newButton = Instantiate(commandButtonPrefab, commandPanel.transform);
+                Command newCommandComponent = null;
+
+                // Set button position
+                float xOffset = (i % 4) * 64.0f;
+                float yOffset = (Mathf.Floor(i / 4.0f)) * -64.0f;
+                newButton.transform.localPosition = new Vector2(-96.0f + xOffset, 64.0f + yOffset);
+
+                // Attach command script and texture to new button
+                switch (newCommands[i])
+                {
+                    case CommandType.MOVE:
+                        newCommandComponent = newButton.AddComponent<MoveCommand>();
+                        newButton.GetComponent<Image>().sprite = moveCommandSprite;
+                        break;
+                    case CommandType.ATTACK:
+                        newCommandComponent = newButton.AddComponent<AttackCommand>();
+                        newButton.GetComponent<Image>().sprite = attackCommandSprite;
+                        break;
+                    case CommandType.HOLD:
+                        newCommandComponent = newButton.AddComponent<HoldCommand>();
+                        newButton.GetComponent<Image>().sprite = holdCommandSprite;
+                        break;
+                    case CommandType.BUILD:
+                        newCommandComponent = newButton.AddComponent<BuildCommand>();
+                        newButton.GetComponent<Image>().sprite = buildCommandSprite;
+                        break;
+                }
+
+                commandButtons.Add(newButton);
             }
         }
     }
