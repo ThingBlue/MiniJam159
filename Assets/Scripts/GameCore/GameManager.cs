@@ -34,6 +34,9 @@ namespace MiniJam159.GameCore
             if (instance == null) instance = this;
             else Destroy(this);
 
+            // Set fullscreen
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+
             // TEMP TEMP TEMP TEMP TEMP TEMP TEMP TEMP TEMP TEMP
             gameState = GameState.GAME;
         }
