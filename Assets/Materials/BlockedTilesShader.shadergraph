@@ -11,6 +11,9 @@
         },
         {
             "m_Id": "67edcce9ba8b4682b3fe25fa946cc63c"
+        },
+        {
+            "m_Id": "d3af8e0b33eb46f5a7c946d1afaa618c"
         }
     ],
     "m_Keywords": [],
@@ -348,8 +351,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -1190.0,
-            "y": -416.0,
+            "x": -1347.0,
+            "y": -228.99998474121095,
             "width": 128.0,
             "height": 101.0
         }
@@ -1220,10 +1223,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -1536.0,
-            "y": -437.0,
+            "x": -1624.0001220703125,
+            "y": -263.0000305175781,
             "width": 97.0,
-            "height": 101.0
+            "height": 101.00003051757813
         }
     },
     "m_Slots": [
@@ -1389,10 +1392,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -1387.0001220703125,
-            "y": -437.0,
+            "x": -1502.0,
+            "y": -238.99998474121095,
             "width": 120.0,
-            "height": 149.0
+            "height": 149.00001525878907
         }
     },
     "m_Slots": [
@@ -1602,6 +1605,28 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.BooleanShaderProperty",
+    "m_ObjectId": "d3af8e0b33eb46f5a7c946d1afaa618c",
+    "m_Guid": {
+        "m_GuidSerialized": "1e64adc3-9768-41f7-89c6-3a4c5dc001a9"
+    },
+    "m_Name": "Multiple",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "Multiple",
+    "m_DefaultReferenceName": "_Multiple",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": false
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
     "m_ObjectId": "da4d1cb63e8f445ea4e30a3e572d5dc0",
     "m_Id": 2,
@@ -1676,6 +1701,9 @@
         },
         {
             "m_Id": "67edcce9ba8b4682b3fe25fa946cc63c"
+        },
+        {
+            "m_Id": "d3af8e0b33eb46f5a7c946d1afaa618c"
         }
     ]
 }
@@ -1768,8 +1796,8 @@
     "m_ShaderOutputName": "Tiling",
     "m_StageCapability": 3,
     "m_Value": {
-        "x": 10.0,
-        "y": 10.0
+        "x": 1.0,
+        "y": 1.0
     },
     "m_DefaultValue": {
         "x": 0.0,

@@ -17,18 +17,19 @@ namespace MiniJam159
         public MeshRenderer placementGuideRenderer;
 
         public Material gridTilesMaterial;
-        public Material blockedTilesMaterial;
 
         public GameObject structurePrefab;
 
         #endregion
 
+        public List<GameObject> structures;
+
+        private Structure placementStructure;
+        public bool inPlacementMode = false;
+        private bool previousInPlacementMode = false;
+
         // Singleton
         public static StructureManager instance;
-
-        public List<Structure> structures;
-        public bool inPlacementMode = false;
-        private Structure placementStructure;
 
         private void Awake()
         {
@@ -37,20 +38,20 @@ namespace MiniJam159
             else Destroy(this);
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
-            // DEBUG DEBUG DEBUG TEST TEST TEST
-            if (InputManager.instance.getKeyDown("PlacementTest"))
-            {
-                Structure newStructure = new Structure();
-                newStructure.size = new Vector2(2, 3);
-                beginPlacement(newStructure);
-            }
-
             // Toggle grid guides
-            gridTilesRenderer.enabled = inPlacementMode ? true : false;
-            placementGuideRenderer.enabled = inPlacementMode ? true : false;
-            blockedTilesMaterial.SetFloat("_Enabled", inPlacementMode ? 1 : 0);
+            if (previousInPlacementMode != inPlacementMode)
+            {
+                gridTilesRenderer.enabled = inPlacementMode ? true : false;
+                placementGuideRenderer.enabled = inPlacementMode ? true : false;
+                foreach (GameObject structure in structures)
+                {
+                    structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = inPlacementMode ? true : false;
+                }
+
+                previousInPlacementMode = inPlacementMode;
+            }
 
             if (inPlacementMode)
             {
@@ -105,8 +106,17 @@ namespace MiniJam159
                 GridManager.instance.occupyCells(startPosition, placementStructure.size);
 
                 // Instantiate strucutre
-                GameObject newStructure = GameObject.Instantiate(structurePrefab, new Vector3(snappedPosition.x, 0.5f, snappedPosition.z), Quaternion.identity);
-                newStructure.transform.localScale = new Vector3(placementStructure.size.x, 1, placementStructure.size.y);
+                GameObject newStructure = Instantiate(structurePrefab, new Vector3(snappedPosition.x, 0.5f, snappedPosition.z), Quaternion.identity);
+                GameObject newBlockedTilesObject = newStructure.transform.Find("BlockedTiles").gameObject;
+
+                // Set scale
+                newBlockedTilesObject.transform.localScale = new Vector3(placementStructure.size.x / 10.0f, 1, placementStructure.size.y / 10.0f);
+
+                // Create duplicate material to fix shader graph weirdness
+                Renderer renderer = newBlockedTilesObject.GetComponent<MeshRenderer>();
+                renderer.material = new Material(renderer.material);
+
+                structures.Add(newStructure);
             }
             else
             {

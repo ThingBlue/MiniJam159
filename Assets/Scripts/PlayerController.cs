@@ -1,4 +1,5 @@
 using MiniJam159.GameCore;
+using MiniJam159.Structures;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,6 +35,14 @@ namespace MiniJam159
             // Check key states
             if (InputManager.instance.getKeyDown("Mouse0")) mouse0Down = true;
             if (InputManager.instance.getKeyDown("Mouse1")) mouse1Down = true;
+
+            // DEBUG DEBUG DEBUG TEST TEST TEST
+            if (InputManager.instance.getKeyDown("PlacementTest"))
+            {
+                Structure newStructure = new Structure();
+                newStructure.size = new Vector2(2, 3);
+                StructureManager.instance.beginPlacement(newStructure);
+            }
         }
 
         private void FixedUpdate()
