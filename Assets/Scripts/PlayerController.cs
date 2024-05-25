@@ -13,8 +13,8 @@ namespace MiniJam159
 
         #endregion
 
+        private bool mouse0Down;
         private bool mouse1Down;
-        private bool mouse2Down;
 
         private bool massSelecting;
         private float massSelectStartTimer;
@@ -32,8 +32,8 @@ namespace MiniJam159
         private void Update()
         {
             // Check key states
+            if (InputManager.instance.getKeyDown("Mouse0")) mouse0Down = true;
             if (InputManager.instance.getKeyDown("Mouse1")) mouse1Down = true;
-            if (InputManager.instance.getKeyDown("Mouse2")) mouse2Down = true;
         }
 
         private void FixedUpdate()
@@ -44,41 +44,50 @@ namespace MiniJam159
             if (Input.mousePosition.y >= Screen.height) CameraController.instance.PanCamera(Vector2.up);
             if (Input.mousePosition.y <= 0) CameraController.instance.PanCamera(Vector2.down);
 
-            // Mass select
-            if (InputManager.instance.getKey("Mouse1"))
+            // End placement
+            if (StructureManager.instance.inPlacementMode)
             {
-                massSelectStartTimer += Time.deltaTime;
+                if (mouse0Down) StructureManager.instance.finishPlacement();
+                if (mouse1Down) StructureManager.instance.cancelPlacement();
             }
             else
             {
-                if (massSelectStartTimer >= massSelectDelay)
+                // Mass select
+                if (InputManager.instance.getKey("Mouse0"))
                 {
-                    // Execute mass select
-                    massSelecting = true;
+                    massSelectStartTimer += Time.deltaTime;
+                }
+                else
+                {
+                    if (massSelectStartTimer >= massSelectDelay)
+                    {
+                        // Execute mass select
+                        massSelecting = true;
+                    }
+
+                    // Reset mass select
+                    massSelectStartTimer = 0.0f;
+                    massSelecting = false;
                 }
 
-                // Reset mass select
-                massSelectStartTimer = 0.0f;
-                massSelecting = false;
-            }
+                // Single select
+                if (mouse0Down && !massSelecting)
+                {
 
-            // Single select
-            if (mouse1Down && !massSelecting)
-            {
+                }
 
-            }
-
-            // Movement commands
-            if (mouse2Down)
-            {
-                // Attack if hovering over enemy
-                // Interact if hovering over interactable
-                // Move if none of the above
+                // Movement commands
+                if (mouse1Down)
+                {
+                    // Attack if hovering over enemy
+                    // Interact if hovering over interactable
+                    // Move if none of the above
+                }
             }
 
             // Clear key states
+            mouse0Down = false;
             mouse1Down = false;
-            mouse2Down = false;
         }
     }
 }
