@@ -19,3 +19,29 @@ MonoBehaviour:
     keys: 44010000
   - name: PlacementTest
     keys: 62000000
+  - name: QCommand
+    keys: 71000000
+  - name: WCommand
+    keys: 77000000
+  - name: ECommand
+    keys: 65000000
+  - name: RCommand
+    keys: 72000000
+  - name: ACommand
+    keys: 61000000
+  - name: SCommand
+    keys: 73000000
+  - name: DCommand
+    keys: 64000000
+  - name: FCommand
+    keys: 66000000
+  - name: ZCommand
+    keys: 7a000000
+  - name: XCommand
+    keys: 78000000
+  - name: CCommand
+    keys: 63000000
+  - name: VCommand
+    keys: 76000000
+  - name: CommandUpdateTest
+    keys: 67000000
