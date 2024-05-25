@@ -6,8 +6,6 @@ namespace MiniJam159.GameCore
 {
     public class GridManager : MonoBehaviour
     {
-        public GameObject testCubePrefab;
-
         // Singleton
         public static GridManager instance;
 
@@ -46,8 +44,6 @@ namespace MiniJam159.GameCore
                 for (int j = 0; j < size.y; j++)
                 {
                     gridMatrix[(int)startPosition.y + j][(int)startPosition.x + i] = true;
-
-                    GameObject.Instantiate(testCubePrefab, new Vector3(startPosition.x + i + 0.5f, 0, startPosition.y + j + 0.5f), Quaternion.identity);
                 }
             }
         }

@@ -240,8 +240,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   placementGuide: {fileID: 1046527040}
+  gridTilesRenderer: {fileID: 1834896601}
+  placementGuideRenderer: {fileID: 1046527041}
   gridTilesMaterial: {fileID: 2100000, guid: 111778313e54b3742944aefb440d2fe6, type: 2}
-  placementGuideMaterial: {fileID: 2100000, guid: 0c3dded4cbc228f4bafdd77fb007059e, type: 2}
+  blockedTilesMaterial: {fileID: 2100000, guid: 809fdc25ef3ca1e4583a6f6aacfb15e9, type: 2}
+  structurePrefab: {fileID: 5914292673917186741, guid: bedf7ccd2febc0540bcff6dfb1c3d7c6, type: 3}
   structures: []
   inPlacementMode: 0
 --- !u!4 &308521648
@@ -771,6 +774,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 322507c10dad5474aaa787a390c54e4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  massSelectDelay: 0
 --- !u!4 &1855134516
 Transform:
   m_ObjectHideFlags: 0
@@ -843,4 +847,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c4c14d6f2ecf6e4fa79fabf382f2d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testCubePrefab: {fileID: 5928113959764695313, guid: 602aa68c98e442f4da539f079299c94c, type: 3}
