@@ -47,9 +47,11 @@ Material:
     - _BUILTIN_ZWrite: 0
     - _BUILTIN_ZWriteControl: 0
     - _DistanceThreshold: 4
+    - _Enabled: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _FocusPosition: {r: 0, g: 0, b: 0, a: 0}
+    - _FocusPosition: {r: -14.6421995, g: 0, b: 18.327394, a: 0}
+    - _PlacementPosition: {r: -8.907087, g: 0, b: -7.2747164, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2445214943293736006
 MonoBehaviour:

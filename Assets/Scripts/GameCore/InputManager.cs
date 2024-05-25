@@ -85,7 +85,7 @@ namespace MiniJam159.GameCore
         public Vector3 getMousePositionInWorld()
         {
             // Create plane at zero
-            Plane plane = new Plane(Vector3.back, Vector3.zero);
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
 
             // Cast ray onto plane
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

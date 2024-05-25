@@ -15,6 +15,12 @@ namespace MiniJam159.GameCore
 
     public class GameManager : MonoBehaviour
     {
+        #region Inspector members
+
+        public SettingsData settingsData;
+
+        #endregion
+
         // Singleton
         public static GameManager instance;
 
@@ -37,6 +43,9 @@ namespace MiniJam159.GameCore
             // Subscribe to events
             EventManager.instance.pauseEvent.AddListener(onPause);
             EventManager.instance.unpauseEvent.AddListener(onUnpause);
+
+            // Apply keybinds
+            applyKeybinds();
         }
 
         private void Update()
@@ -45,6 +54,18 @@ namespace MiniJam159.GameCore
             if (gameState == GameState.GAME && InputManager.instance.getKeyDown("pause")) EventManager.instance.pauseEvent.Invoke();
             // Unpause
             else if (gameState == GameState.PAUSED && InputManager.instance.getKeyDown("pause")) EventManager.instance.unpauseEvent.Invoke();
+        }
+
+        private void applyKeybinds()
+        {
+            // Clear current key binds
+            InputManager.instance.clearKeyMap();
+
+            // Add every key bind in list to input manger
+            foreach (KeyBind keyBind in settingsData.keyBinds)
+            {
+                InputManager.instance.setKeyListInMap(keyBind.name, keyBind.keys);
+            }
         }
 
 
