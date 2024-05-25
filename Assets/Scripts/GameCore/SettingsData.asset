@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: SettingsData
   m_EditorClassIdentifier: 
   keyBinds:
-  - name: Mouse0
+  - name: FinishPlacement
     keys: 43010000
-  - name: Mouse1
+  - name: CancelPlacement
     keys: 44010000
   - name: PlacementTest
     keys: 62000000

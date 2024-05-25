@@ -239,9 +239,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bee0c5ed7cfccc4abea317eb5ff7ae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  freeTilePrefab: {fileID: 3989580075377471629, guid: 4e560f77f5b46294bab176293a3cebd8, type: 3}
-  blockedTilePrefab: {fileID: 3989580075377471629, guid: 577d167e2c358ae42bd964eb7e1eb285, type: 3}
+  placementGuide: {fileID: 1046527040}
   gridTilesMaterial: {fileID: 2100000, guid: 111778313e54b3742944aefb440d2fe6, type: 2}
+  placementGuideMaterial: {fileID: 2100000, guid: 0c3dded4cbc228f4bafdd77fb007059e, type: 2}
   structures: []
   inPlacementMode: 0
 --- !u!4 &308521648
@@ -771,7 +771,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 322507c10dad5474aaa787a390c54e4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  massSelectDelay: 0
 --- !u!4 &1855134516
 Transform:
   m_ObjectHideFlags: 0
