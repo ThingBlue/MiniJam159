@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 public class GroundMeleeAI : MonoBehaviour
 {
@@ -8,13 +10,24 @@ public class GroundMeleeAI : MonoBehaviour
     public float attackCooldown = 1.0f; // Time between attacks
     public int attackDamage = 10; // Damage dealt by each attack
     public float moveSpeed = 3.0f; // Movement speed of the AI
+    public float surroundDistance = 1.5f; // Distance to maintain around the target when surrounding
+    public float coordinationRadius = 5.0f; // Radius within which AIs coordinate their actions
 
+    private static List<GroundMeleeAI> activeAIs = new List<GroundMeleeAI>(); // List of active AIs
     private Transform target;
     private float attackTimer;
+    private bool isLeader;
 
     void Start()
     {
+        activeAIs.Add(this);
         attackTimer = 0f;
+        isLeader = false;
+    }
+
+    void OnDestroy()
+    {
+        activeAIs.Remove(this);
     }
 
     void Update()
@@ -33,11 +46,18 @@ public class GroundMeleeAI : MonoBehaviour
 
         if (distanceToTarget <= attackRange)
         {
-            Attack();
+            if (isLeader)
+            {
+                CoordinatedAttack();
+            }
+            else
+            {
+                Attack();
+            }
         }
         else
         {
-            MoveTowardsTarget();
+            MoveTowardsSurroundPosition();
         }
 
         if (attackTimer > 0)
@@ -71,12 +91,39 @@ public class GroundMeleeAI : MonoBehaviour
         }
 
         target = nearestTarget;
+
+        // Assign leader dynamically
+        if (target != null)
+        {
+            AssignLeader();
+        }
     }
 
-    void MoveTowardsTarget()
+    void MoveTowardsSurroundPosition()
     {
-        Vector2 direction = (target.position - transform.position).normalized;
-        transform.position = Vector2.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
+        Vector2 surroundPosition = GetSurroundPosition();
+        Vector2 direction = (surroundPosition - (Vector2)transform.position).normalized;
+        transform.position = Vector2.MoveTowards(transform.position, surroundPosition, moveSpeed * Time.deltaTime);
+    }
+
+    Vector2 GetSurroundPosition()
+    {
+        if (target == null)
+        {
+            return transform.position;
+        }
+
+        // Filter the list of activeAIs to include only those targeting the same target
+        List<GroundMeleeAI> sameTargetAIs = activeAIs.Where(ai => ai.target == this.target).ToList();
+        int aiIndex = sameTargetAIs.IndexOf(this);
+        int totalAIs = sameTargetAIs.Count;
+
+        float angleIncrement = 270f / (totalAIs - 1); // 270 degrees spread over number of AIs
+        float angle = -135f + (aiIndex * angleIncrement); // Start at -135 degrees to +135 degrees
+
+        Vector2 offset = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * surroundDistance;
+
+        return (Vector2)target.position + offset;
     }
 
     void Attack()
@@ -90,6 +137,48 @@ public class GroundMeleeAI : MonoBehaviour
         }
     }
 
+    void CoordinatedAttack()
+    {
+        foreach (var ai in activeAIs)
+        {
+            if (ai.target == this.target && Vector2.Distance(transform.position, ai.transform.position) <= coordinationRadius)
+            {
+                ai.Attack();
+            }
+        }
+    }
+
+    void AssignLeader()
+    {
+        float minDistance = Mathf.Infinity;
+        GroundMeleeAI leader = null;
+
+        foreach (var ai in activeAIs)
+        {
+            if (ai.target == this.target)
+            {
+                float distanceToTarget = Vector2.Distance(ai.transform.position, target.position);
+                if (distanceToTarget < minDistance)
+                {
+                    minDistance = distanceToTarget;
+                    leader = ai;
+                }
+            }
+        }
+
+        if (leader != null)
+        {
+            leader.isLeader = true;
+            foreach (var ai in activeAIs)
+            {
+                if (ai != leader)
+                {
+                    ai.isLeader = false;
+                }
+            }
+        }
+    }
+
     void OnDrawGizmosSelected()
     {
         // Draw a yellow sphere at the transform's position to visualize detection radius
@@ -97,3 +186,4 @@ public class GroundMeleeAI : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
 }
+
