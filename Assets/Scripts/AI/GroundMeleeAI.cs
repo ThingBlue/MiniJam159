@@ -15,8 +15,8 @@ namespace MiniJam159.AI
         public float surroundDistance = 1.5f; // Distance to maintain around the target when surrounding
         public float coordinationRadius = 5.0f; // Radius within which AIs coordinate their actions
 
-        private float attackTimer;
-        private bool isLeader;
+        protected float attackTimer;
+        protected bool isLeader;
 
         protected override void Start()
         {
@@ -25,7 +25,7 @@ namespace MiniJam159.AI
             isLeader = false;
         }
 
-        void Update()
+        protected virtual void Update()
         {
             if (isMovingToPosition)
             {

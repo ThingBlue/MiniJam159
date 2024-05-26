@@ -2,7 +2,8 @@
     "name": "MiniJam159.AI",
     "rootNamespace": "",
     "references": [
-        "GUID:0f3c0a8212f3aa04ab219718b9a57984"
+        "GUID:0f3c0a8212f3aa04ab219718b9a57984",
+        "GUID:4d11028396cb5ee4b95cd3a6952d535b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
