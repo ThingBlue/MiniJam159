@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MiniJam159.GameCore;
 
-namespace MiniJam159.Commands
+namespace MiniJam159.AI
 {
     public class CommandManager : MonoBehaviour
     {

@@ -4,8 +4,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using MiniJam159.AI;
 
-namespace MiniJam159.Commands
+namespace MiniJam159.AI
 {
     public enum CommandType
     {
