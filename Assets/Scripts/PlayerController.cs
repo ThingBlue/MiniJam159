@@ -5,6 +5,7 @@ using MiniJam159.AI;
 using MiniJam159.Selection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -47,18 +48,21 @@ namespace MiniJam159
             if (InputManager.instance.getKeyUp("Mouse1")) mouse1Up = true;
 
             // Keyboard
-            if (InputManager.instance.getKeyDown("QCommand")) CommandManager.instance.executeCommand(0);
-            if (InputManager.instance.getKeyDown("WCommand")) CommandManager.instance.executeCommand(1);
-            if (InputManager.instance.getKeyDown("ECommand")) CommandManager.instance.executeCommand(2);
-            if (InputManager.instance.getKeyDown("RCommand")) CommandManager.instance.executeCommand(3);
-            if (InputManager.instance.getKeyDown("ACommand")) CommandManager.instance.executeCommand(4);
-            if (InputManager.instance.getKeyDown("SCommand")) CommandManager.instance.executeCommand(5);
-            if (InputManager.instance.getKeyDown("DCommand")) CommandManager.instance.executeCommand(6);
-            if (InputManager.instance.getKeyDown("FCommand")) CommandManager.instance.executeCommand(7);
-            if (InputManager.instance.getKeyDown("ZCommand")) CommandManager.instance.executeCommand(8);
-            if (InputManager.instance.getKeyDown("XCommand")) CommandManager.instance.executeCommand(9);
-            if (InputManager.instance.getKeyDown("CCommand")) CommandManager.instance.executeCommand(10);
-            if (InputManager.instance.getKeyDown("VCommand")) CommandManager.instance.executeCommand(11);
+            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
+            {
+                if (InputManager.instance.getKeyDown("QCommand")) CommandManager.instance.executeCommand(0);
+                if (InputManager.instance.getKeyDown("WCommand")) CommandManager.instance.executeCommand(1);
+                if (InputManager.instance.getKeyDown("ECommand")) CommandManager.instance.executeCommand(2);
+                if (InputManager.instance.getKeyDown("RCommand")) CommandManager.instance.executeCommand(3);
+                if (InputManager.instance.getKeyDown("ACommand")) CommandManager.instance.executeCommand(4);
+                if (InputManager.instance.getKeyDown("SCommand")) CommandManager.instance.executeCommand(5);
+                if (InputManager.instance.getKeyDown("DCommand")) CommandManager.instance.executeCommand(6);
+                if (InputManager.instance.getKeyDown("FCommand")) CommandManager.instance.executeCommand(7);
+                if (InputManager.instance.getKeyDown("ZCommand")) CommandManager.instance.executeCommand(8);
+                if (InputManager.instance.getKeyDown("XCommand")) CommandManager.instance.executeCommand(9);
+                if (InputManager.instance.getKeyDown("CCommand")) CommandManager.instance.executeCommand(10);
+                if (InputManager.instance.getKeyDown("VCommand")) CommandManager.instance.executeCommand(11);
+            }
 
             // DEBUG DEBUG DEBUG TEST TEST TEST
             if (InputManager.instance.getKeyDown("PlacementTest"))
@@ -135,70 +139,99 @@ namespace MiniJam159
             if (Input.mousePosition.y >= Screen.height) CameraController.instance.PanCamera(Vector2.up);
             if (Input.mousePosition.y <= 0) CameraController.instance.PanCamera(Vector2.down);
 
-            // Mouse
-            if (StructureManager.instance.inPlacementMode)
+            switch (PlayerModeManager.instance.playerMode)
             {
-                if (mouse0Down)
-                {
-                    StructureManager.instance.finishPlacement();
-                    ignoreNextMouse0Up = true;
-                }
-                if (mouse1Down) StructureManager.instance.cancelPlacement();
-
-                SelectionManager.instance.massSelecting = false;
-                SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
-                canStartMassSelect = false;
-            }
-            else if (SelectionManager.instance.massSelecting)
-            {
-                SelectionManager.instance.updateMassSelectBox();
-
-                // Execute mass select
-                if (mouse0Up) SelectionManager.instance.executeMassSelect();
-            }
-            else
-            {
-                // Set start position for mass select
-                if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
-                {
-                    SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
-                    canStartMassSelect = true;
-                }
-                if (mouse0Down && EventSystem.current.IsPointerOverGameObject())
-                {
-                    canStartMassSelect = false;
-                }
-
-                if (InputManager.instance.getKey("Mouse0") && canStartMassSelect)
-                {
-                    massSelectStartTimer += Time.deltaTime;
-                    if (massSelectStartTimer >= SelectionManager.instance.massSelectDelay ||
-                        Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition) > SelectionManager.instance.massSelectMouseMoveDistance)
+                case PlayerMode.STRUCTURE_PLACEMENT:
+                    if (mouse0Down)
                     {
-                        // Start mass select
-                        SelectionManager.instance.massSelecting = true;
-
-                        Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition));
+                        StructureManager.instance.finishPlacement();
+                        ignoreNextMouse0Up = true;
                     }
-                }
-                else
-                {
-                    // Reset mass select timer
-                    massSelectStartTimer = 0.0f;
+                    if (mouse1Down) StructureManager.instance.cancelPlacement();
+
                     SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
-                }
-                SelectionManager.instance.updateMassSelectBox();
+                    canStartMassSelect = false;
+                    break;
+                case PlayerMode.ATTACK_TARGET:
+                    break;
+                case PlayerMode.HARVEST_TARGET:
+                    break;
+                case PlayerMode.MOVE_TARGET:
+                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
+                    {
+                        // Invoke move command on all selected units
+                        foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+                        {
+                            // Check that object has a GameAI
+                            GameAI ai = selectedObject.GetComponent<GameAI>();
+                            if (ai == null) continue;
 
-                // Execute single select
-                if (mouse0Up && !EventSystem.current.IsPointerOverGameObject()) SelectionManager.instance.executeSingleSelect();
+                            MethodInfo method = ai.GetType().GetMethod("moveAICommand");
+                            if (method != null)
+                            {
+                                // Invoke move command method in ai using mouse position in world
+                                Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
+                                Vector2 movementDestination = new Vector2(mousePositionInWorld.x, mousePositionInWorld.z);
+                                method.Invoke(ai, new object[] { movementDestination });
+                            }
+                        }
 
-                // Movement commands
-                if (mouse1Down)
-                {
-                    // Attack if hovering over enemy
-                    // Interact if hovering over interactable
-                    // Move if none of the above
-                }
+                        // End move target mode
+                        PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                    }
+
+                    SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                    canStartMassSelect = false;
+                    break;
+                case PlayerMode.MASS_SELECT:
+                    SelectionManager.instance.updateMassSelectBox();
+
+                    // Execute mass select
+                    if (mouse0Up) SelectionManager.instance.executeMassSelect();
+                    break;
+                case PlayerMode.NORMAL:
+                    // Set start position for mass select
+                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
+                    {
+                        SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                        canStartMassSelect = true;
+                    }
+                    if (mouse0Down && EventSystem.current.IsPointerOverGameObject())
+                    {
+                        canStartMassSelect = false;
+                    }
+
+                    if (InputManager.instance.getKey("Mouse0") && canStartMassSelect)
+                    {
+                        massSelectStartTimer += Time.deltaTime;
+                        if (massSelectStartTimer >= SelectionManager.instance.massSelectDelay ||
+                            Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition) > SelectionManager.instance.massSelectMouseMoveDistance)
+                        {
+                            // Start mass select
+                            PlayerModeManager.instance.playerMode = PlayerMode.MASS_SELECT;
+
+                            Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition));
+                        }
+                    }
+                    else
+                    {
+                        // Reset mass select timer
+                        massSelectStartTimer = 0.0f;
+                        SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                    }
+                    SelectionManager.instance.updateMassSelectBox();
+
+                    // Execute single select
+                    if (mouse0Up && !EventSystem.current.IsPointerOverGameObject()) SelectionManager.instance.executeSingleSelect();
+
+                    // Movement commands
+                    if (mouse1Down)
+                    {
+                        // Attack if hovering over enemy
+                        // Interact if hovering over interactable
+                        // Move if none of the above
+                    }
+                    break;
             }
 
             // Clear key states

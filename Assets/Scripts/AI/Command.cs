@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using MiniJam159.AI;
+using MiniJam159.GameCore;
 
 namespace MiniJam159.AI
 {
@@ -40,6 +41,12 @@ namespace MiniJam159.AI
 
         public override void execute()
         {
+            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
+            {
+                PlayerModeManager.instance.playerMode = PlayerMode.MOVE_TARGET;
+            }
+
+            /*
             // TODO: Use correct selected list
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)
@@ -51,6 +58,7 @@ namespace MiniJam159.AI
                     method.Invoke(ai, new object[] { (Vector2)Input.mousePosition });
                 }
             }
+            */
         }
     }
     public class AttackCommand : Command
@@ -62,6 +70,12 @@ namespace MiniJam159.AI
 
         public override void execute()
         {
+            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
+            {
+                PlayerModeManager.instance.playerMode = PlayerMode.ATTACK_TARGET;
+            }
+
+            /*
             // TODO: Use correct selected list
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)
@@ -74,6 +88,7 @@ namespace MiniJam159.AI
                     method.Invoke(ai, new object[] { target });
                 }
             }
+            */
         }
     }
     public class HoldCommand : Command
@@ -128,6 +143,11 @@ namespace MiniJam159.AI
 
         public override void execute()
         {
+            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
+            {
+                PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
+            }
+
             // TODO: Use correct selected list
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)

@@ -1,4 +1,5 @@
 using MiniJam159;
+using MiniJam159.GameCore;
 using MiniJam159.AI;
 using MiniJam159.Structures;
 using MiniJam159.UI;
@@ -28,7 +29,6 @@ namespace MiniJam159.Selection
 
         #endregion
 
-        public bool massSelecting;
         public Vector2 massSelectStartPosition;
 
         public List<GameObject> selectedObjects;
@@ -360,11 +360,12 @@ namespace MiniJam159.Selection
             setMassSelectObjects();
 
             // Reset mass select
-            massSelecting = false;
+            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
         public void updateMassSelectBox()
         {
+            bool massSelecting = (PlayerModeManager.instance.playerMode == PlayerMode.MASS_SELECT);
             massSelectBoxTransform.gameObject.GetComponent<Image>().enabled = massSelecting;
             if (!massSelecting) return;
 

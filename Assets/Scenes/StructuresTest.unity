@@ -1855,6 +1855,7 @@ GameObject:
   - component: {fileID: 1855134516}
   - component: {fileID: 1855134515}
   - component: {fileID: 1855134517}
+  - component: {fileID: 1855134518}
   m_Layer: 0
   m_Name: PlayerController
   m_TagString: Untagged
@@ -1916,6 +1917,19 @@ MonoBehaviour:
   massSelecting: 0
   massSelectStartPosition: {x: 0, y: 0}
   selectedObjects: []
+--- !u!114 &1855134518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1855134514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6417e71f307278447bbf2860686cc9a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerMode: 0
 --- !u!1 &1909279005
 GameObject:
   m_ObjectHideFlags: 0
