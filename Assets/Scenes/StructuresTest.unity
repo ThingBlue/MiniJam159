@@ -1342,7 +1342,7 @@ GameObject:
   - component: {fileID: 1606605246}
   - component: {fileID: 1606605249}
   m_Layer: 0
-  m_Name: Camera
+  m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1426,7 +1426,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9005adae390f2345bd4037ef77d5c25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  disablePan: 1
+  cameraBoundaryStart: {x: 4, y: 4}
+  cameraBoundaryEnd: {x: 24, y: 24}
+  disablePan: 0
   panSpeed: 0.2
 --- !u!1 &1674426301
 GameObject:
