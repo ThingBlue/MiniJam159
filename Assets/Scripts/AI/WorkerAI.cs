@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class WorkerAI : GroundMeleeAI, IHarvester
+public class WorkerAI : GroundMeleeAI
 {
     public Vector2 basePosition; // Base location to return resources
     private IResource currentResource; // Current resource being harvested
