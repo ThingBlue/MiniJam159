@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MiniJam159.GameCore;
 using MiniJam159.Commands;
 
 namespace MiniJam159.UI
@@ -19,6 +20,7 @@ namespace MiniJam159.UI
         public Sprite attackCommandSprite;
         public Sprite holdCommandSprite;
         public Sprite buildCommandSprite;
+        public Sprite harvestCommandSprite;
 
         #endregion
 
@@ -34,65 +36,56 @@ namespace MiniJam159.UI
             else Destroy(this);
         }
 
-        public void clearCommands()
+        public void clearCommandButtons()
         {
-            CommandManager.instance.activeCommands.Clear();
             for (int i = 0; i < commandButtons.Count; i++)
             {
                 Destroy(commandButtons[i]);
             }
         }
 
-        public void populateCommandUI(List<CommandType> newCommands)
+        public void populateCommandButtons()
         {
-            // Clear previous commands
-            clearCommands();
+            clearCommandButtons();
 
             // Create new ui
-            for (int i = 0; i < newCommands.Count; i++)
+            for (int i = 0; i < CommandManager.instance.activeCommands.Count; i++)
             {
+                Command activeCommand = CommandManager.instance.activeCommands[i];
+
                 // Skip null commands
-                if (newCommands[i] == CommandType.NULL)
-                {
-                    // Add null command to command manager
-                    CommandManager.instance.activeCommands.Add(null);
-                    continue;
-                }
+                if (activeCommand == null) continue;
 
                 // Create new button
-                GameObject newButton = Instantiate(commandButtonPrefab, commandPanel.transform);
+                GameObject newButtonObject = Instantiate(commandButtonPrefab, commandPanel.transform);
+                CommandButton newCommandButton = newButtonObject.GetComponent<CommandButton>();
+                newCommandButton.command = activeCommand;
 
                 // Set button position
                 float xOffset = (i % 4) * 64.0f;
                 float yOffset = (Mathf.Floor(i / 4.0f)) * -64.0f;
-                newButton.transform.localPosition = new Vector2(-96.0f + xOffset, 64.0f + yOffset);
+                newButtonObject.transform.localPosition = new Vector2(-96.0f + xOffset, 64.0f + yOffset);
 
-                Command newCommand = new Command();
-
-                // Attach command script and texture to new button
-                switch (newCommands[i])
+                // Attach command texture to new button
+                switch (activeCommand.commandType)
                 {
                     case CommandType.MOVE:
-                        newCommand = newButton.AddComponent<MoveCommand>();
-                        newButton.GetComponent<Image>().sprite = moveCommandSprite;
+                        newButtonObject.GetComponent<Image>().sprite = moveCommandSprite;
                         break;
                     case CommandType.ATTACK:
-                        newCommand = newButton.AddComponent<AttackCommand>();
-                        newButton.GetComponent<Image>().sprite = attackCommandSprite;
+                        newButtonObject.GetComponent<Image>().sprite = attackCommandSprite;
                         break;
                     case CommandType.HOLD:
-                        newCommand = newButton.AddComponent<HoldCommand>();
-                        newButton.GetComponent<Image>().sprite = holdCommandSprite;
+                        newButtonObject.GetComponent<Image>().sprite = holdCommandSprite;
                         break;
                     case CommandType.BUILD:
-                        newCommand = newButton.AddComponent<BuildCommand>();
-                        newButton.GetComponent<Image>().sprite = buildCommandSprite;
+                        newButtonObject.GetComponent<Image>().sprite = buildCommandSprite;
+                        break;
+                    case CommandType.HARVEST:
+                        newButtonObject.GetComponent<Image>().sprite = harvestCommandSprite;
                         break;
                 }
-                commandButtons.Add(newButton);
-
-                // Populate command manager active commands list
-                CommandManager.instance.activeCommands.Add(newCommand);
+                commandButtons.Add(newButtonObject);
             }
         }
 

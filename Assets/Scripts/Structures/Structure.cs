@@ -5,7 +5,7 @@ using MiniJam159.Commands;
 
 namespace MiniJam159.Structures
 {
-    public class Structure : MonoBehaviour
+    public class StructureData
     {
         public Vector2 position;
         public Vector2 size;
@@ -16,5 +16,15 @@ namespace MiniJam159.Structures
         public float contructionTime;
 
         public List<CommandType> commands;
+    }
+
+    public class Structure : MonoBehaviour
+    {
+        public StructureData structureData;
+
+        private void Awake()
+        {
+            structureData = new StructureData();
+        }
     }
 }

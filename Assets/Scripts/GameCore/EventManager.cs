@@ -21,20 +21,11 @@ namespace MiniJam159.GameCore
     {
         public static EventManager instance;
 
-        #region Game events
+        #region Events
 
         public UnityEvent pauseEvent;
         public UnityEvent unpauseEvent;
 
-        #endregion
-
-        #region UI Events
-        #endregion
-
-        #region Player events
-        #endregion
-
-        #region Dialogue events
         #endregion
 
         private void Awake()

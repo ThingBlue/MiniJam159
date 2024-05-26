@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using MiniJam159.Commands;
 
-namespace MiniJam159.Commands
+namespace MiniJam159.UI
 {
     public class TooltipManager : MonoBehaviour
     {
@@ -40,7 +42,8 @@ namespace MiniJam159.Commands
             Vector2 backgroundSize = new Vector2(tooltipText.preferredWidth + textPaddingSize * 2f, tooltipText.preferredHeight + textPaddingSize * 2f);
             GetComponent<RectTransform>().sizeDelta = backgroundSize;
 
-            gameObject.SetActive(visible);
+            GetComponent<Image>().enabled = visible;
+            tooltipText.enabled = visible;
         }
     }
 }

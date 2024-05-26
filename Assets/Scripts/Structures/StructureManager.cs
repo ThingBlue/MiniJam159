@@ -25,7 +25,7 @@ namespace MiniJam159
 
         public List<GameObject> structures;
 
-        private Structure placementStructure;
+        private StructureData placementStructureData;
         public bool inPlacementMode = false;
         private bool previousInPlacementMode = false;
 
@@ -62,23 +62,23 @@ namespace MiniJam159
                 gridTilesMaterial.SetVector("_PlacementPosition", mousePosition);
 
                 // Transform placement guide
-                placementGuide.transform.localScale = new Vector3(placementStructure.size.x / 10.0f, 1, placementStructure.size.y / 10.0f);
+                placementGuide.transform.localScale = new Vector3(placementStructureData.size.x / 10.0f, 1, placementStructureData.size.y / 10.0f);
 
                 Vector3 roundedPosition = mousePosition;
                 roundedPosition.x = Mathf.Round(mousePosition.x);
                 roundedPosition.z = Mathf.Round(mousePosition.z);
 
                 Vector3 snappedPosition = roundedPosition;
-                if (placementStructure.size.x % 2 == 1) snappedPosition.x += 0.5f;
-                if (placementStructure.size.y % 2 == 1) snappedPosition.z += 0.5f;
+                if (placementStructureData.size.x % 2 == 1) snappedPosition.x += 0.5f;
+                if (placementStructureData.size.y % 2 == 1) snappedPosition.z += 0.5f;
                 placementGuide.transform.SetPositionAndRotation(snappedPosition, Quaternion.identity);
             }
         }
 
-        public void beginPlacement(Structure structure)
+        public void beginPlacement(StructureData structureData)
         {
-            placementStructure = structure;
-            placementStructure.commands = new List<CommandType>(structure.commands);
+            placementStructureData = structureData;
+            placementStructureData.commands = new List<CommandType>(structureData.commands);
             inPlacementMode = true;
         }
 
@@ -92,13 +92,13 @@ namespace MiniJam159
             roundedPosition.z = Mathf.Round(mousePosition.z);
 
             Vector3 snappedPosition = roundedPosition;
-            if (placementStructure.size.x % 2 == 1) snappedPosition.x += 0.5f;
-            if (placementStructure.size.y % 2 == 1) snappedPosition.z += 0.5f;
+            if (placementStructureData.size.x % 2 == 1) snappedPosition.x += 0.5f;
+            if (placementStructureData.size.y % 2 == 1) snappedPosition.z += 0.5f;
 
             // Check for blocked tiles
             Vector2 startPosition = new Vector2(
-                roundedPosition.x - Mathf.Floor(placementStructure.size.x / 2.0f),
-                roundedPosition.z - Mathf.Floor(placementStructure.size.y / 2.0f)
+                roundedPosition.x - Mathf.Floor(placementStructureData.size.x / 2.0f),
+                roundedPosition.z - Mathf.Floor(placementStructureData.size.y / 2.0f)
             );
 
             // Check if placement location is valid
@@ -106,24 +106,24 @@ namespace MiniJam159
             {
                 // Complete placement
                 inPlacementMode = false;
-                GridManager.instance.occupyCells(startPosition, placementStructure.size);
+                GridManager.instance.occupyCells(startPosition, placementStructureData.size);
 
                 // Instantiate strucutre
                 GameObject newStructureObject = Instantiate(structurePrefab, new Vector3(snappedPosition.x, 0.5f, snappedPosition.z), Quaternion.identity);
                 GameObject newBlockedTilesObject = newStructureObject.transform.Find("BlockedTiles").gameObject;
 
                 // Set scale
-                newBlockedTilesObject.transform.localScale = new Vector3(placementStructure.size.x / 10.0f, 1, placementStructure.size.y / 10.0f);
+                newBlockedTilesObject.transform.localScale = new Vector3(placementStructureData.size.x / 10.0f, 1, placementStructureData.size.y / 10.0f);
 
                 // Create duplicate material to fix shader graph weirdness
                 Renderer renderer = newBlockedTilesObject.GetComponent<MeshRenderer>();
                 renderer.material = new Material(renderer.material);
 
-                // Set properties in structure class
-                Structure newStructure = newStructureObject.GetComponent<Structure>();
-                newStructure.position = new Vector2(snappedPosition.x, snappedPosition.z);
-                newStructure.size = placementStructure.size;
-                newStructure.commands = new List<CommandType>(placementStructure.commands);
+                // Set properties in structure data class
+                StructureData newStructureData = newStructureObject.GetComponent<Structure>().structureData;
+                newStructureData.position = new Vector2(snappedPosition.x, snappedPosition.z);
+                newStructureData.size = placementStructureData.size;
+                newStructureData.commands = new List<CommandType>(placementStructureData.commands);
 
                 structures.Add(newStructureObject);
             }
@@ -140,9 +140,9 @@ namespace MiniJam159
 
         private bool placementBlocked(Vector2 startPosition)
         {
-            for (int i = 0; i < placementStructure.size.x; i++)
+            for (int i = 0; i < placementStructureData.size.x; i++)
             {
-                for (int j = 0; j < placementStructure.size.y; j++)
+                for (int j = 0; j < placementStructureData.size.y; j++)
                 {
                     if ((int)startPosition.x + i < 0 || (int)startPosition.y + j < 0 ||
                         (int)startPosition.x + i >= 20 || (int)startPosition.y + j >= 20 ||

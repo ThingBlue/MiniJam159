@@ -1,4 +1,5 @@
 using MiniJam159;
+using MiniJam159.Commands;
 using MiniJam159.Structures;
 using MiniJam159.UI;
 using System.Collections;
@@ -72,7 +73,7 @@ namespace MiniJam159
             selectedObjects.Clear();
 
             // Clear commands
-            UIManager.instance.clearCommands();
+            UIManager.instance.clearCommandButtons();
         }
 
         public void setSelectedObjects()
@@ -109,9 +110,10 @@ namespace MiniJam159
 
                 if (focusObject.layer == LayerMask.NameToLayer("Structure"))
                 {
-                    Structure structure = focusObject.GetComponent<Structure>();
+                    StructureData structureData = focusObject.GetComponent<Structure>().structureData;
 
-                    UIManager.instance.populateCommandUI(structure.commands);
+                    CommandManager.instance.populateCommands(structureData.commands);
+                    UIManager.instance.populateCommandButtons();
                 }
                 else if (focusObject.layer == LayerMask.NameToLayer("Unit"))
                 {
@@ -188,12 +190,12 @@ namespace MiniJam159
             foreach (GameObject structureObject in StructureManager.instance.structures)
             {
                 // Find corners of structure
-                Structure structure = structureObject.GetComponent<Structure>();
+                StructureData structureData = structureObject.GetComponent<Structure>().structureData;
                 List<Vector2> structurePoints = new List<Vector2>();
-                structurePoints.Add(structure.position + (structure.size / 2f));
-                structurePoints.Add(structure.position + new Vector2(structure.size.x / 2f, 0) - new Vector2(0, structure.size.y / 2f));
-                structurePoints.Add(structure.position - (structure.size / 2f));
-                structurePoints.Add(structure.position - new Vector2(structure.size.x / 2f, 0) + new Vector2(0, structure.size.y / 2f));
+                structurePoints.Add(structureData.position + (structureData.size / 2f));
+                structurePoints.Add(structureData.position + new Vector2(structureData.size.x / 2f, 0) - new Vector2(0, structureData.size.y / 2f));
+                structurePoints.Add(structureData.position - (structureData.size / 2f));
+                structurePoints.Add(structureData.position - new Vector2(structureData.size.x / 2f, 0) + new Vector2(0, structureData.size.y / 2f));
 
                 // Find all normals
                 List<Vector2> allNormals = new List<Vector2>(normals);

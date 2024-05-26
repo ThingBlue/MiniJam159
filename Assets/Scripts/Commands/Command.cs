@@ -12,33 +12,25 @@ namespace MiniJam159.Commands
         MOVE,
         ATTACK,
         HOLD,
-        BUILD
+        BUILD,
+        HARVEST
     }
 
-    public class Command : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class Command
     {
-        public string tooltip;
+        public CommandType commandType;
+        public string tooltip = "DEFAULT COMMAND TOOLTIP";
+
+        public virtual void initialize() { }
 
         public virtual void execute()
         {
             Debug.LogWarning("Attempted to execute a null command!");
         }
-
-        public virtual void OnPointerEnter(PointerEventData eventData)
-        {
-            Debug.Log("entered");
-            TooltipManager.instance.toggleTooltip(tooltip, true);
-        }
-
-        public virtual void OnPointerExit(PointerEventData eventData)
-        {
-            Debug.Log("exited");
-            TooltipManager.instance.toggleTooltip("", false);
-        }
     }
     public class MoveCommand : Command
     {
-        private void Start()
+        public override void initialize()
         {
             tooltip = "<b>Move</b>\nMoves the selected units to target location";
         }
@@ -50,7 +42,7 @@ namespace MiniJam159.Commands
     }
     public class AttackCommand : Command
     {
-        private void Start()
+        public override void initialize()
         {
             tooltip = "<b>Attack</b>\nAttacks target enemy unit";
         }
@@ -62,7 +54,7 @@ namespace MiniJam159.Commands
     }
     public class HoldCommand : Command
     {
-        private void Start()
+        public override void initialize()
         {
             tooltip = "<b>Hold</b>\nSelected units will stop moving and attack enemies in range";
         }
@@ -74,9 +66,21 @@ namespace MiniJam159.Commands
     }
     public class BuildCommand : Command
     {
-        private void Start()
+        public override void initialize()
         {
             tooltip = "<b>Build</b>\nOpens the build menu";
+        }
+
+        public override void execute()
+        {
+
+        }
+    }
+    public class HarvestCommand : Command
+    {
+        public override void initialize()
+        {
+            tooltip = "<b>Harvest</b>\nHarvests the target resource";
         }
 
         public override void execute()

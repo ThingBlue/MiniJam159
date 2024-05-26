@@ -152,7 +152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4ecc38f98622384886d2bec508c225e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeCommands: []
 --- !u!4 &5680823
 Transform:
   m_ObjectHideFlags: 0
@@ -809,6 +808,7 @@ MonoBehaviour:
   attackCommandSprite: {fileID: 21300000, guid: 2b30954fa39e1ff409176e8484478604, type: 3}
   holdCommandSprite: {fileID: 21300000, guid: 818d78a5e97f47b4e9db1261d96cd462, type: 3}
   buildCommandSprite: {fileID: 21300000, guid: cf09fcd436e2c7448ba3b3f468bf1095, type: 3}
+  harvestCommandSprite: {fileID: 21300000, guid: 487c10d71a22f7640abebc4de6e3689a, type: 3}
   commandButtons: []
 --- !u!1 &1000442350
 GameObject:
