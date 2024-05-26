@@ -30,7 +30,7 @@ namespace MiniJam159.GameCore
 
         private void FixedUpdate()
         {
-            print(playerMode);
+            //print(playerMode);
         }
     }
 }

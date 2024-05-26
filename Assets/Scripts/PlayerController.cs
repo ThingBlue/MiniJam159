@@ -16,6 +16,8 @@ namespace MiniJam159
     {
         #region Inspector members
 
+        public LayerMask enemyLayer;
+
         #endregion
 
         private bool mouse0Down;
@@ -23,7 +25,7 @@ namespace MiniJam159
         private bool mouse0Up;
         private bool mouse1Up;
 
-        private bool canStartMassSelect;
+        private bool canSelect;
         private bool ignoreNextMouse0Up;
 
         private float massSelectStartTimer;
@@ -148,60 +150,39 @@ namespace MiniJam159
                         ignoreNextMouse0Up = true;
                     }
                     if (mouse1Down) StructureManager.instance.cancelPlacement();
+                    break;
 
-                    SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
-                    canStartMassSelect = false;
-                    break;
                 case PlayerMode.ATTACK_TARGET:
+                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeAttackTarget();
                     break;
+
                 case PlayerMode.HARVEST_TARGET:
                     break;
+
                 case PlayerMode.MOVE_TARGET:
-                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
-                    {
-                        // Invoke move command on all selected units
-                        foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
-                        {
-                            // Check that object has a GameAI
-                            GameAI ai = selectedObject.GetComponent<GameAI>();
-                            if (ai == null) continue;
-
-                            MethodInfo method = ai.GetType().GetMethod("moveAICommand");
-                            if (method != null)
-                            {
-                                // Invoke move command method in ai using mouse position in world
-                                Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
-                                Vector2 movementDestination = new Vector2(mousePositionInWorld.x, mousePositionInWorld.z);
-                                method.Invoke(ai, new object[] { movementDestination });
-                            }
-                        }
-
-                        // End move target mode
-                        PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-                    }
-
-                    SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
-                    canStartMassSelect = false;
+                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMoveTarget();
                     break;
+
                 case PlayerMode.MASS_SELECT:
                     SelectionManager.instance.updateMassSelectBox();
 
                     // Execute mass select
                     if (mouse0Up) SelectionManager.instance.executeMassSelect();
                     break;
+
                 case PlayerMode.NORMAL:
                     // Set start position for mass select
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
                     {
                         SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
-                        canStartMassSelect = true;
+                        canSelect = true;
                     }
                     if (mouse0Down && EventSystem.current.IsPointerOverGameObject())
                     {
-                        canStartMassSelect = false;
+                        canSelect = false;
                     }
 
-                    if (InputManager.instance.getKey("Mouse0") && canStartMassSelect)
+                    if (InputManager.instance.getKey("Mouse0") && canSelect)
                     {
                         massSelectStartTimer += Time.deltaTime;
                         if (massSelectStartTimer >= SelectionManager.instance.massSelectDelay ||
@@ -222,7 +203,7 @@ namespace MiniJam159
                     SelectionManager.instance.updateMassSelectBox();
 
                     // Execute single select
-                    if (mouse0Up && !EventSystem.current.IsPointerOverGameObject()) SelectionManager.instance.executeSingleSelect();
+                    if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject()) SelectionManager.instance.executeSingleSelect();
 
                     // Movement commands
                     if (mouse1Down)
@@ -234,11 +215,72 @@ namespace MiniJam159
                     break;
             }
 
+            // Don't allow start of mass select when occupied
+            if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL && PlayerModeManager.instance.playerMode != PlayerMode.MASS_SELECT)
+            {
+                SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                canSelect = false;
+            }
+
             // Clear key states
             mouse0Down = false;
             mouse1Down = false;
             mouse0Up = false;
             mouse1Up = false;
+        }
+
+        public void executeMoveTarget()
+        {
+            // Invoke move command on all selected units
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                // Check that object has a GameAI
+                GameAI ai = selectedObject.GetComponent<GameAI>();
+                if (ai == null) continue;
+
+                MethodInfo method = ai.GetType().GetMethod("moveAICommand");
+                if (method != null)
+                {
+                    // Invoke move command method in ai using mouse position in world
+                    Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
+                    Vector2 movementDestination = new Vector2(mousePositionInWorld.x, mousePositionInWorld.z);
+                    method.Invoke(ai, new object[] { movementDestination });
+                }
+            }
+
+            // Finish move command
+            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+        }
+
+        public void executeAttackTarget()
+        {
+            GameObject target = InputManager.instance.mouseRaycast(enemyLayer);
+            if (target == null)
+            {
+                // No target, cancel attack command
+                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                return;
+            }
+
+            // Invoke move command on all selected units
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                // Check that object has a GameAI
+                GameAI ai = selectedObject.GetComponent<GameAI>();
+                if (ai == null) continue;
+
+                MethodInfo method = ai.GetType().GetMethod("attackAICommand");
+                if (method != null)
+                {
+                    // Invoke attack command method in ai using transform of target
+                    //method.Invoke(ai, new object[] { target.transform });
+
+                    Debug.Log("Attacking target: " + target);
+                }
+            }
+
+            // Finish attack command
+            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
     }
 }

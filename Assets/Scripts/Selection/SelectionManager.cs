@@ -172,20 +172,14 @@ namespace MiniJam159.Selection
             clearSelectedObjects();
 
             // Raycast from mouse and grab first hit
-            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            RaycastHit hit;
             LayerMask raycastMask = unitLayer | structureLayer;
-            if (Physics.Raycast(mouseRay, out hit, selectionRaycastDistance, raycastMask))
-            {
-                // We have a hit
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Structure") ||
-                    hit.collider.gameObject.layer == LayerMask.NameToLayer("Unit"))
-                {
-                    selectedObjects.Add(hit.collider.transform.parent.gameObject);
-                    setSingleSelectObject();
-                }
-            }
+            GameObject hitObject = InputManager.instance.mouseRaycast(raycastMask);
+
+            if (hitObject == null) return;
+
+            // We have a hit
+            selectedObjects.Add(hitObject.transform.parent.gameObject);
+            setSingleSelectObject();
         }
 
         public void executeMassSelect()
