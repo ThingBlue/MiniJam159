@@ -2,13 +2,14 @@ using MiniJam159;
 using MiniJam159.Commands;
 using MiniJam159.Structures;
 using MiniJam159.UI;
+using MiniJam159.AI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MiniJam159
+namespace MiniJam159.Selection
 {
     public class SelectionManager : MonoBehaviour
     {
@@ -24,7 +25,7 @@ namespace MiniJam159
         public float selectionRaycastDistance;
 
         public Material defaultMaterial;
-        public Material structureOutlineMaterial;
+        public Material selectedOutlineMaterial;
 
         #endregion
 
@@ -53,21 +54,18 @@ namespace MiniJam159
             // Clear outlines
             foreach (GameObject selectedObject in selectedObjects)
             {
-                if (selectedObject.layer == LayerMask.NameToLayer("Structure"))
+                MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
+                Material[] newMaterials = new Material[2];
+                renderer.materials.CopyTo(newMaterials, 0);
+                for (int i = 0; i < renderer.materials.Length; i++)
                 {
-                    MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
-                    Material[] newMaterials = new Material[2];
-                    renderer.materials.CopyTo(newMaterials, 0);
-                    for (int i = 0; i < renderer.materials.Length; i++)
+                    if (renderer.materials[i].name == selectedOutlineMaterial.name + " (Instance)")
                     {
-                        if (renderer.materials[i].name == structureOutlineMaterial.name + " (Instance)")
-                        {
-                            //renderer.materials[i] = defaultMaterial;
-                            newMaterials[i] = null;
-                        }
+                        //renderer.materials[i] = defaultMaterial;
+                        newMaterials[i] = null;
                     }
-                    renderer.materials = newMaterials;
                 }
+                renderer.materials = newMaterials;
             }
 
             selectedObjects.Clear();
@@ -81,41 +79,43 @@ namespace MiniJam159
             if (selectedObjects.Count == 0 || selectedObjects[0] == null) return;
             GameObject selectedObject = selectedObjects[0];
 
+            Debug.Log(selectedObject);
+
             // Add outline
-            if (selectedObject.layer == LayerMask.NameToLayer("Structure"))
+            MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
+            Material[] newMaterials = renderer.materials;
+            bool hasOutlineMaterial = false;
+            for (int i = 0; i < newMaterials.Length; i++)
             {
-                MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
-                Material[] newMaterials = renderer.materials;
-                bool hasOutlineMaterial = false;
-                for (int i = 0; i < newMaterials.Length; i++)
+                if (newMaterials[i].name == selectedOutlineMaterial.name + " (Instance)")
                 {
-                    if (newMaterials[i].name == structureOutlineMaterial.name + " (Instance)")
-                    {
-                        hasOutlineMaterial = true;
-                        break;
-                    }
+                    hasOutlineMaterial = true;
+                    break;
                 }
-                if (!hasOutlineMaterial)
-                {
-                    newMaterials[0] = new Material(structureOutlineMaterial);
-                    renderer.materials = newMaterials;
-                }
+            }
+            if (!hasOutlineMaterial)
+            {
+                newMaterials[0] = new Material(selectedOutlineMaterial);
+                renderer.materials = newMaterials;
             }
 
             // Populate command menu using the first unit in list
             GameObject focusObject = selectedObjects[0];
             if (focusObject == null) return;
 
-            if (focusObject.layer == LayerMask.NameToLayer("Structure"))
+            if (focusObject.layer == LayerMask.NameToLayer("Unit"))
+            {
+                GameAI newAI = focusObject.GetComponent<GameAI>();
+
+                CommandManager.instance.populateCommands(newAI.commandTypes);
+                UIManager.instance.populateCommandButtons();
+            }
+            else if (focusObject.layer == LayerMask.NameToLayer("Structure"))
             {
                 StructureData structureData = focusObject.GetComponent<Structure>().structureData;
 
                 CommandManager.instance.populateCommands(structureData.commands);
                 UIManager.instance.populateCommandButtons();
-            }
-            else if (focusObject.layer == LayerMask.NameToLayer("Unit"))
-            {
-
             }
         }
 
@@ -126,24 +126,21 @@ namespace MiniJam159
             // Add outlines
             foreach (GameObject selectedObject in selectedObjects)
             {
-                if (selectedObject.layer == LayerMask.NameToLayer("Structure"))
+                MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
+                Material[] newMaterials = renderer.materials;
+                bool hasOutlineMaterial = false;
+                for (int i = 0; i < newMaterials.Length; i++)
                 {
-                    MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
-                    Material[] newMaterials = renderer.materials;
-                    bool hasOutlineMaterial = false;
-                    for (int i = 0; i < newMaterials.Length; i++)
+                    if (newMaterials[i].name == selectedOutlineMaterial.name + " (Instance)")
                     {
-                        if (newMaterials[i].name == structureOutlineMaterial.name + " (Instance)")
-                        {
-                            hasOutlineMaterial = true;
-                            break;
-                        }
+                        hasOutlineMaterial = true;
+                        break;
                     }
-                    if (!hasOutlineMaterial)
-                    {
-                        newMaterials[0] = new Material(structureOutlineMaterial);
-                        renderer.materials = newMaterials;
-                    }
+                }
+                if (!hasOutlineMaterial)
+                {
+                    newMaterials[0] = new Material(selectedOutlineMaterial);
+                    renderer.materials = newMaterials;
                 }
             }
 
@@ -151,17 +148,23 @@ namespace MiniJam159
             GameObject focusObject = selectedObjects[0];
             if (focusObject == null) return;
 
-            if (focusObject.layer == LayerMask.NameToLayer("Structure"))
+            if (focusObject.layer == LayerMask.NameToLayer("Unit"))
+            {
+                GameAI newAI = focusObject.GetComponent<GameAI>();
+
+                CommandManager.instance.populateCommands(newAI.commandTypes);
+                UIManager.instance.populateCommandButtons();
+            }
+            // NOT ALLOWING MASS SELECT ON STRUCTURES FOR NOW
+            /*
+            else if (focusObject.layer == LayerMask.NameToLayer("Structure"))
             {
                 StructureData structureData = focusObject.GetComponent<Structure>().structureData;
 
                 CommandManager.instance.populateCommands(structureData.commands);
                 UIManager.instance.populateCommandButtons();
             }
-            else if (focusObject.layer == LayerMask.NameToLayer("Unit"))
-            {
-
-            }
+            */
         }
 
         public void executeSingleSelect()
@@ -177,7 +180,8 @@ namespace MiniJam159
             if (Physics.Raycast(mouseRay, out hit, selectionRaycastDistance, raycastMask))
             {
                 // We have a hit
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Structure"))
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Structure") ||
+                    hit.collider.gameObject.layer == LayerMask.NameToLayer("Unit"))
                 {
                     selectedObjects.Add(hit.collider.transform.parent.gameObject);
                     setSingleSelectObject();
@@ -228,7 +232,9 @@ namespace MiniJam159
             {
                 normals.Add(Vector2.Perpendicular(castPoints[i + 1] - castPoints[i]).normalized);
             }
-            
+
+            // NOT ALLOWING MASS SELECT ON STRUCTURES FOR NOW
+            /*
             foreach (GameObject structureObject in StructureManager.instance.structures)
             {
                 // Find corners of structure
@@ -285,6 +291,71 @@ namespace MiniJam159
                 {
                     // Inside selection if not separated
                     selectedObjects.Add(structureObject);
+                }
+            }
+            */
+
+            // Loop through all units
+            foreach (GameAI unitAI in GameAI.allAIs)
+            {
+                GameObject unitObject = unitAI.gameObject;
+                if (unitObject == null || unitObject.tag != "Unit") continue;
+
+                // Find corners of unit
+                List<Vector2> unitPoints = new List<Vector2>();
+                Vector2 unitPosition = new Vector2(unitObject.transform.position.x, unitObject.transform.position.z);
+                Vector2 unitSize = new Vector2(unitObject.transform.localScale.x, unitObject.transform.localScale.z);
+                unitPoints.Add(unitPosition + (unitSize / 2f));
+                unitPoints.Add(unitPosition + new Vector2(unitSize.x / 2f, 0) - new Vector2(0, unitSize.y / 2f));
+                unitPoints.Add(unitPosition - (unitSize / 2f));
+                unitPoints.Add(unitPosition - new Vector2(unitSize.x / 2f, 0) + new Vector2(0, unitSize.y / 2f));
+
+                // Find all normals
+                List<Vector2> allNormals = new List<Vector2>(normals);
+                allNormals.Add(Vector2.Perpendicular(unitPoints[0] - unitPoints[unitPoints.Count - 1]).normalized);
+                for (int i = 0; i < unitPoints.Count - 1; i++)
+                {
+                    allNormals.Add(Vector2.Perpendicular(unitPoints[i + 1] - unitPoints[i]).normalized);
+                }
+
+                // Loop over all normals
+                bool separated = false;
+                foreach (Vector2 normal in allNormals)
+                {
+                    // Project shapes onto normal
+                    float castMin = float.MaxValue;
+                    float castMax = float.MinValue;
+                    foreach (Vector2 point in castPoints)
+                    {
+                        Vector2 projectedPoint = closestPointOnNormal(normal, point);
+                        float distance = Vector2.Distance(Vector2.zero, projectedPoint);
+                        if (Vector2.Dot(projectedPoint, normal) < 0) distance = -distance;
+                        if (distance < castMin) castMin = distance;
+                        if (distance > castMax) castMax = distance;
+                    }
+                    float unitMin = float.MaxValue;
+                    float unitMax = float.MinValue;
+                    foreach (Vector2 point in unitPoints)
+                    {
+                        Vector2 projectedPoint = closestPointOnNormal(normal, point);
+                        float distance = Vector2.Distance(Vector2.zero, projectedPoint);
+                        if (Vector2.Dot(projectedPoint, normal) < 0) distance = -distance;
+                        if (distance < unitMin) unitMin = distance;
+                        if (distance > unitMax) unitMax = distance;
+                    }
+
+                    // Check if projected shapes overlap
+                    if (castMax < unitMin || unitMax < castMin)
+                    {
+                        separated = true;
+                        break;
+                    }
+                }
+
+                if (!separated)
+                {
+                    // Inside selection if not separated
+                    selectedObjects.Add(unitObject);
                 }
             }
             setMassSelectObjects();
