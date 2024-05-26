@@ -185,7 +185,7 @@ namespace MiniJam159
                 SelectionManager.instance.updateMassSelectBox();
 
                 // Execute single select
-                if (mouse0Up) SelectionManager.instance.executeSingleSelect();
+                if (mouse0Up && !EventSystem.current.IsPointerOverGameObject()) SelectionManager.instance.executeSingleSelect();
 
                 // Movement commands
                 if (mouse1Down)
