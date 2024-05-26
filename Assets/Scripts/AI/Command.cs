@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -43,10 +44,11 @@ namespace MiniJam159.AI
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)
             {
-                var type = ai.GetType();
-                if (type.GetMethod("moveAICommand") != null)
+                MethodInfo method = ai.GetType().GetMethod("moveAICommand");
+                if (method != null)
                 {
-                    //ai.moveAICommand(Input.mousePosition);
+                    // TODO: Pass correct info
+                    method.Invoke(ai, new object[] { (Vector2)Input.mousePosition });
                 }
             }
         }
@@ -64,10 +66,12 @@ namespace MiniJam159.AI
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)
             {
-                var type = ai.GetType();
-                if (type.GetMethod("attackAICommand") != null)
+                MethodInfo method = ai.GetType().GetMethod("attackAICommand");
+                if (method != null)
                 {
-                    //ai.attackAICommand(Input.mousePosition);
+                    // TODO: Pass correct info
+                    Transform target = null;
+                    method.Invoke(ai, new object[] { target });
                 }
             }
         }
@@ -85,10 +89,10 @@ namespace MiniJam159.AI
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)
             {
-                var type = ai.GetType();
-                if (type.GetMethod("holdAICommand") != null)
+                MethodInfo method = ai.GetType().GetMethod("holdAICommand");
+                if (method != null)
                 {
-                    //ai.holdAICommand(Input.mousePosition);
+                    method.Invoke(ai, new object[] { });
                 }
             }
         }
@@ -106,10 +110,11 @@ namespace MiniJam159.AI
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)
             {
-                var type = ai.GetType();
-                if (type.GetMethod("buildAICommand") != null)
+                MethodInfo method = ai.GetType().GetMethod("buildAICommand");
+                if (method != null)
                 {
-                    //ai.buildAICommand(Input.mousePosition);
+                    // TODO: Pass correct info
+                    method.Invoke(ai, new object[] { });
                 }
             }
         }
@@ -127,10 +132,11 @@ namespace MiniJam159.AI
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)
             {
-                var type = ai.GetType();
-                if (type.GetMethod("harvestAICommand") != null)
+                MethodInfo method = ai.GetType().GetMethod("harvestAICommand");
+                if (method != null)
                 {
-                    //ai.harvestAICommand(Input.mousePosition);
+                    // TODO: Pass correct info
+                    method.Invoke(ai, new object[] { });
                 }
             }
         }
