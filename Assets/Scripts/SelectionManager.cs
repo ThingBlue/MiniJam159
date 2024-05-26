@@ -91,7 +91,6 @@ namespace MiniJam159
                     if (!hasOutlineMaterial)
                     {
                         newMaterials[0] = new Material(structureOutlineMaterial);
-                        Debug.Log(newMaterials[0]);
                         renderer.materials = newMaterials;
                     }
                 }
