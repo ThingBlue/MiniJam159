@@ -4,6 +4,8 @@ using MiniJam159.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace MiniJam159
 {
@@ -11,15 +13,15 @@ namespace MiniJam159
     {
         #region Inspector members
 
-        public float massSelectDelay;
-
         #endregion
 
         private bool mouse0Down;
         private bool mouse1Down;
+        private bool mouse0Up;
+        private bool mouse1Up;
 
-        private bool massSelecting;
         private float massSelectStartTimer;
+
 
         // Singleton
         public static PlayerController instance;
@@ -36,6 +38,8 @@ namespace MiniJam159
             // Check key states
             if (InputManager.instance.getKeyDown("Mouse0")) mouse0Down = true;
             if (InputManager.instance.getKeyDown("Mouse1")) mouse1Down = true;
+            if (InputManager.instance.getKeyUp("Mouse0")) mouse0Up = true;
+            if (InputManager.instance.getKeyUp("Mouse1")) mouse1Up = true;
 
             // DEBUG DEBUG DEBUG TEST TEST TEST
             if (InputManager.instance.getKeyDown("PlacementTest"))
@@ -48,15 +52,15 @@ namespace MiniJam159
             {
                 List<CommandType> commands = new List<CommandType>();
                 commands.Add(CommandType.MOVE);
-                commands.Add(CommandType.ATTACK);
-                commands.Add(CommandType.NULL);
                 commands.Add(CommandType.NULL);
                 commands.Add(CommandType.HOLD);
                 commands.Add(CommandType.NULL);
                 commands.Add(CommandType.NULL);
                 commands.Add(CommandType.NULL);
-                commands.Add(CommandType.BUILD);
+                commands.Add(CommandType.ATTACK);
                 commands.Add(CommandType.NULL);
+                commands.Add(CommandType.NULL);
+                commands.Add(CommandType.BUILD);
                 commands.Add(CommandType.NULL);
                 commands.Add(CommandType.NULL);
                 UIManager.instance.updateCommandUI(commands);
@@ -79,29 +83,32 @@ namespace MiniJam159
             }
             else
             {
-                // Mass select
+                // Set start position for mass select
+                if (mouse0Down) SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+
                 if (InputManager.instance.getKey("Mouse0"))
                 {
                     massSelectStartTimer += Time.deltaTime;
+                    if (massSelectStartTimer >= SelectionManager.instance.massSelectDelay ||
+                        Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition) > SelectionManager.instance.massSelectMouseMoveDistance)
+                    {
+                        // Start mass select
+                        SelectionManager.instance.massSelecting = true;
+                    }
                 }
                 else
                 {
-                    if (massSelectStartTimer >= massSelectDelay)
-                    {
-                        // Execute mass select
-                        massSelecting = true;
-                    }
-
-                    // Reset mass select
+                    // Reset mass select timer
                     massSelectStartTimer = 0.0f;
-                    massSelecting = false;
                 }
+                SelectionManager.instance.updateMassSelectBox();
 
-                // Single select
-                if (mouse0Down && !massSelecting)
-                {
+                // Execute single select
+                if (mouse0Up && !SelectionManager.instance.massSelecting) SelectionManager.instance.executeSingleSelect();
 
-                }
+                // Execute mass select
+                if (SelectionManager.instance.massSelecting && mouse0Up) SelectionManager.instance.executeMassSelect();
+
 
                 // Movement commands
                 if (mouse1Down)
@@ -129,6 +136,8 @@ namespace MiniJam159
             // Clear key states
             mouse0Down = false;
             mouse1Down = false;
+            mouse0Up = false;
+            mouse1Up = false;
         }
     }
 }

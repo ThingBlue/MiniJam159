@@ -8,6 +8,7 @@ namespace MiniJam159.GameCore
     {
         #region Inspector members
 
+        public bool disablePan = false;
         public float panSpeed;
 
         #endregion
@@ -24,6 +25,8 @@ namespace MiniJam159.GameCore
 
         public void PanCamera(Vector2 direction)
         {
+            if (disablePan) return;
+
             if (direction == Vector2.up) transform.position = new Vector3(transform.position.x - panSpeed, 10, transform.position.z - panSpeed);
             if (direction == Vector2.down) transform.position = new Vector3(transform.position.x + panSpeed, 10, transform.position.z + panSpeed);
             if (direction == Vector2.left) transform.position = new Vector3(transform.position.x + panSpeed, 10, transform.position.z - panSpeed);

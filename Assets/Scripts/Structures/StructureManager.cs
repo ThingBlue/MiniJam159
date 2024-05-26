@@ -48,6 +48,7 @@ namespace MiniJam159
                 foreach (GameObject structure in structures)
                 {
                     structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = inPlacementMode ? true : false;
+                    structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = true;
                 }
 
                 previousInPlacementMode = inPlacementMode;
@@ -106,8 +107,8 @@ namespace MiniJam159
                 GridManager.instance.occupyCells(startPosition, placementStructure.size);
 
                 // Instantiate strucutre
-                GameObject newStructure = Instantiate(structurePrefab, new Vector3(snappedPosition.x, 0.5f, snappedPosition.z), Quaternion.identity);
-                GameObject newBlockedTilesObject = newStructure.transform.Find("BlockedTiles").gameObject;
+                GameObject newStructureObject = Instantiate(structurePrefab, new Vector3(snappedPosition.x, 0.5f, snappedPosition.z), Quaternion.identity);
+                GameObject newBlockedTilesObject = newStructureObject.transform.Find("BlockedTiles").gameObject;
 
                 // Set scale
                 newBlockedTilesObject.transform.localScale = new Vector3(placementStructure.size.x / 10.0f, 1, placementStructure.size.y / 10.0f);
@@ -116,7 +117,12 @@ namespace MiniJam159
                 Renderer renderer = newBlockedTilesObject.GetComponent<MeshRenderer>();
                 renderer.material = new Material(renderer.material);
 
-                structures.Add(newStructure);
+                // Set properties in structure class
+                Structure newStructure = newStructureObject.GetComponent<Structure>();
+                newStructure.position = new Vector2(snappedPosition.x, snappedPosition.z);
+                newStructure.size = placementStructure.size;
+
+                structures.Add(newStructureObject);
             }
             else
             {

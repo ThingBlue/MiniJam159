@@ -99,5 +99,6 @@ namespace MiniJam159.UI
                 commandButtons.Add(newButton);
             }
         }
+
     }
 }
