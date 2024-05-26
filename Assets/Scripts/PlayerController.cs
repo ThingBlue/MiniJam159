@@ -20,8 +20,10 @@ namespace MiniJam159
         private bool mouse0Up;
         private bool mouse1Up;
 
-        private float massSelectStartTimer;
+        private bool canStartMassSelect;
+        private bool ignoreNextMouse0Up;
 
+        private float massSelectStartTimer;
 
         // Singleton
         public static PlayerController instance;
@@ -38,7 +40,8 @@ namespace MiniJam159
             // Check key states
             if (InputManager.instance.getKeyDown("Mouse0")) mouse0Down = true;
             if (InputManager.instance.getKeyDown("Mouse1")) mouse1Down = true;
-            if (InputManager.instance.getKeyUp("Mouse0")) mouse0Up = true;
+            if (InputManager.instance.getKeyUp("Mouse0") && !ignoreNextMouse0Up) mouse0Up = true;
+            if (InputManager.instance.getKeyUp("Mouse0") && ignoreNextMouse0Up) ignoreNextMouse0Up = false;
             if (InputManager.instance.getKeyUp("Mouse1")) mouse1Up = true;
 
             // DEBUG DEBUG DEBUG TEST TEST TEST
@@ -78,15 +81,34 @@ namespace MiniJam159
             // Mouse
             if (StructureManager.instance.inPlacementMode)
             {
-                if (mouse0Down) StructureManager.instance.finishPlacement();
+                if (mouse0Down)
+                {
+                    StructureManager.instance.finishPlacement();
+                    ignoreNextMouse0Up = true;
+                }
                 if (mouse1Down) StructureManager.instance.cancelPlacement();
+
+                SelectionManager.instance.massSelecting = false;
+                SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                canStartMassSelect = false;
+            }
+            else if (SelectionManager.instance.massSelecting)
+            {
+                SelectionManager.instance.updateMassSelectBox();
+
+                // Execute mass select
+                if (mouse0Up) SelectionManager.instance.executeMassSelect();
             }
             else
             {
                 // Set start position for mass select
-                if (mouse0Down) SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                if (mouse0Down)
+                {
+                    SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                    canStartMassSelect = true;
+                }
 
-                if (InputManager.instance.getKey("Mouse0"))
+                if (InputManager.instance.getKey("Mouse0") && canStartMassSelect)
                 {
                     massSelectStartTimer += Time.deltaTime;
                     if (massSelectStartTimer >= SelectionManager.instance.massSelectDelay ||
@@ -94,21 +116,20 @@ namespace MiniJam159
                     {
                         // Start mass select
                         SelectionManager.instance.massSelecting = true;
+
+                        Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition));
                     }
                 }
                 else
                 {
                     // Reset mass select timer
                     massSelectStartTimer = 0.0f;
+                    SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
                 }
                 SelectionManager.instance.updateMassSelectBox();
 
                 // Execute single select
-                if (mouse0Up && !SelectionManager.instance.massSelecting) SelectionManager.instance.executeSingleSelect();
-
-                // Execute mass select
-                if (SelectionManager.instance.massSelecting && mouse0Up) SelectionManager.instance.executeMassSelect();
-
+                if (mouse0Up) SelectionManager.instance.executeSingleSelect();
 
                 // Movement commands
                 if (mouse1Down)
