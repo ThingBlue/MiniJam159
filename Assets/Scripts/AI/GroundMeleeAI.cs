@@ -15,14 +15,20 @@ public class GroundMeleeAI : MonoBehaviour
 
     private static List<GroundMeleeAI> activeAIs = new List<GroundMeleeAI>(); // List of active AIs
     private Transform target;
+    private Vector2 moveToPosition;
+    private bool isMovingToPosition;
     private float attackTimer;
     private bool isLeader;
+    private float moveIgnoreTargetTimer; // Timer to ignore targets while moving
+    private const float moveIgnoreTargetDuration = 10f; // Duration to ignore targets while moving
 
     void Start()
     {
         activeAIs.Add(this);
         attackTimer = 0f;
         isLeader = false;
+        isMovingToPosition = false;
+        moveIgnoreTargetTimer = 0f;
     }
 
     void OnDestroy()
@@ -32,37 +38,49 @@ public class GroundMeleeAI : MonoBehaviour
 
     void Update()
     {
-        if (target == null)
+        if (isMovingToPosition)
         {
-            FindNearestTarget();
-        }
-
-        if (target == null)
-        {
-            return; // No target found, do nothing
-        }
-
-        float distanceToTarget = Vector2.Distance(transform.position, target.position);
-
-        if (distanceToTarget <= attackRange)
-        {
-            if (isLeader)
-            {
-                CoordinatedAttack();
-            }
-            else
-            {
-                Attack();
-            }
+            MoveTowardsPosition();
         }
         else
         {
-            MoveTowardsSurroundPosition();
+            if (target == null)
+            {
+                FindNearestTarget();
+            }
+
+            if (target == null)
+            {
+                return; // No target found, do nothing
+            }
+
+            float distanceToTarget = Vector2.Distance(transform.position, target.position);
+
+            if (distanceToTarget <= attackRange)
+            {
+                if (isLeader)
+                {
+                    CoordinatedAttack();
+                }
+                else
+                {
+                    Attack();
+                }
+            }
+            else
+            {
+                MoveTowardsSurroundPosition();
+            }
         }
 
         if (attackTimer > 0)
         {
             attackTimer -= Time.deltaTime;
+        }
+
+        if (moveIgnoreTargetTimer > 0)
+        {
+            moveIgnoreTargetTimer -= Time.deltaTime;
         }
     }
 
@@ -73,6 +91,11 @@ public class GroundMeleeAI : MonoBehaviour
 
     void FindNearestTarget()
     {
+        if (moveIgnoreTargetTimer > 0)
+        {
+            return; // Ignore finding targets if timer is active
+        }
+
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
         float nearestDistance = Mathf.Infinity;
         Transform nearestTarget = null;
@@ -104,6 +127,38 @@ public class GroundMeleeAI : MonoBehaviour
         Vector2 surroundPosition = GetSurroundPosition();
         Vector2 direction = (surroundPosition - (Vector2)transform.position).normalized;
         transform.position = Vector2.MoveTowards(transform.position, surroundPosition, moveSpeed * Time.deltaTime);
+    }
+
+    void MoveTowardsPosition()
+    {
+        Vector2 direction = (moveToPosition - (Vector2)transform.position).normalized;
+        transform.position = Vector2.MoveTowards(transform.position, moveToPosition, moveSpeed * Time.deltaTime);
+
+        if (moveIgnoreTargetTimer <= 0)
+        {
+            // Check for targets while moving if the ignore timer is not active
+            FindNearestTarget();
+
+            if (target != null)
+            {
+                isMovingToPosition = false;
+                return; // Stop moving to position if a target is found
+            }
+        }
+
+        // Stop moving to position if reached
+        if (Vector2.Distance(transform.position, moveToPosition) < 0.1f)
+        {
+            isMovingToPosition = false;
+        }
+    }
+
+    public void MoveTo(Vector2 position)
+    {
+        moveToPosition = position;
+        isMovingToPosition = true;
+        target = null; // Reset target
+        moveIgnoreTargetTimer = moveIgnoreTargetDuration; // Start ignore target timer
     }
 
     Vector2 GetSurroundPosition()
@@ -186,4 +241,3 @@ public class GroundMeleeAI : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
 }
-
