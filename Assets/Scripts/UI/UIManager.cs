@@ -1,9 +1,9 @@
-using Codice.Client.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MiniJam159.Commands;
 
 namespace MiniJam159.UI
 {
@@ -22,7 +22,6 @@ namespace MiniJam159.UI
 
         #endregion
 
-        public List<CommandType> activeCommands;
         public List<GameObject> commandButtons;
 
         // Singleton
@@ -35,37 +34,30 @@ namespace MiniJam159.UI
             else Destroy(this);
         }
 
-        private void Start()
+        public void clearCommands()
         {
-            activeCommands = new List<CommandType>();
-        }
-
-        public void executeCommand(int index)
-        {
-            if (commandButtons[index] == null) return;
-
-            Command commandComponent = commandButtons[index].GetComponent<Command>();
-            if (commandComponent == null) return;
-
-            commandComponent.execute();
-        }
-
-        public void updateCommandUI(List<CommandType> newCommands)
-        {
-            // Clear previous command ui
+            CommandManager.instance.activeCommands.Clear();
             for (int i = 0; i < commandButtons.Count; i++)
             {
                 Destroy(commandButtons[i]);
             }
+        }
 
-            // Set new commands
-            activeCommands = newCommands;
+        public void populateCommandUI(List<CommandType> newCommands)
+        {
+            // Clear previous commands
+            clearCommands();
 
             // Create new ui
             for (int i = 0; i < newCommands.Count; i++)
             {
                 // Skip null commands
-                if (newCommands[i] == CommandType.NULL) continue;
+                if (newCommands[i] == CommandType.NULL)
+                {
+                    // Add null command to command manager
+                    CommandManager.instance.activeCommands.Add(null);
+                    continue;
+                }
 
                 // Create new button
                 GameObject newButton = Instantiate(commandButtonPrefab, commandPanel.transform);
@@ -75,28 +67,32 @@ namespace MiniJam159.UI
                 float yOffset = (Mathf.Floor(i / 4.0f)) * -64.0f;
                 newButton.transform.localPosition = new Vector2(-96.0f + xOffset, 64.0f + yOffset);
 
+                Command newCommand = new Command();
+
                 // Attach command script and texture to new button
                 switch (newCommands[i])
                 {
                     case CommandType.MOVE:
-                        newButton.AddComponent<MoveCommand>();
+                        newCommand = newButton.AddComponent<MoveCommand>();
                         newButton.GetComponent<Image>().sprite = moveCommandSprite;
                         break;
                     case CommandType.ATTACK:
-                        newButton.AddComponent<AttackCommand>();
+                        newCommand = newButton.AddComponent<AttackCommand>();
                         newButton.GetComponent<Image>().sprite = attackCommandSprite;
                         break;
                     case CommandType.HOLD:
-                        newButton.AddComponent<HoldCommand>();
+                        newCommand = newButton.AddComponent<HoldCommand>();
                         newButton.GetComponent<Image>().sprite = holdCommandSprite;
                         break;
                     case CommandType.BUILD:
-                        newButton.AddComponent<BuildCommand>();
+                        newCommand = newButton.AddComponent<BuildCommand>();
                         newButton.GetComponent<Image>().sprite = buildCommandSprite;
                         break;
                 }
-
                 commandButtons.Add(newButton);
+
+                // Populate command manager active commands list
+                CommandManager.instance.activeCommands.Add(newCommand);
             }
         }
 

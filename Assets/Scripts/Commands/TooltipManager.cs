@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace MiniJam159.UI
+namespace MiniJam159.Commands
 {
     public class TooltipManager : MonoBehaviour
     {

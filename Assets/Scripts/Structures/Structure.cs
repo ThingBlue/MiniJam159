@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MiniJam159.Commands;
 
 namespace MiniJam159.Structures
 {
@@ -13,5 +14,7 @@ namespace MiniJam159.Structures
         public float health;
 
         public float contructionTime;
+
+        public List<CommandType> commands;
     }
 }

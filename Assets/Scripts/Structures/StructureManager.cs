@@ -1,5 +1,6 @@
 using MiniJam159.GameCore;
 using MiniJam159.Structures;
+using MiniJam159.Commands;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.YamlDotNet.Core.Tokens;
@@ -77,6 +78,7 @@ namespace MiniJam159
         public void beginPlacement(Structure structure)
         {
             placementStructure = structure;
+            placementStructure.commands = new List<CommandType>(structure.commands);
             inPlacementMode = true;
         }
 
@@ -121,6 +123,7 @@ namespace MiniJam159
                 Structure newStructure = newStructureObject.GetComponent<Structure>();
                 newStructure.position = new Vector2(snappedPosition.x, snappedPosition.z);
                 newStructure.size = placementStructure.size;
+                newStructure.commands = new List<CommandType>(placementStructure.commands);
 
                 structures.Add(newStructureObject);
             }

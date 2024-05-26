@@ -1,7 +1,9 @@
 using MiniJam159;
 using MiniJam159.Structures;
+using MiniJam159.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -68,9 +70,12 @@ namespace MiniJam159
             }
 
             selectedObjects.Clear();
+
+            // Clear commands
+            UIManager.instance.clearCommands();
         }
 
-        public void updateSelectedObjects()
+        public void setSelectedObjects()
         {
             // Add outlines
             foreach (GameObject selectedObject in selectedObjects)
@@ -95,6 +100,24 @@ namespace MiniJam159
                     }
                 }
             }
+
+            if (selectedObjects.Count > 0)
+            {
+                // Populate command menu using the first unit in list
+                GameObject focusObject = selectedObjects[0];
+                if (focusObject == null) return;
+
+                if (focusObject.layer == LayerMask.NameToLayer("Structure"))
+                {
+                    Structure structure = focusObject.GetComponent<Structure>();
+
+                    UIManager.instance.populateCommandUI(structure.commands);
+                }
+                else if (focusObject.layer == LayerMask.NameToLayer("Unit"))
+                {
+
+                }
+            }
         }
 
         public void executeSingleSelect()
@@ -113,7 +136,7 @@ namespace MiniJam159
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Structure"))
                 {
                     selectedObjects.Add(hit.collider.transform.parent.gameObject);
-                    updateSelectedObjects();
+                    setSelectedObjects();
                 }
             }
         }
@@ -220,7 +243,7 @@ namespace MiniJam159
                     selectedObjects.Add(structureObject);
                 }
             }
-            updateSelectedObjects();
+            setSelectedObjects();
 
             // Reset mass select
             massSelecting = false;
