@@ -21,6 +21,8 @@ namespace MiniJam159
 
         public float massSelectionRaycastDistance;
 
+        public Material structureOutlineMaterial;
+
         #endregion
 
         private bool mouse0Down;
@@ -43,6 +45,11 @@ namespace MiniJam159
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
+        }
+
+        private void Start()
+        {
+            selectedObjects = new List<GameObject>();
         }
 
         private void Update()
@@ -115,8 +122,10 @@ namespace MiniJam159
                 // Execute mass select
                 if (massSelecting && mouse0Up)
                 {
+                    // Clear current selection
+                    selectedObjects.Clear();
+
                     // Find boundaries of selection box in screen space
-                    //Vector3 center = massSelectBoxTransform.position + ((massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta) - massSelectBoxTransform.position) / 2f;
                     Vector3 bottomLeft = massSelectBoxTransform.position;
                     Vector3 bottomRight = massSelectBoxTransform.position + new Vector3(massSelectBoxTransform.sizeDelta.x, 0, 0);
                     Vector3 topRight = massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta;
@@ -125,17 +134,14 @@ namespace MiniJam159
                     Plane worldPlane = new Plane(Vector3.up, Vector3.zero);
 
                     // Transform position into world space
-                    //Ray centerRay = Camera.main.ScreenPointToRay(center);
                     Ray bottomLeftRay = Camera.main.ScreenPointToRay(bottomLeft);
                     Ray bottomRightRay = Camera.main.ScreenPointToRay(bottomRight);
                     Ray topRightRay = Camera.main.ScreenPointToRay(topRight);
                     Ray topLeftRay = Camera.main.ScreenPointToRay(topLeft);
-                    //Vector3 centerWorldSpace = Vector3.zero;
                     Vector3 bottomLeftWorldSpace = Vector3.zero;
                     Vector3 bottomRightWorldSpace = Vector3.zero;
                     Vector3 topRightWorldSpace = Vector3.zero;
                     Vector3 topLeftWorldSpace = Vector3.zero;
-                    //if (worldPlane.Raycast(centerRay, out float centerEnter)) centerWorldSpace = centerRay.GetPoint(centerEnter);
                     if (worldPlane.Raycast(bottomLeftRay, out float bottomLeftEnter)) bottomLeftWorldSpace = bottomLeftRay.GetPoint(bottomLeftEnter);
                     if (worldPlane.Raycast(bottomRightRay, out float bottomRightEnter)) bottomRightWorldSpace = bottomRightRay.GetPoint(bottomRightEnter);
                     if (worldPlane.Raycast(topRightRay, out float topRightEnter)) topRightWorldSpace = topRightRay.GetPoint(topRightEnter);
@@ -213,6 +219,7 @@ namespace MiniJam159
                         if (!separated)
                         {
                             // Inside selection if not separated
+                            selectedObjects.Add(structureObject);
                         }
                     }
 
@@ -220,13 +227,26 @@ namespace MiniJam159
                     massSelecting = false;
                 }
 
+                // Set start position for mass select
+                if (mouse0Down && !massSelecting) massSelectStartPosition = Input.mousePosition;
+
                 // Single select
-                if (mouse0Down && !massSelecting)
+                if (mouse0Up && !massSelecting)
                 {
+                    // Clear current selection
+                    selectedObjects.Clear();
 
+                    // Raycast from mouse and grab first hit
+                    Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                    // Set start position for mass select
-                    massSelectStartPosition = Input.mousePosition;
+                    RaycastHit hit;
+                    LayerMask raycastMask = (1 << unitLayer) | (1 << structureLayer);
+                    if (Physics.Raycast(mouseRay, out hit, raycastMask))
+                    {
+                        // We have a hit
+                        selectedObjects.Add(hit.collider.gameObject);
+                        Debug.Log("Object hit");
+                    }
                 }
 
                 // Movement commands
