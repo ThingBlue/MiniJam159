@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MiniJam159.Commands;
+using MiniJam159.AI;
 
 namespace MiniJam159.Structures
 {

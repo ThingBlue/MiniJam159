@@ -22,7 +22,6 @@ namespace MiniJam159.AI
         private void Start()
         {
             activeCommands = new List<Command>();
-
         }
 
         public void executeCommand(int index)

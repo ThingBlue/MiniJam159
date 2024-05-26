@@ -46,7 +46,7 @@ namespace MiniJam159.AI
                 var type = ai.GetType();
                 if (type.GetMethod("moveAICommand") != null)
                 {
-                    ai.moveAICommand(Input.mousePosition);
+                    //ai.moveAICommand(Input.mousePosition);
                 }
             }
         }
@@ -67,7 +67,7 @@ namespace MiniJam159.AI
                 var type = ai.GetType();
                 if (type.GetMethod("attackAICommand") != null)
                 {
-                    ai.attackAICommand(Input.mousePosition);
+                    //ai.attackAICommand(Input.mousePosition);
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace MiniJam159.AI
                 var type = ai.GetType();
                 if (type.GetMethod("holdAICommand") != null)
                 {
-                    ai.holdAICommand(Input.mousePosition);
+                    //ai.holdAICommand(Input.mousePosition);
                 }
             }
         }
@@ -109,7 +109,7 @@ namespace MiniJam159.AI
                 var type = ai.GetType();
                 if (type.GetMethod("buildAICommand") != null)
                 {
-                    ai.buildAICommand(Input.mousePosition);
+                    //ai.buildAICommand(Input.mousePosition);
                 }
             }
         }
@@ -130,7 +130,7 @@ namespace MiniJam159.AI
                 var type = ai.GetType();
                 if (type.GetMethod("harvestAICommand") != null)
                 {
-                    ai.harvestAICommand(Input.mousePosition);
+                    //ai.harvestAICommand(Input.mousePosition);
                 }
             }
         }
