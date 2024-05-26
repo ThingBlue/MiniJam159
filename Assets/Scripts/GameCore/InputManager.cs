@@ -21,11 +21,17 @@ namespace MiniJam159.GameCore
 
     public class InputManager : MonoBehaviour
     {
-        // Singleton
-        public static InputManager instance;
+        #region Inspector members
+
+        public float mouseRaycastDistance;
+
+        #endregion
 
         public Dictionary<string, List<KeyCode>> keyMap;
         public List<string> keysInMap;
+
+        // Singleton
+        public static InputManager instance;
 
         private void Awake()
         {
@@ -93,6 +99,17 @@ namespace MiniJam159.GameCore
             // Return hit location
             if (plane.Raycast(ray, out float enter)) return ray.GetPoint(enter);
             return Vector3.zero; // Should never execute
+        }
+
+        // Returns first object hit by raycast
+        public GameObject mouseRaycast(LayerMask layerMask)
+        {
+            // Raycast from mouse and grab first hit
+            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hit;
+            if (Physics.Raycast(mouseRay, out hit, mouseRaycastDistance, layerMask)) return hit.collider.gameObject;
+            return null;
         }
 
         #endregion

@@ -28,7 +28,6 @@ namespace MiniJam159
         public List<GameObject> structures;
 
         private StructureData placementStructureData;
-        public bool inPlacementMode = false;
         private bool previousInPlacementMode = false;
 
         // Singleton
@@ -43,6 +42,7 @@ namespace MiniJam159
 
         private void FixedUpdate()
         {
+            bool inPlacementMode = (PlayerModeManager.instance.playerMode == PlayerMode.STRUCTURE_PLACEMENT);
             // Toggle grid guides
             if (previousInPlacementMode != inPlacementMode)
             {
@@ -97,7 +97,7 @@ namespace MiniJam159
         {
             placementStructureData = structureData;
             placementStructureData.commands = new List<CommandType>(structureData.commands);
-            inPlacementMode = true;
+            PlayerModeManager.instance.playerMode = PlayerMode.STRUCTURE_PLACEMENT;
         }
 
         public void finishPlacement()
@@ -123,7 +123,7 @@ namespace MiniJam159
             if (!placementBlocked(startPosition))
             {
                 // Complete placement
-                inPlacementMode = false;
+                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
                 GridManager.instance.occupyCells(startPosition, placementStructureData.size);
 
                 // Instantiate strucutre
@@ -153,7 +153,7 @@ namespace MiniJam159
 
         public void cancelPlacement()
         {
-            inPlacementMode = false;
+            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
         private bool placementBlocked(Vector2 startPosition)

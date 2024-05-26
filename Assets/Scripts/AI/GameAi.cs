@@ -26,8 +26,10 @@ namespace MiniJam159.AI
 
         protected void MoveTowardsPosition(float moveSpeed)
         {
-            Vector2 direction = (moveToPosition - (Vector2)transform.position).normalized;
-            transform.position = Vector2.MoveTowards(transform.position, moveToPosition, moveSpeed * Time.deltaTime);
+            Vector2 transformPosition = new Vector2(transform.position.x, transform.position.z);
+            Vector2 direction = (moveToPosition - transformPosition).normalized;
+            Vector2 moveTowardsDestination = Vector2.MoveTowards(transformPosition, moveToPosition, moveSpeed * Time.deltaTime);
+            transform.position = new Vector3(moveTowardsDestination.x, 0, moveTowardsDestination.y);
 
             if (moveIgnoreTargetTimer <= 0)
             {
@@ -42,7 +44,7 @@ namespace MiniJam159.AI
             }
 
             // Stop moving to position if reached
-            if (Vector2.Distance(transform.position, moveToPosition) < 0.1f)
+            if (Vector2.Distance(transformPosition, moveToPosition) < 0.1f)
             {
                 isMovingToPosition = false;
             }
@@ -67,7 +69,7 @@ namespace MiniJam159.AI
             
             // Stop moving to position if hold command is issued
             isMovingToPosition = false;
-            moveToPosition = transform.position;
+            moveToPosition = new Vector2(transform.position.x, transform.position.z);
         }
 
         protected abstract void FindNearestTarget();
