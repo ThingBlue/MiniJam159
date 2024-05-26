@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using MiniJam159.Selection;
 
 namespace MiniJam159
 {
@@ -86,7 +87,7 @@ namespace MiniJam159
             if (InputManager.instance.getKeyDown("PlacementTest2"))
             {
                 StructureData newStructureData = new StructureData();
-                newStructureData.size = new Vector2(2, 3);
+                newStructureData.size = new Vector2(6, 4);
                 newStructureData.commands = new List<CommandType>();
 
                 newStructureData.commands.Add(CommandType.NULL);
@@ -158,10 +159,14 @@ namespace MiniJam159
             else
             {
                 // Set start position for mass select
-                if (mouse0Down)
+                if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
                 {
                     SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
                     canStartMassSelect = true;
+                }
+                if (mouse0Down && EventSystem.current.IsPointerOverGameObject())
+                {
+                    canStartMassSelect = false;
                 }
 
                 if (InputManager.instance.getKey("Mouse0") && canStartMassSelect)
@@ -185,7 +190,7 @@ namespace MiniJam159
                 SelectionManager.instance.updateMassSelectBox();
 
                 // Execute single select
-                if (mouse0Up) SelectionManager.instance.executeSingleSelect();
+                if (mouse0Up && !EventSystem.current.IsPointerOverGameObject()) SelectionManager.instance.executeSingleSelect();
 
                 // Movement commands
                 if (mouse1Down)

@@ -18,6 +18,8 @@ namespace MiniJam159
         public MeshRenderer placementGuideRenderer;
 
         public Material gridTilesMaterial;
+        public Material placementGuideMaterial;
+        public Material blockedTilesMaterial;
 
         public GameObject structurePrefab;
 
@@ -49,7 +51,7 @@ namespace MiniJam159
                 foreach (GameObject structure in structures)
                 {
                     structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = inPlacementMode ? true : false;
-                    structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = true;
+                    //structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = true;
                 }
 
                 previousInPlacementMode = inPlacementMode;
@@ -72,6 +74,22 @@ namespace MiniJam159
                 if (placementStructureData.size.x % 2 == 1) snappedPosition.x += 0.5f;
                 if (placementStructureData.size.y % 2 == 1) snappedPosition.z += 0.5f;
                 placementGuide.transform.SetPositionAndRotation(snappedPosition, Quaternion.identity);
+
+                // Check if placement is outside of the grid
+                Vector2 startPosition = new Vector2(
+                    roundedPosition.x - Mathf.Floor(placementStructureData.size.x / 2.0f),
+                    roundedPosition.z - Mathf.Floor(placementStructureData.size.y / 2.0f)
+                );
+                Vector2 endPosition = startPosition + placementStructureData.size;
+                if (startPosition.x < 0 || startPosition.y < 0 ||
+                    endPosition.x > GridManager.instance.mapXLength || endPosition.y > GridManager.instance.mapZLength)
+                {
+                    placementGuide.GetComponent<MeshRenderer>().material = blockedTilesMaterial;
+                }
+                else
+                {
+                    placementGuide.GetComponent<MeshRenderer>().material = placementGuideMaterial;
+                }
             }
         }
 
@@ -145,7 +163,7 @@ namespace MiniJam159
                 for (int j = 0; j < placementStructureData.size.y; j++)
                 {
                     if ((int)startPosition.x + i < 0 || (int)startPosition.y + j < 0 ||
-                        (int)startPosition.x + i >= 20 || (int)startPosition.y + j >= 20 ||
+                        (int)startPosition.x + i >= GridManager.instance.mapXLength || (int)startPosition.y + j >= GridManager.instance.mapXLength ||
                         GridManager.instance.isCellOccupied((int)startPosition.x + i, (int)startPosition.y + j))
                     {
                         return true;
