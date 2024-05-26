@@ -70,6 +70,9 @@ namespace MiniJam159
             }
 
             selectedObjects.Clear();
+
+            // Clear commands
+            UIManager.instance.clearCommands();
         }
 
         public void setSelectedObjects()

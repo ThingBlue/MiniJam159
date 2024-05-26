@@ -17,8 +17,6 @@ MonoBehaviour:
     keys: 43010000
   - name: Mouse1
     keys: 44010000
-  - name: PlacementTest
-    keys: 62000000
   - name: QCommand
     keys: 71000000
   - name: WCommand
@@ -43,5 +41,9 @@ MonoBehaviour:
     keys: 63000000
   - name: VCommand
     keys: 76000000
+  - name: PlacementTest
+    keys: 62000000
+  - name: PlacementTest2
+    keys: 6e000000
   - name: CommandUpdateTest
     keys: 67000000

@@ -34,14 +34,19 @@ namespace MiniJam159.UI
             else Destroy(this);
         }
 
-        public void populateCommandUI(List<CommandType> newCommands)
+        public void clearCommands()
         {
-            // Clear previous commands
             CommandManager.instance.activeCommands.Clear();
             for (int i = 0; i < commandButtons.Count; i++)
             {
                 Destroy(commandButtons[i]);
             }
+        }
+
+        public void populateCommandUI(List<CommandType> newCommands)
+        {
+            // Clear previous commands
+            clearCommands();
 
             // Create new ui
             for (int i = 0; i < newCommands.Count; i++)

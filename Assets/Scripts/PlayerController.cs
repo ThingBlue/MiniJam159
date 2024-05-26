@@ -64,6 +64,46 @@ namespace MiniJam159
             {
                 Structure newStructure = new Structure();
                 newStructure.size = new Vector2(2, 3);
+                newStructure.commands = new List<CommandType>();
+
+                newStructure.commands.Add(CommandType.MOVE);
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.HOLD);
+                newStructure.commands.Add(CommandType.NULL);
+
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.ATTACK);
+                newStructure.commands.Add(CommandType.NULL);
+
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.BUILD);
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.NULL);
+
+                StructureManager.instance.beginPlacement(newStructure);
+            }
+            if (InputManager.instance.getKeyDown("PlacementTest2"))
+            {
+                Structure newStructure = new Structure();
+                newStructure.size = new Vector2(2, 3);
+                newStructure.commands = new List<CommandType>();
+
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.MOVE);
+
+                newStructure.commands.Add(CommandType.BUILD);
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.ATTACK);
+
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.HOLD);
+                newStructure.commands.Add(CommandType.NULL);
+                newStructure.commands.Add(CommandType.NULL);
+
                 StructureManager.instance.beginPlacement(newStructure);
             }
             if (InputManager.instance.getKeyDown("CommandUpdateTest"))
