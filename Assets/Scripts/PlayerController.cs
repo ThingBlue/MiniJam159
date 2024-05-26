@@ -17,6 +17,7 @@ namespace MiniJam159
         #region Inspector members
 
         public LayerMask enemyLayer;
+        public LayerMask resourceLayer;
 
         #endregion
 
@@ -157,6 +158,7 @@ namespace MiniJam159
                     break;
 
                 case PlayerMode.HARVEST_TARGET:
+                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeHarvestTarget();
                     break;
 
                 case PlayerMode.MOVE_TARGET:
@@ -231,7 +233,7 @@ namespace MiniJam159
 
         public void executeMoveTarget()
         {
-            // Invoke move command on all selected units
+            // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a GameAI
@@ -262,7 +264,7 @@ namespace MiniJam159
                 return;
             }
 
-            // Invoke move command on all selected units
+            // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a GameAI
@@ -276,6 +278,37 @@ namespace MiniJam159
                     //method.Invoke(ai, new object[] { target.transform });
 
                     Debug.Log("Attacking target: " + target);
+                }
+            }
+
+            // Finish attack command
+            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+        }
+
+        public void executeHarvestTarget()
+        {
+            GameObject target = InputManager.instance.mouseRaycast(resourceLayer);
+            if (target == null)
+            {
+                // No target, cancel attack command
+                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                return;
+            }
+
+            // Invoke command on all selected units
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                // Check that object has a GameAI
+                GameAI ai = selectedObject.GetComponent<GameAI>();
+                if (ai == null) continue;
+
+                MethodInfo method = ai.GetType().GetMethod("harvestAICommand");
+                if (method != null)
+                {
+                    // Invoke attack command method in ai using transform of target
+                    //method.Invoke(ai, new object[] { target.transform });
+
+                    Debug.Log("Harvesting target: " + target);
                 }
             }
 

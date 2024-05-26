@@ -121,6 +121,9 @@ namespace MiniJam159.AI
 
         public override void execute()
         {
+            // Open build menu
+
+            /*
             // TODO: Use correct selected list
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)
@@ -132,6 +135,7 @@ namespace MiniJam159.AI
                     method.Invoke(ai, new object[] { });
                 }
             }
+            */
         }
     }
     public class HarvestCommand : Command
@@ -148,6 +152,7 @@ namespace MiniJam159.AI
                 PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
             }
 
+            /*
             // TODO: Use correct selected list
             List<GameAI> selectedAIs = new List<GameAI>();
             foreach (var ai in selectedAIs)
@@ -159,6 +164,7 @@ namespace MiniJam159.AI
                     method.Invoke(ai, new object[] { });
                 }
             }
+            */
         }
     }
 }
