@@ -13,42 +13,35 @@ public class GroundMeleeAI : GameAI
     public float surroundDistance = 1.5f; // Distance to maintain around the target when surrounding
     public float coordinationRadius = 5.0f; // Radius within which AIs coordinate their actions
 
-    private Transform target;
-    private Vector2 moveToPosition;
-    private bool isMovingToPosition;
     private float attackTimer;
     private bool isLeader;
-    private float moveIgnoreTargetTimer; // Timer to ignore targets while moving
-    private const float moveIgnoreTargetDuration = 10f; // Duration to ignore targets while moving
 
     protected override void Start()
     {
         base.Start();
         attackTimer = 0f;
         isLeader = false;
-        isMovingToPosition = false;
-        moveIgnoreTargetTimer = 0f;
     }
 
     void Update()
     {
         if (isMovingToPosition)
         {
-            MoveTowardsPosition();
+            MoveTowardsPosition(moveSpeed);
         }
         else
         {
-            if (target == null)
+            if (Target == null)
             {
                 FindNearestTarget();
             }
 
-            if (target == null)
+            if (Target == null)
             {
                 return; // No target found, do nothing
             }
 
-            float distanceToTarget = Vector2.Distance(transform.position, target.position);
+            float distanceToTarget = Vector2.Distance(transform.position, Target.position);
 
             if (distanceToTarget <= attackRange)
             {
@@ -83,7 +76,7 @@ public class GroundMeleeAI : GameAI
         targetTag = newTargetTag;
     }
 
-    void FindNearestTarget()
+    protected override void FindNearestTarget()
     {
         if (moveIgnoreTargetTimer > 0)
         {
@@ -107,10 +100,10 @@ public class GroundMeleeAI : GameAI
             }
         }
 
-        target = nearestTarget;
+        Target = nearestTarget;
 
         // Assign leader dynamically
-        if (target != null)
+        if (Target != null)
         {
             AssignLeader();
         }
@@ -123,47 +116,15 @@ public class GroundMeleeAI : GameAI
         transform.position = Vector2.MoveTowards(transform.position, surroundPosition, moveSpeed * Time.deltaTime);
     }
 
-    void MoveTowardsPosition()
-    {
-        Vector2 direction = (moveToPosition - (Vector2)transform.position).normalized;
-        transform.position = Vector2.MoveTowards(transform.position, moveToPosition, moveSpeed * Time.deltaTime);
-
-        if (moveIgnoreTargetTimer <= 0)
-        {
-            // Check for targets while moving if the ignore timer is not active
-            FindNearestTarget();
-
-            if (target != null)
-            {
-                isMovingToPosition = false;
-                return; // Stop moving to position if a target is found
-            }
-        }
-
-        // Stop moving to position if reached
-        if (Vector2.Distance(transform.position, moveToPosition) < 0.1f)
-        {
-            isMovingToPosition = false;
-        }
-    }
-
-    public void MoveTo(Vector2 position)
-    {
-        moveToPosition = position;
-        isMovingToPosition = true;
-        target = null; // Reset target
-        moveIgnoreTargetTimer = moveIgnoreTargetDuration; // Start ignore target timer
-    }
-
     Vector2 GetSurroundPosition()
     {
-        if (target == null)
+        if (Target == null)
         {
             return transform.position;
         }
 
         // Filter the list of activeAIs to include only those targeting the same target
-        List<GroundMeleeAI> sameTargetAIs = GameAI.allAIs.OfType<GroundMeleeAI>().Where(ai => ai.target == this.target).ToList();
+        List<GroundMeleeAI> sameTargetAIs = GameAI.allAIs.OfType<GroundMeleeAI>().Where(ai => ai.Target == this.Target).ToList();
         int aiIndex = sameTargetAIs.IndexOf(this);
         int totalAIs = sameTargetAIs.Count;
 
@@ -172,7 +133,7 @@ public class GroundMeleeAI : GameAI
 
         Vector2 offset = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * surroundDistance;
 
-        return (Vector2)target.position + offset;
+        return (Vector2)Target.position + offset;
     }
 
     void Attack()
@@ -180,8 +141,7 @@ public class GroundMeleeAI : GameAI
         if (attackTimer <= 0)
         {
             Debug.Log("Attacking the target for " + attackDamage + " damage.");
-            
-            // TODO: Implement health reduction on the target here
+            // Implement health reduction on the target here
 
             attackTimer = attackCooldown;
         }
@@ -191,7 +151,7 @@ public class GroundMeleeAI : GameAI
     {
         foreach (var ai in GameAI.allAIs.OfType<GroundMeleeAI>())
         {
-            if (ai.target == this.target && Vector2.Distance(transform.position, ai.transform.position) <= coordinationRadius)
+            if (ai.Target == this.Target && Vector2.Distance(transform.position, ai.transform.position) <= coordinationRadius)
             {
                 ai.Attack();
             }
@@ -205,9 +165,9 @@ public class GroundMeleeAI : GameAI
 
         foreach (var ai in GameAI.allAIs.OfType<GroundMeleeAI>())
         {
-            if (ai.target == this.target)
+            if (ai.Target == this.Target)
             {
-                float distanceToTarget = Vector2.Distance(ai.transform.position, target.position);
+                float distanceToTarget = Vector2.Distance(ai.transform.position, Target.position);
                 if (distanceToTarget < minDistance)
                 {
                     minDistance = distanceToTarget;
