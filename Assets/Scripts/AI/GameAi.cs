@@ -57,6 +57,20 @@ namespace MiniJam159.AI
             moveIgnoreTargetTimer = moveIgnoreTargetDuration; // Start ignore target timer
         }
 
+        public void moveAICommand(Vector2 position)
+        {
+            MoveTo(position);
+        }
+
+        public void holdAICommand()
+        {
+            Target = null; // Reset target
+            
+            // Stop moving to position if hold command is issued
+            isMovingToPosition = false;
+            moveToPosition = transform.position;
+        }
+
         protected abstract void FindNearestTarget();
 
         protected Transform Target { get; set; } // Property to be implemented by subclasses
