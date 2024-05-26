@@ -10,7 +10,6 @@ public class RangedAI : GameAI
     public float moveSpeed = 2.0f; // Movement speed of the AI
     public GameObject projectilePrefab; // Prefab for the projectile
 
-    private Transform target;
     private float attackTimer;
 
     protected override void Start()
@@ -21,30 +20,42 @@ public class RangedAI : GameAI
 
     void Update()
     {
-        if (target == null)
+        if (isMovingToPosition)
         {
-            FindNearestTarget();
-        }
-
-        if (target == null)
-        {
-            return; // No target found, do nothing
-        }
-
-        float distanceToTarget = Vector2.Distance(transform.position, target.position);
-
-        if (distanceToTarget <= attackRange)
-        {
-            Attack();
+            MoveTowardsPosition(moveSpeed);
         }
         else
         {
-            MoveTowardsTarget();
+            if (Target == null)
+            {
+                FindNearestTarget();
+            }
+
+            if (Target == null)
+            {
+                return; // No target found, do nothing
+            }
+
+            float distanceToTarget = Vector2.Distance(transform.position, Target.position);
+
+            if (distanceToTarget <= attackRange)
+            {
+                Attack();
+            }
+            else
+            {
+                MoveTowardsTarget();
+            }
         }
 
         if (attackTimer > 0)
         {
             attackTimer -= Time.deltaTime;
+        }
+
+        if (moveIgnoreTargetTimer > 0)
+        {
+            moveIgnoreTargetTimer -= Time.deltaTime;
         }
     }
 
@@ -53,8 +64,13 @@ public class RangedAI : GameAI
         targetTag = newTargetTag;
     }
 
-    void FindNearestTarget()
+    protected override void FindNearestTarget()
     {
+        if (moveIgnoreTargetTimer > 0)
+        {
+            return; // Ignore finding targets if timer is active
+        }
+
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
         float nearestDistance = Mathf.Infinity;
         Transform nearestTarget = null;
@@ -72,13 +88,13 @@ public class RangedAI : GameAI
             }
         }
 
-        target = nearestTarget;
+        Target = nearestTarget;
     }
 
     void MoveTowardsTarget()
     {
-        Vector2 direction = (target.position - transform.position).normalized;
-        transform.position = Vector2.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
+        Vector2 direction = (Target.position - transform.position).normalized;
+        transform.position = Vector2.MoveTowards(transform.position, Target.position, moveSpeed * Time.deltaTime);
     }
 
     void Attack()
@@ -90,7 +106,7 @@ public class RangedAI : GameAI
             if (projectilePrefab != null)
             {
                 GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-                projectile.GetComponent<Projectile>().Initialize(target.position, attackDamage);
+                projectile.GetComponent<Projectile>().Initialize(Target.position, attackDamage);
             }
 
             attackTimer = attackCooldown;
