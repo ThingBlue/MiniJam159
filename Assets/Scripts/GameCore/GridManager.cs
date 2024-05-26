@@ -13,6 +13,13 @@ namespace MiniJam159.GameCore
 
     public class GridManager : MonoBehaviour
     {
+        #region Inspector members
+
+        public int mapXLength;
+        public int mapZLength;
+
+        #endregion
+
         // Singleton
         public static GridManager instance;
 
@@ -28,10 +35,10 @@ namespace MiniJam159.GameCore
         private void Start()
         {
             gridMatrix = new List<List<CellType>>();
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < mapZLength; i++)
             {
                 List<CellType> newList = new List<CellType>();
-                for (int j = 0; j < 20; j++)
+                for (int j = 0; j < mapXLength; j++)
                 {
                     newList.Add(CellType.Empty);
                 }
@@ -39,14 +46,14 @@ namespace MiniJam159.GameCore
             }
         }
 
-        public bool isCellOccupied(int x, int y)
+        public bool isCellOccupied(int x, int z)
         {
-            if (x < 0 || x >= gridMatrix[0].Count || y < 0 || y >= gridMatrix.Count)
+            if (x < 0 || x >= gridMatrix[0].Count || z < 0 || z >= gridMatrix.Count)
             {
                 throw new System.Exception("Invalid cell position");
             }
 
-            return gridMatrix[y][x] != CellType.Empty;
+            return gridMatrix[z][x] != CellType.Empty;
         }
 
         public void occupyCells(Vector2 startPosition, Vector2 size, CellType occupationType = CellType.Building)
