@@ -11,6 +11,8 @@ namespace MiniJam159.GameCore
         public Vector2 cameraBoundaryStart;
         public Vector2 cameraBoundaryEnd;
 
+        public float cameraYPosition;
+
         public bool disablePan = false;
         public float panSpeed;
 
@@ -30,10 +32,10 @@ namespace MiniJam159.GameCore
         {
             if (disablePan) return;
 
-            if (direction == Vector2.up) transform.position = new Vector3(transform.position.x - panSpeed, 10, transform.position.z - panSpeed);
-            if (direction == Vector2.down) transform.position = new Vector3(transform.position.x + panSpeed, 10, transform.position.z + panSpeed);
-            if (direction == Vector2.left) transform.position = new Vector3(transform.position.x + panSpeed, 10, transform.position.z - panSpeed);
-            if (direction == Vector2.right) transform.position = new Vector3(transform.position.x - panSpeed, 10, transform.position.z + panSpeed);
+            if (direction == Vector2.up) transform.position = new Vector3(transform.position.x - panSpeed, cameraYPosition, transform.position.z - panSpeed);
+            if (direction == Vector2.down) transform.position = new Vector3(transform.position.x + panSpeed, cameraYPosition, transform.position.z + panSpeed);
+            if (direction == Vector2.left) transform.position = new Vector3(transform.position.x + panSpeed, cameraYPosition, transform.position.z - panSpeed);
+            if (direction == Vector2.right) transform.position = new Vector3(transform.position.x - panSpeed, cameraYPosition, transform.position.z + panSpeed);
 
             if (transform.position.x < cameraBoundaryStart.x) transform.position = new Vector3(cameraBoundaryStart.x, transform.position.y, transform.position.z);
             if (transform.position.z < cameraBoundaryStart.y) transform.position = new Vector3(transform.position.x, transform.position.y, cameraBoundaryStart.y);

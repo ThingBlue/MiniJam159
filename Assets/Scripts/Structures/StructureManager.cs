@@ -163,7 +163,7 @@ namespace MiniJam159
                 for (int j = 0; j < placementStructureData.size.y; j++)
                 {
                     if ((int)startPosition.x + i < 0 || (int)startPosition.y + j < 0 ||
-                        (int)startPosition.x + i >= 20 || (int)startPosition.y + j >= 20 ||
+                        (int)startPosition.x + i >= GridManager.instance.mapXLength || (int)startPosition.y + j >= GridManager.instance.mapXLength ||
                         GridManager.instance.isCellOccupied((int)startPosition.x + i, (int)startPosition.y + j))
                     {
                         return true;

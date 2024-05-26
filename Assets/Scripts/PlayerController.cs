@@ -86,7 +86,7 @@ namespace MiniJam159
             if (InputManager.instance.getKeyDown("PlacementTest2"))
             {
                 StructureData newStructureData = new StructureData();
-                newStructureData.size = new Vector2(2, 3);
+                newStructureData.size = new Vector2(6, 4);
                 newStructureData.commands = new List<CommandType>();
 
                 newStructureData.commands.Add(CommandType.NULL);
@@ -158,10 +158,14 @@ namespace MiniJam159
             else
             {
                 // Set start position for mass select
-                if (mouse0Down)
+                if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
                 {
                     SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
                     canStartMassSelect = true;
+                }
+                if (mouse0Down && EventSystem.current.IsPointerOverGameObject())
+                {
+                    canStartMassSelect = false;
                 }
 
                 if (InputManager.instance.getKey("Mouse0") && canStartMassSelect)

@@ -76,8 +76,53 @@ namespace MiniJam159
             UIManager.instance.clearCommandButtons();
         }
 
-        public void setSelectedObjects()
+        public void setSingleSelectObject()
         {
+            if (selectedObjects.Count == 0 || selectedObjects[0] == null) return;
+            GameObject selectedObject = selectedObjects[0];
+
+            // Add outline
+            if (selectedObject.layer == LayerMask.NameToLayer("Structure"))
+            {
+                MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
+                Material[] newMaterials = renderer.materials;
+                bool hasOutlineMaterial = false;
+                for (int i = 0; i < newMaterials.Length; i++)
+                {
+                    if (newMaterials[i].name == structureOutlineMaterial.name + " (Instance)")
+                    {
+                        hasOutlineMaterial = true;
+                        break;
+                    }
+                }
+                if (!hasOutlineMaterial)
+                {
+                    newMaterials[0] = new Material(structureOutlineMaterial);
+                    renderer.materials = newMaterials;
+                }
+            }
+
+            // Populate command menu using the first unit in list
+            GameObject focusObject = selectedObjects[0];
+            if (focusObject == null) return;
+
+            if (focusObject.layer == LayerMask.NameToLayer("Structure"))
+            {
+                StructureData structureData = focusObject.GetComponent<Structure>().structureData;
+
+                CommandManager.instance.populateCommands(structureData.commands);
+                UIManager.instance.populateCommandButtons();
+            }
+            else if (focusObject.layer == LayerMask.NameToLayer("Unit"))
+            {
+
+            }
+        }
+
+        public void setMassSelectObjects()
+        {
+            if (selectedObjects.Count == 0) return;
+
             // Add outlines
             foreach (GameObject selectedObject in selectedObjects)
             {
@@ -102,23 +147,20 @@ namespace MiniJam159
                 }
             }
 
-            if (selectedObjects.Count > 0)
+            // Populate command menu using the first unit in list
+            GameObject focusObject = selectedObjects[0];
+            if (focusObject == null) return;
+
+            if (focusObject.layer == LayerMask.NameToLayer("Structure"))
             {
-                // Populate command menu using the first unit in list
-                GameObject focusObject = selectedObjects[0];
-                if (focusObject == null) return;
+                StructureData structureData = focusObject.GetComponent<Structure>().structureData;
 
-                if (focusObject.layer == LayerMask.NameToLayer("Structure"))
-                {
-                    StructureData structureData = focusObject.GetComponent<Structure>().structureData;
+                CommandManager.instance.populateCommands(structureData.commands);
+                UIManager.instance.populateCommandButtons();
+            }
+            else if (focusObject.layer == LayerMask.NameToLayer("Unit"))
+            {
 
-                    CommandManager.instance.populateCommands(structureData.commands);
-                    UIManager.instance.populateCommandButtons();
-                }
-                else if (focusObject.layer == LayerMask.NameToLayer("Unit"))
-                {
-
-                }
             }
         }
 
@@ -138,7 +180,7 @@ namespace MiniJam159
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Structure"))
                 {
                     selectedObjects.Add(hit.collider.transform.parent.gameObject);
-                    setSelectedObjects();
+                    setSingleSelectObject();
                 }
             }
         }
@@ -186,7 +228,7 @@ namespace MiniJam159
             {
                 normals.Add(Vector2.Perpendicular(castPoints[i + 1] - castPoints[i]).normalized);
             }
-
+            
             foreach (GameObject structureObject in StructureManager.instance.structures)
             {
                 // Find corners of structure
@@ -245,7 +287,7 @@ namespace MiniJam159
                     selectedObjects.Add(structureObject);
                 }
             }
-            setSelectedObjects();
+            setMassSelectObjects();
 
             // Reset mass select
             massSelecting = false;
