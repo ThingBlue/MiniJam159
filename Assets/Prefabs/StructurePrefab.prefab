@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5914292673917186737}
   - component: {fileID: 473903977527802775}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: StructurePrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,7 +62,8 @@ GameObject:
   - component: {fileID: 5914292674001413811}
   - component: {fileID: 5914292674001413773}
   - component: {fileID: 5914292674001413810}
-  m_Layer: 0
+  - component: {fileID: 5179024281511054752}
+  m_Layer: 11
   m_Name: BlockedTiles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,6 +135,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &5179024281511054752
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5914292674001413808}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &7613787474467162148
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,8 +161,8 @@ GameObject:
   - component: {fileID: 2351592743322913596}
   - component: {fileID: 3134976303323265504}
   - component: {fileID: 4469517200079939873}
-  m_Layer: 0
-  m_Name: Cube
+  m_Layer: 11
+  m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -197,7 +212,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2cd68e4b28dbb8c429577e2a5e049d53, type: 2}
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -228,7 +243,7 @@ BoxCollider:
   m_GameObject: {fileID: 7613787474467162148}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
