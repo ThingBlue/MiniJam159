@@ -37,7 +37,16 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-
+            // TODO: Use correct selected list
+            List<GameAI> selectedAIs = new List<GameAI>();
+            foreach (var ai in selectedAIs)
+            {
+                var type = ai.GetType();
+                if (type.GetMethod("moveAICommand") != null)
+                {
+                    ai.moveAICommand(Input.mousePosition);
+                }
+            }
         }
     }
     public class AttackCommand : Command
@@ -49,7 +58,16 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-
+            // TODO: Use correct selected list
+            List<GameAI> selectedAIs = new List<GameAI>();
+            foreach (var ai in selectedAIs)
+            {
+                var type = ai.GetType();
+                if (type.GetMethod("attackAICommand") != null)
+                {
+                    ai.attackAICommand(Input.mousePosition);
+                }
+            }
         }
     }
     public class HoldCommand : Command
@@ -61,7 +79,16 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-
+            // TODO: Use correct selected list
+            List<GameAI> selectedAIs = new List<GameAI>();
+            foreach (var ai in selectedAIs)
+            {
+                var type = ai.GetType();
+                if (type.GetMethod("holdAICommand") != null)
+                {
+                    ai.holdAICommand(Input.mousePosition);
+                }
+            }
         }
     }
     public class BuildCommand : Command
@@ -73,7 +100,16 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-
+            // TODO: Use correct selected list
+            List<GameAI> selectedAIs = new List<GameAI>();
+            foreach (var ai in selectedAIs)
+            {
+                var type = ai.GetType();
+                if (type.GetMethod("buildAICommand") != null)
+                {
+                    ai.buildAICommand(Input.mousePosition);
+                }
+            }
         }
     }
     public class HarvestCommand : Command
@@ -85,7 +121,16 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-
+            // TODO: Use correct selected list
+            List<GameAI> selectedAIs = new List<GameAI>();
+            foreach (var ai in selectedAIs)
+            {
+                var type = ai.GetType();
+                if (type.GetMethod("harvestAICommand") != null)
+                {
+                    ai.harvestAICommand(Input.mousePosition);
+                }
+            }
         }
     }
 }

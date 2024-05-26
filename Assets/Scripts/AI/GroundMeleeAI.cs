@@ -189,6 +189,12 @@ public class GroundMeleeAI : GameAI
         }
     }
 
+    public void attackAICommand(Transform newTarget)
+    {
+        Target = newTarget;
+        isMovingToPosition = false;
+    }
+
     void OnDrawGizmosSelected()
     {
         // Draw a yellow sphere at the transform's position to visualize detection radius
