@@ -1,6 +1,7 @@
 using MiniJam159.GameCore;
 using MiniJam159.Structures;
 using MiniJam159.UI;
+using MiniJam159.Commands;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,12 +38,26 @@ namespace MiniJam159
 
         private void Update()
         {
-            // Check key states
+            // Mouse
             if (InputManager.instance.getKeyDown("Mouse0")) mouse0Down = true;
             if (InputManager.instance.getKeyDown("Mouse1")) mouse1Down = true;
             if (InputManager.instance.getKeyUp("Mouse0") && !ignoreNextMouse0Up) mouse0Up = true;
             if (InputManager.instance.getKeyUp("Mouse0") && ignoreNextMouse0Up) ignoreNextMouse0Up = false;
             if (InputManager.instance.getKeyUp("Mouse1")) mouse1Up = true;
+
+            // Keyboard
+            if (InputManager.instance.getKeyDown("QCommand")) CommandManager.instance.executeCommand(0);
+            if (InputManager.instance.getKeyDown("WCommand")) CommandManager.instance.executeCommand(1);
+            if (InputManager.instance.getKeyDown("ECommand")) CommandManager.instance.executeCommand(2);
+            if (InputManager.instance.getKeyDown("RCommand")) CommandManager.instance.executeCommand(3);
+            if (InputManager.instance.getKeyDown("ACommand")) CommandManager.instance.executeCommand(4);
+            if (InputManager.instance.getKeyDown("SCommand")) CommandManager.instance.executeCommand(5);
+            if (InputManager.instance.getKeyDown("DCommand")) CommandManager.instance.executeCommand(6);
+            if (InputManager.instance.getKeyDown("FCommand")) CommandManager.instance.executeCommand(7);
+            if (InputManager.instance.getKeyDown("ZCommand")) CommandManager.instance.executeCommand(8);
+            if (InputManager.instance.getKeyDown("XCommand")) CommandManager.instance.executeCommand(9);
+            if (InputManager.instance.getKeyDown("CCommand")) CommandManager.instance.executeCommand(10);
+            if (InputManager.instance.getKeyDown("VCommand")) CommandManager.instance.executeCommand(11);
 
             // DEBUG DEBUG DEBUG TEST TEST TEST
             if (InputManager.instance.getKeyDown("PlacementTest"))
@@ -66,7 +81,7 @@ namespace MiniJam159
                 commands.Add(CommandType.BUILD);
                 commands.Add(CommandType.NULL);
                 commands.Add(CommandType.NULL);
-                UIManager.instance.updateCommandUI(commands);
+                UIManager.instance.populateCommandUI(commands);
             }
         }
 
@@ -139,20 +154,6 @@ namespace MiniJam159
                     // Move if none of the above
                 }
             }
-
-            // Keyboard
-            if (InputManager.instance.getKeyDown("QCommand")) UIManager.instance.executeCommand(0);
-            if (InputManager.instance.getKeyDown("WCommand")) UIManager.instance.executeCommand(1);
-            if (InputManager.instance.getKeyDown("ECommand")) UIManager.instance.executeCommand(2);
-            if (InputManager.instance.getKeyDown("RCommand")) UIManager.instance.executeCommand(3);
-            if (InputManager.instance.getKeyDown("ACommand")) UIManager.instance.executeCommand(4);
-            if (InputManager.instance.getKeyDown("SCommand")) UIManager.instance.executeCommand(5);
-            if (InputManager.instance.getKeyDown("DCommand")) UIManager.instance.executeCommand(6);
-            if (InputManager.instance.getKeyDown("FCommand")) UIManager.instance.executeCommand(7);
-            if (InputManager.instance.getKeyDown("ZCommand")) UIManager.instance.executeCommand(8);
-            if (InputManager.instance.getKeyDown("XCommand")) UIManager.instance.executeCommand(9);
-            if (InputManager.instance.getKeyDown("CCommand")) UIManager.instance.executeCommand(10);
-            if (InputManager.instance.getKeyDown("VCommand")) UIManager.instance.executeCommand(11);
 
             // Clear key states
             mouse0Down = false;
