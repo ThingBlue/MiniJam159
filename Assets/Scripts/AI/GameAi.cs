@@ -56,12 +56,12 @@ namespace MiniJam159.AI
             moveIgnoreTargetTimer = moveIgnoreTargetDuration; // Start ignore target timer
         }
 
-        public void moveAICommand(Vector2 position)
+        public virtual void moveAICommand(Vector2 position)
         {
             MoveTo(position);
         }
 
-        public void holdAICommand()
+        public virtual void holdAICommand()
         {
             Target = null; // Reset target
             

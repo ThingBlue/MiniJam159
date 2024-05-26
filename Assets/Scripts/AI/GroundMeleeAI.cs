@@ -191,7 +191,7 @@ namespace MiniJam159.AI
             }
         }
 
-        public void attackAICommand(Transform newTarget)
+        public virtual void attackAICommand(Transform newTarget)
         {
             Target = newTarget;
             isMovingToPosition = false;
