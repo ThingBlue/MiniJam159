@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MiniJam159.GameCore;
 using MiniJam159.AI;
+using MiniJam159.Structures;
 
 namespace MiniJam159.UI
 {
@@ -22,6 +23,10 @@ namespace MiniJam159.UI
         public Sprite buildCommandSprite;
         public Sprite harvestCommandSprite;
 
+        public GameObject displayPanel;
+        public GameObject displayBoxPrefab;
+        public float displayCenterHeight;
+
         #endregion
 
         public List<GameObject> commandButtons;
@@ -34,6 +39,19 @@ namespace MiniJam159.UI
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
+
+            // Hide display panel at the start
+            displayPanel.SetActive(false);
+        }
+
+        private void Update()
+        {
+            // Calculate display panel size and position
+            RectTransform displayPanelTransform = displayPanel.GetComponent<RectTransform>();
+            float newWidth = Screen.width - 256f - 320f;
+            float newPosition = 256f + ((Screen.width - 320f) - 256f) / 2f - (Screen.width / 2f);
+            displayPanelTransform.localPosition = new Vector3(newPosition, -32f, 0f);
+            displayPanelTransform.sizeDelta = new Vector2(newWidth, displayPanelTransform.sizeDelta.y);
         }
 
         public void clearCommandButtons()
@@ -86,6 +104,33 @@ namespace MiniJam159.UI
                         break;
                 }
                 commandButtons.Add(newButtonObject);
+            }
+        }
+
+        public void clearSelectedObjects()
+        {
+
+        }
+
+        public void showSelectedObjects(List<GameObject> selectedObjects)
+        {
+            clearSelectedObjects();
+
+            if (selectedObjects.Count == 0)
+            {
+                // Hide display panel
+                displayPanel.SetActive(false);
+                return;
+            }
+
+            // Show display panel
+            displayPanel.SetActive(true);
+
+            // Single selected structure
+            if (selectedObjects.Count == 1 && selectedObjects[0].GetComponent<Structure>())
+            {
+                GameObject newDisplayBox = Instantiate(displayBoxPrefab);
+                newDisplayBox.GetComponent<RectTransform>().position = new Vector3(0, displayCenterHeight, 0);
             }
         }
 

@@ -175,11 +175,28 @@ namespace MiniJam159.Selection
             LayerMask raycastMask = unitLayer | structureLayer;
             GameObject hitObject = InputManager.instance.mouseRaycast(raycastMask);
 
-            if (hitObject == null) return;
+            if (hitObject == null)
+            {
+                // Clear display
+                UIManager.instance.showSelectedObjects(selectedObjects);
+                return;
+            }
 
             // We have a hit
-            selectedObjects.Add(hitObject.transform.parent.gameObject);
+            if (hitObject.GetComponent<GameAI>())
+            {
+                // Hit the parent
+                selectedObjects.Add(hitObject);
+            }
+            else
+            {
+                // Hit the child
+                selectedObjects.Add(hitObject.transform.parent.gameObject);
+            }
             setSingleSelectObject();
+
+            // Update display
+            UIManager.instance.showSelectedObjects(selectedObjects);
         }
 
         public void executeMassSelect()
@@ -352,6 +369,9 @@ namespace MiniJam159.Selection
                 }
             }
             setMassSelectObjects();
+
+            // Update display
+            UIManager.instance.showSelectedObjects(selectedObjects);
 
             // Reset mass select
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
