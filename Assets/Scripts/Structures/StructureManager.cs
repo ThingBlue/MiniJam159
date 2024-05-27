@@ -97,6 +97,7 @@ namespace MiniJam159
         {
             placementStructureData = structureData;
             placementStructureData.commands = new List<CommandType>(structureData.commands);
+            placementStructureData.displaySprite = structureData.displaySprite;
             PlayerModeManager.instance.playerMode = PlayerMode.STRUCTURE_PLACEMENT;
         }
 
@@ -142,6 +143,7 @@ namespace MiniJam159
                 newStructureData.position = new Vector2(snappedPosition.x, snappedPosition.z);
                 newStructureData.size = placementStructureData.size;
                 newStructureData.commands = new List<CommandType>(placementStructureData.commands);
+                newStructureData.displaySprite = placementStructureData.displaySprite;
 
                 structures.Add(newStructureObject);
             }

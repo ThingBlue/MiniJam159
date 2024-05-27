@@ -19,6 +19,8 @@ namespace MiniJam159
         public LayerMask enemyLayer;
         public LayerMask resourceLayer;
 
+        public Sprite testStructureSprite;
+
         #endregion
 
         private bool mouse0Down;
@@ -89,6 +91,8 @@ namespace MiniJam159
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
 
+                newStructureData.displaySprite = testStructureSprite;
+
                 StructureManager.instance.beginPlacement(newStructureData);
             }
             if (InputManager.instance.getKeyDown("PlacementTest2"))
@@ -112,25 +116,9 @@ namespace MiniJam159
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
 
+                newStructureData.displaySprite = testStructureSprite;
+
                 StructureManager.instance.beginPlacement(newStructureData);
-            }
-            if (InputManager.instance.getKeyDown("CommandUpdateTest"))
-            {
-                List<CommandType> commands = new List<CommandType>();
-                commands.Add(CommandType.MOVE);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.HOLD);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.ATTACK);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.BUILD);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.NULL);
-                CommandManager.instance.populateCommands(commands);
-                UIManager.instance.populateCommandButtons();
             }
         }
 

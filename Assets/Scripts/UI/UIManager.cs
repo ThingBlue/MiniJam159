@@ -25,11 +25,13 @@ namespace MiniJam159.UI
 
         public GameObject displayPanel;
         public GameObject displayBoxPrefab;
+
         public float displayCenterHeight;
 
         #endregion
 
         public List<GameObject> commandButtons;
+        public List<GameObject> displayBoxes;
 
         // Singleton
         public static UIManager instance;
@@ -46,7 +48,7 @@ namespace MiniJam159.UI
 
         private void Update()
         {
-            // Calculate display panel size and position
+            // Calculate display panel background size and position
             RectTransform displayPanelTransform = displayPanel.GetComponent<RectTransform>();
             float newWidth = Screen.width - 256f - 320f;
             float newPosition = 256f + ((Screen.width - 320f) - 256f) / 2f - (Screen.width / 2f);
@@ -109,7 +111,11 @@ namespace MiniJam159.UI
 
         public void clearSelectedObjects()
         {
-
+            foreach (GameObject displayBox in displayBoxes)
+            {
+                Destroy(displayBox);
+            }
+            displayBoxes.Clear();
         }
 
         public void showSelectedObjects(List<GameObject> selectedObjects)
@@ -129,8 +135,17 @@ namespace MiniJam159.UI
             // Single selected structure
             if (selectedObjects.Count == 1 && selectedObjects[0].GetComponent<Structure>())
             {
-                GameObject newDisplayBox = Instantiate(displayBoxPrefab);
-                newDisplayBox.GetComponent<RectTransform>().position = new Vector3(0, displayCenterHeight, 0);
+                GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
+                newDisplayBox.GetComponent<RectTransform>().localPosition = new Vector3(0, displayCenterHeight, 0);
+                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().structureData.displaySprite;
+                displayBoxes.Add(newDisplayBox);
+                return;
+            }
+
+            // Units
+            for (int i = 0; i < selectedObjects.Count; i++)
+            {
+                GameObject selectedUnit = selectedObjects[i];
             }
         }
 

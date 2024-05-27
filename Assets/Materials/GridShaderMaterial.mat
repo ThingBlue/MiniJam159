@@ -52,7 +52,7 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _FocusPosition: {r: -14.6421995, g: 0, b: 18.327394, a: 0}
-    - _PlacementPosition: {r: 94.40713, g: 0, b: 89.061325, a: 0}
+    - _PlacementPosition: {r: 87.70697, g: 0, b: 85.94897, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2445214943293736006
 MonoBehaviour:
