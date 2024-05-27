@@ -35,6 +35,7 @@ namespace MiniJam159.AI
         public void clearCommands()
         {
             activeCommands.Clear();
+            for (int i = 0; i < 12; i++) activeCommands.Add(null);
         }
 
         public void populateCommands(List<CommandType> newCommandTypes)

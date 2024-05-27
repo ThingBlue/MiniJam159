@@ -156,8 +156,18 @@ namespace MiniJam159
                 case PlayerMode.MASS_SELECT:
                     SelectionManager.instance.updateMassSelectBox();
 
-                    // Execute mass select
-                    if (mouse0Up) SelectionManager.instance.executeMassSelect();
+                    if (mouse0Up)
+                    {
+                        // Clear commands
+                        CommandManager.instance.clearCommands();
+
+                        // Execute mass select
+                        SelectionManager.instance.executeMassSelect();
+
+                        // Update UI
+                        UIManager.instance.showSelectedObjects(SelectionManager.instance.selectedObjects);
+                        UIManager.instance.populateCommandButtons();
+                    }
                     break;
 
                 case PlayerMode.NORMAL:
@@ -192,8 +202,18 @@ namespace MiniJam159
                     }
                     SelectionManager.instance.updateMassSelectBox();
 
-                    // Execute single select
-                    if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject()) SelectionManager.instance.executeSingleSelect();
+                    if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject())
+                    {
+                        // Clear commands
+                        CommandManager.instance.clearCommands();
+
+                        // Execute single select
+                        SelectionManager.instance.executeSingleSelect();
+
+                        // Update UI
+                        UIManager.instance.showSelectedObjects(SelectionManager.instance.selectedObjects);
+                        UIManager.instance.populateCommandButtons();
+                    }
 
                     // Movement commands
                     if (mouse1Down)

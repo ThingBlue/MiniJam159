@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using MiniJam159.GameCore;
 using MiniJam159.AI;
 using MiniJam159.Structures;
+using MiniJam159.Selection;
 
 namespace MiniJam159.UI
 {
@@ -62,13 +63,7 @@ namespace MiniJam159.UI
             {
                 Destroy(commandButtons[i]);
             }
-        }
-
-
-        public void TaskOnClick()
-        {
-            //Output this to console when Button1 or Button3 is clicked
-            Debug.Log("You have clicked the button!");
+            commandButtons.Clear();
         }
 
         public void populateCommandButtons()
@@ -149,6 +144,13 @@ namespace MiniJam159.UI
                 GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
                 newDisplayBox.GetComponent<RectTransform>().localPosition = new Vector3(0f, displayCenterHeight, 0f);
                 newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().structureData.displaySprite;
+
+                // Set up button
+                SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
+                newDisplayButton.selectedObjectName = selectedObjects[0].name;
+                newDisplayButton.selectedIndex = 0;
+                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => SelectionManager.instance.singleSelectObjectInList(newDisplayButton.selectedIndex));
+
                 displayBoxes.Add(newDisplayBox);
                 return;
             }
@@ -183,8 +185,28 @@ namespace MiniJam159.UI
                 GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
                 newDisplayBox.GetComponent<RectTransform>().localPosition = boxLocalPosition;
                 newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<GameAI>().displaySprite;
+
+                // Set up button
+                SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
+                newDisplayButton.selectedObjectName = selectedObjects[0].name;
+                newDisplayButton.selectedIndex = i;
+                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => onDisplayBoxClicked(newDisplayButton.selectedIndex));
+
                 displayBoxes.Add(newDisplayBox);
             }
+        }
+
+        public void onDisplayBoxClicked(int index)
+        {
+            // Clear commands
+            CommandManager.instance.clearCommands();
+
+            // Select new object
+            SelectionManager.instance.singleSelectObjectInList(index);
+
+            // Update UI
+            showSelectedObjects(SelectionManager.instance.selectedObjects);
+            populateCommandButtons();
         }
 
     }
