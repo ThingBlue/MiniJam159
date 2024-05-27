@@ -64,6 +64,13 @@ namespace MiniJam159.UI
             }
         }
 
+
+        public void TaskOnClick()
+        {
+            //Output this to console when Button1 or Button3 is clicked
+            Debug.Log("You have clicked the button!");
+        }
+
         public void populateCommandButtons()
         {
             clearCommandButtons();
@@ -82,7 +89,8 @@ namespace MiniJam159.UI
 
                 // Assign command to button
                 newCommandButton.command = activeCommand;
-                newButtonObject.GetComponent<Button>().onClick.AddListener(() => CommandManager.instance.executeCommand(i));
+                newCommandButton.commandIndex = i;
+                newButtonObject.GetComponent<Button>().onClick.AddListener(() => CommandManager.instance.executeCommand(newCommandButton.commandIndex));
 
                 // Set button position
                 float xOffset = (i % 4) * 64.0f;

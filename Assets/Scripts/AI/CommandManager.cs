@@ -26,6 +26,7 @@ namespace MiniJam159.AI
 
         public void executeCommand(int index)
         {
+            Debug.Log("Executing command: " + activeCommands[index]);
             if (activeCommands[index] == null) return;
 
             activeCommands[index].execute();
