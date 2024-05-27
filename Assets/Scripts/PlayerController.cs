@@ -74,6 +74,7 @@ namespace MiniJam159
             if (InputManager.instance.getKeyDown("PlacementTest"))
             {
                 StructureData newStructureData = new StructureData();
+                newStructureData.structureType = StructureType.NULL;
                 newStructureData.size = new Vector2(2, 3);
                 newStructureData.commands = new List<CommandType>();
 
@@ -99,7 +100,8 @@ namespace MiniJam159
             if (InputManager.instance.getKeyDown("PlacementTest2"))
             {
                 StructureData newStructureData = new StructureData();
-                newStructureData.size = new Vector2(6, 4);
+                newStructureData.structureType = StructureType.NEST;
+                newStructureData.size = new Vector2(5, 5);
                 newStructureData.commands = new List<CommandType>();
 
                 newStructureData.commands.Add(CommandType.NULL);

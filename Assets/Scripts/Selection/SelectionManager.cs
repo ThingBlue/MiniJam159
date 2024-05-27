@@ -174,7 +174,12 @@ namespace MiniJam159.Selection
             // We have a hit
             if (hitObject.GetComponent<GameAI>())
             {
-                // Hit the parent
+                // Hit the paernt ai
+                selectedObjects.Add(hitObject);
+            }
+            if (hitObject.GetComponent<Structure>())
+            {
+                // Hit the parent structure
                 selectedObjects.Add(hitObject);
             }
             else

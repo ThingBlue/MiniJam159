@@ -21,7 +21,9 @@ namespace MiniJam159
         public Material placementGuideMaterial;
         public Material blockedTilesMaterial;
 
-        public GameObject structurePrefab;
+        public GameObject nestStructurePrefab;
+        public GameObject wombStructurePrefab;
+        public GameObject testStructurePrefab;
 
         #endregion
 
@@ -95,9 +97,9 @@ namespace MiniJam159
 
         public void beginPlacement(StructureData structureData)
         {
-            placementStructureData = structureData;
-            placementStructureData.commands = new List<CommandType>(structureData.commands);
-            placementStructureData.displaySprite = structureData.displaySprite;
+            placementStructureData = new StructureData(structureData);
+            //placementStructureData.commands = new List<CommandType>(structureData.commands);
+            //placementStructureData.displaySprite = structureData.displaySprite;
             PlayerModeManager.instance.playerMode = PlayerMode.STRUCTURE_PLACEMENT;
         }
 
@@ -128,10 +130,23 @@ namespace MiniJam159
                 GridManager.instance.occupyCells(startPosition, placementStructureData.size);
 
                 // Instantiate strucutre
-                GameObject newStructureObject = Instantiate(structurePrefab, new Vector3(snappedPosition.x, 0.5f, snappedPosition.z), Quaternion.identity);
+                GameObject newStructureObject = null;
+                switch (placementStructureData.structureType)
+                {
+                    case StructureType.NEST:
+                        newStructureObject = Instantiate(nestStructurePrefab, new Vector3(snappedPosition.x, 0.5f, snappedPosition.z), Quaternion.identity);
+                        break;
+                    case StructureType.WOMB:
+                        newStructureObject = Instantiate(wombStructurePrefab, new Vector3(snappedPosition.x, 0.5f, snappedPosition.z), Quaternion.identity);
+                        break;
+                    case StructureType.NULL:
+                        newStructureObject = Instantiate(testStructurePrefab, new Vector3(snappedPosition.x, 0.5f, snappedPosition.z), Quaternion.identity);
+                        break;
+                }
+
                 GameObject newBlockedTilesObject = newStructureObject.transform.Find("BlockedTiles").gameObject;
 
-                // Set scale
+                // Set scale of blocked tiles
                 newBlockedTilesObject.transform.localScale = new Vector3(placementStructureData.size.x / 10.0f, 1, placementStructureData.size.y / 10.0f);
 
                 // Create duplicate material to fix shader graph weirdness
@@ -139,11 +154,11 @@ namespace MiniJam159
                 renderer.material = new Material(renderer.material);
 
                 // Set properties in structure data class
-                StructureData newStructureData = newStructureObject.GetComponent<Structure>().structureData;
-                newStructureData.position = new Vector2(snappedPosition.x, snappedPosition.z);
-                newStructureData.size = placementStructureData.size;
-                newStructureData.commands = new List<CommandType>(placementStructureData.commands);
-                newStructureData.displaySprite = placementStructureData.displaySprite;
+                newStructureObject.GetComponent<Structure>().structureData = new StructureData(placementStructureData);
+                //newStructureData.position = new Vector2(snappedPosition.x, snappedPosition.z);
+                //newStructureData.size = placementStructureData.size;
+                //newStructureData.commands = new List<CommandType>(placementStructureData.commands);
+                //newStructureData.displaySprite = placementStructureData.displaySprite;
 
                 structures.Add(newStructureObject);
             }

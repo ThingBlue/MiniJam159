@@ -421,7 +421,9 @@ MonoBehaviour:
   gridTilesMaterial: {fileID: 2100000, guid: 111778313e54b3742944aefb440d2fe6, type: 2}
   placementGuideMaterial: {fileID: 2100000, guid: 0c3dded4cbc228f4bafdd77fb007059e, type: 2}
   blockedTilesMaterial: {fileID: 2100000, guid: 809fdc25ef3ca1e4583a6f6aacfb15e9, type: 2}
-  structurePrefab: {fileID: 5914292673917186741, guid: bedf7ccd2febc0540bcff6dfb1c3d7c6, type: 3}
+  nestStructurePrefab: {fileID: 1192815717685616482, guid: 1fc7532120e808347a9d20d06fd54d7a, type: 3}
+  wombStructurePrefab: {fileID: 0}
+  testStructurePrefab: {fileID: 5914292673917186741, guid: bedf7ccd2febc0540bcff6dfb1c3d7c6, type: 3}
   structures: []
 --- !u!4 &308521648
 Transform:
