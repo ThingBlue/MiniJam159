@@ -234,7 +234,7 @@ MonoBehaviour:
   commandTypes: 010000000200000003000000000000000000000000000000000000000500000004000000000000000000000000000000
   targetTag: Enemy
   detectionRadius: 15
-  attackRange: 1
+  attackRange: 2
   attackCooldown: 1
   attackDamage: 10
   moveSpeed: 3

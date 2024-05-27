@@ -202,12 +202,12 @@ namespace MiniJam159
                     }
                     SelectionManager.instance.updateMassSelectBox();
 
+                    // Execute single select
                     if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject())
                     {
                         // Clear commands
                         CommandManager.instance.clearCommands();
 
-                        // Execute single select
                         SelectionManager.instance.executeSingleSelect();
 
                         // Update UI
@@ -216,11 +216,14 @@ namespace MiniJam159
                     }
 
                     // Movement commands
-                    if (mouse1Down)
+                    if (mouse1Down && !EventSystem.current.IsPointerOverGameObject())
                     {
                         // Attack if hovering over enemy
+                        if (InputManager.instance.mouseRaycastObject(enemyLayer)) executeAttackTarget();
                         // Interact if hovering over interactable
+                        else if (InputManager.instance.mouseRaycastObject(resourceLayer)) executeHarvestTarget();
                         // Move if none of the above
+                        else executeMoveTarget();
                     }
                     break;
             }

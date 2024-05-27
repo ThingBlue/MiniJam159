@@ -8,7 +8,7 @@ namespace MiniJam159.AI
     {
         public string targetTag = "Enemy"; // Tag to identify targets
         public float detectionRadius = 15.0f; // Radius to detect the nearest target
-        public float attackRange = 1.0f; // Range within which the AI will attack
+        public float attackRange = 2.0f; // Range within which the AI will attack
         public float attackCooldown = 1.0f; // Time between attacks
         public int attackDamage = 10; // Damage dealt by each attack
         public float moveSpeed = 3.0f; // Movement speed of the AI

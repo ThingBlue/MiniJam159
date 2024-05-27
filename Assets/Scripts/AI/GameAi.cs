@@ -50,7 +50,7 @@ namespace MiniJam159.AI
             }
 
             // Stop moving to position if reached
-            if (Vector2.Distance(transformPosition, moveToPosition) < 0.1f)
+            if (Vector2.Distance(transformPosition, moveToPosition) <= 0.5f)
             {
                 isMovingToPosition = false;
             }
