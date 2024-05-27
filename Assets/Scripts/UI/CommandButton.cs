@@ -9,6 +9,7 @@ namespace MiniJam159.UI
     public class CommandButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public Command command;
+        public int commandIndex;
 
         public void OnPointerEnter(PointerEventData eventData)
         {

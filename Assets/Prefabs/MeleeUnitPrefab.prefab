@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7390341802126829762
 Transform:
   m_ObjectHideFlags: 0
@@ -192,6 +192,8 @@ GameObject:
   m_Component:
   - component: {fileID: 9018097853522243624}
   - component: {fileID: 9018097853522243625}
+  - component: {fileID: 2750277581510662005}
+  - component: {fileID: 8850321739734179687}
   m_Layer: 10
   m_Name: MeleeUnitPrefab
   m_TagString: Unit
@@ -228,6 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32df92ecdd306f2448754d9e6864fb2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  displaySprite: {fileID: 21300000, guid: cd9f05cf0dc137243a07d149c8e22bd9, type: 3}
   commandTypes: 010000000200000003000000000000000000000000000000000000000500000004000000000000000000000000000000
   targetTag: Enemy
   detectionRadius: 15
@@ -237,3 +240,32 @@ MonoBehaviour:
   moveSpeed: 3
   surroundDistance: 1.5
   coordinationRadius: 5
+--- !u!54 &2750277581510662005
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018097853522243631}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 116
+  m_CollisionDetection: 0
+--- !u!65 &8850321739734179687
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018097853522243631}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

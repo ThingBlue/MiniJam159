@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using MiniJam159.GameCore;
 using MiniJam159.AI;
+using MiniJam159.Structures;
+using MiniJam159.Selection;
 
 namespace MiniJam159.UI
 {
@@ -22,9 +24,15 @@ namespace MiniJam159.UI
         public Sprite buildCommandSprite;
         public Sprite harvestCommandSprite;
 
+        public GameObject displayPanel;
+        public GameObject displayBoxPrefab;
+
+        public float displayCenterHeight;
+
         #endregion
 
         public List<GameObject> commandButtons;
+        public List<GameObject> displayBoxes;
 
         // Singleton
         public static UIManager instance;
@@ -34,6 +42,19 @@ namespace MiniJam159.UI
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
+
+            // Hide display panel at the start
+            displayPanel.SetActive(false);
+        }
+
+        private void Update()
+        {
+            // Calculate display panel background size and position
+            RectTransform displayPanelTransform = displayPanel.GetComponent<RectTransform>();
+            float newWidth = Screen.width - 256f - 320f;
+            float newPosition = 256f + ((Screen.width - 320f) - 256f) / 2f - (Screen.width / 2f);
+            displayPanelTransform.localPosition = new Vector3(newPosition, -32f, 0f);
+            displayPanelTransform.sizeDelta = new Vector2(newWidth, displayPanelTransform.sizeDelta.y);
         }
 
         public void clearCommandButtons()
@@ -42,6 +63,7 @@ namespace MiniJam159.UI
             {
                 Destroy(commandButtons[i]);
             }
+            commandButtons.Clear();
         }
 
         public void populateCommandButtons()
@@ -59,7 +81,11 @@ namespace MiniJam159.UI
                 // Create new button
                 GameObject newButtonObject = Instantiate(commandButtonPrefab, commandPanel.transform);
                 CommandButton newCommandButton = newButtonObject.GetComponent<CommandButton>();
+
+                // Assign command to button
                 newCommandButton.command = activeCommand;
+                newCommandButton.commandIndex = i;
+                newButtonObject.GetComponent<Button>().onClick.AddListener(() => CommandManager.instance.executeCommand(newCommandButton.commandIndex));
 
                 // Set button position
                 float xOffset = (i % 4) * 64.0f;
@@ -87,6 +113,100 @@ namespace MiniJam159.UI
                 }
                 commandButtons.Add(newButtonObject);
             }
+        }
+
+        public void clearSelectedObjects()
+        {
+            foreach (GameObject displayBox in displayBoxes)
+            {
+                Destroy(displayBox);
+            }
+            displayBoxes.Clear();
+        }
+
+        public void showSelectedObjects(List<GameObject> selectedObjects)
+        {
+            clearSelectedObjects();
+
+            if (selectedObjects.Count == 0)
+            {
+                // Hide display panel
+                displayPanel.SetActive(false);
+                return;
+            }
+
+            // Show display panel
+            displayPanel.SetActive(true);
+
+            // Single selected structure
+            if (selectedObjects.Count == 1 && selectedObjects[0].GetComponent<Structure>())
+            {
+                GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
+                newDisplayBox.GetComponent<RectTransform>().localPosition = new Vector3(0f, displayCenterHeight, 0f);
+                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().structureData.displaySprite;
+
+                // Set up button
+                SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
+                newDisplayButton.selectedObjectName = selectedObjects[0].name;
+                newDisplayButton.selectedIndex = 0;
+                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => SelectionManager.instance.singleSelectObjectInList(newDisplayButton.selectedIndex));
+
+                displayBoxes.Add(newDisplayBox);
+                return;
+            }
+
+            // Units
+            int columns = Mathf.FloorToInt(displayPanel.GetComponent<RectTransform>().sizeDelta.x / 32.0f);
+            int rows = Mathf.CeilToInt((float)selectedObjects.Count / (float)columns);
+            int lastRowColumns = selectedObjects.Count % columns;
+            if (lastRowColumns == 0) lastRowColumns = columns;
+            float leftBoxXPosition = 0f - (columns - 1) * 32f / 2f;
+            float lastRowLeftBoxXPosition = 0f - (lastRowColumns - 1) * 32f / 2f;
+
+            for (int i = 0; i < selectedObjects.Count; i++)
+            {
+                GameObject selectedUnit = selectedObjects[i];
+
+                Vector3 boxLocalPosition = new Vector3(0f, 0f, 0f);
+                if (i < selectedObjects.Count - lastRowColumns)
+                {
+                    // Not last row
+                    boxLocalPosition.x = leftBoxXPosition + (i % columns) * 32f;
+                }
+                else
+                {
+                    // Last row
+                    boxLocalPosition.x = lastRowLeftBoxXPosition + (i % columns) * 32f;
+                }
+                //boxLocalPosition.y = displayCenterHeight - Mathf.Floor(i + 1 / (float)columns) * 32f;
+                int currentRow = Mathf.FloorToInt(i / columns);
+                boxLocalPosition.y = displayCenterHeight - currentRow * 32f;
+
+                GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
+                newDisplayBox.GetComponent<RectTransform>().localPosition = boxLocalPosition;
+                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<GameAI>().displaySprite;
+
+                // Set up button
+                SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
+                newDisplayButton.selectedObjectName = selectedObjects[0].name;
+                newDisplayButton.selectedIndex = i;
+                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => onDisplayBoxClicked(newDisplayButton.selectedIndex));
+
+                displayBoxes.Add(newDisplayBox);
+            }
+        }
+
+        public void onDisplayBoxClicked(int index)
+        {
+            // Clear commands
+            CommandManager.instance.clearCommands();
+
+            // Select new object
+            SelectionManager.instance.singleSelectObjectInList(index);
+
+            // Update UI
+            showSelectedObjects(SelectionManager.instance.selectedObjects);
+            populateCommandButtons();
         }
 
     }

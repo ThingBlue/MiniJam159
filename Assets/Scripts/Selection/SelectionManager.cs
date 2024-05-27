@@ -2,11 +2,11 @@ using MiniJam159;
 using MiniJam159.GameCore;
 using MiniJam159.AI;
 using MiniJam159.Structures;
-using MiniJam159.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System;
 using UnityEngine.UI;
 
 namespace MiniJam159.Selection
@@ -68,9 +68,6 @@ namespace MiniJam159.Selection
             }
 
             selectedObjects.Clear();
-
-            // Clear commands
-            UIManager.instance.clearCommandButtons();
         }
 
         public void setSingleSelectObject()
@@ -107,14 +104,12 @@ namespace MiniJam159.Selection
                 GameAI newAI = focusObject.GetComponent<GameAI>();
 
                 CommandManager.instance.populateCommands(newAI.commandTypes);
-                UIManager.instance.populateCommandButtons();
             }
             else if (focusObject.layer == LayerMask.NameToLayer("Structure"))
             {
                 StructureData structureData = focusObject.GetComponent<Structure>().structureData;
 
                 CommandManager.instance.populateCommands(structureData.commands);
-                UIManager.instance.populateCommandButtons();
             }
         }
 
@@ -152,7 +147,6 @@ namespace MiniJam159.Selection
                 GameAI newAI = focusObject.GetComponent<GameAI>();
 
                 CommandManager.instance.populateCommands(newAI.commandTypes);
-                UIManager.instance.populateCommandButtons();
             }
             // NOT ALLOWING MASS SELECT ON STRUCTURES FOR NOW
             /*
@@ -178,7 +172,16 @@ namespace MiniJam159.Selection
             if (hitObject == null) return;
 
             // We have a hit
-            selectedObjects.Add(hitObject.transform.parent.gameObject);
+            if (hitObject.GetComponent<GameAI>())
+            {
+                // Hit the parent
+                selectedObjects.Add(hitObject);
+            }
+            else
+            {
+                // Hit the child
+                selectedObjects.Add(hitObject.transform.parent.gameObject);
+            }
             setSingleSelectObject();
         }
 
@@ -379,6 +382,19 @@ namespace MiniJam159.Selection
             Vector2 normalized = normal.normalized;
             float d = Vector2.Dot(point, normalized);
             return normalized * d;
+        }
+
+        public void singleSelectObjectInList(int index)
+        {
+            // Store the one object we want to keep
+            GameObject selectedObject = selectedObjects[index];
+
+            // Clear list
+            clearSelectedObjects();
+
+            // Add object back in
+            selectedObjects.Add(selectedObject);
+            setSingleSelectObject();
         }
 
         private void OnDrawGizmos()

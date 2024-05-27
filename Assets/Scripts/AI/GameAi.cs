@@ -5,6 +5,12 @@ namespace MiniJam159.AI
 {
     public abstract class GameAI : MonoBehaviour
     {
+        #region Inspector members
+
+        public Sprite displaySprite;
+
+        #endregion
+
         public static List<GameAI> allAIs = new List<GameAI>(); // List of all AI instances
         protected Vector2 moveToPosition;
         protected bool isMovingToPosition;

@@ -16,6 +16,8 @@ namespace MiniJam159.Structures
         public float contructionTime;
 
         public List<CommandType> commands;
+
+        public Sprite displaySprite;
     }
 
     public class Structure : MonoBehaviour

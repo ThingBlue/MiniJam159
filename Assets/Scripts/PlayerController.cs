@@ -19,6 +19,8 @@ namespace MiniJam159
         public LayerMask enemyLayer;
         public LayerMask resourceLayer;
 
+        public Sprite testStructureSprite;
+
         #endregion
 
         private bool mouse0Down;
@@ -89,6 +91,8 @@ namespace MiniJam159
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
 
+                newStructureData.displaySprite = testStructureSprite;
+
                 StructureManager.instance.beginPlacement(newStructureData);
             }
             if (InputManager.instance.getKeyDown("PlacementTest2"))
@@ -112,25 +116,9 @@ namespace MiniJam159
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
 
+                newStructureData.displaySprite = testStructureSprite;
+
                 StructureManager.instance.beginPlacement(newStructureData);
-            }
-            if (InputManager.instance.getKeyDown("CommandUpdateTest"))
-            {
-                List<CommandType> commands = new List<CommandType>();
-                commands.Add(CommandType.MOVE);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.HOLD);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.ATTACK);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.BUILD);
-                commands.Add(CommandType.NULL);
-                commands.Add(CommandType.NULL);
-                CommandManager.instance.populateCommands(commands);
-                UIManager.instance.populateCommandButtons();
             }
         }
 
@@ -168,8 +156,18 @@ namespace MiniJam159
                 case PlayerMode.MASS_SELECT:
                     SelectionManager.instance.updateMassSelectBox();
 
-                    // Execute mass select
-                    if (mouse0Up) SelectionManager.instance.executeMassSelect();
+                    if (mouse0Up)
+                    {
+                        // Clear commands
+                        CommandManager.instance.clearCommands();
+
+                        // Execute mass select
+                        SelectionManager.instance.executeMassSelect();
+
+                        // Update UI
+                        UIManager.instance.showSelectedObjects(SelectionManager.instance.selectedObjects);
+                        UIManager.instance.populateCommandButtons();
+                    }
                     break;
 
                 case PlayerMode.NORMAL:
@@ -204,8 +202,18 @@ namespace MiniJam159
                     }
                     SelectionManager.instance.updateMassSelectBox();
 
-                    // Execute single select
-                    if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject()) SelectionManager.instance.executeSingleSelect();
+                    if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject())
+                    {
+                        // Clear commands
+                        CommandManager.instance.clearCommands();
+
+                        // Execute single select
+                        SelectionManager.instance.executeSingleSelect();
+
+                        // Update UI
+                        UIManager.instance.showSelectedObjects(SelectionManager.instance.selectedObjects);
+                        UIManager.instance.populateCommandButtons();
+                    }
 
                     // Movement commands
                     if (mouse1Down)
