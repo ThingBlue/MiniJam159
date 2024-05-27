@@ -79,7 +79,10 @@ namespace MiniJam159.UI
                 // Create new button
                 GameObject newButtonObject = Instantiate(commandButtonPrefab, commandPanel.transform);
                 CommandButton newCommandButton = newButtonObject.GetComponent<CommandButton>();
+
+                // Assign command to button
                 newCommandButton.command = activeCommand;
+                newButtonObject.GetComponent<Button>().onClick.AddListener(() => CommandManager.instance.executeCommand(i));
 
                 // Set button position
                 float xOffset = (i % 4) * 64.0f;
