@@ -171,6 +171,8 @@ MonoBehaviour:
   moveSpeed: 3
   surroundDistance: 1.5
   coordinationRadius: 5
+  harvestRange: 2
+  depositRange: 2
   basePosition: {x: 0, y: 0}
 --- !u!1 &9206874893626697354
 GameObject:

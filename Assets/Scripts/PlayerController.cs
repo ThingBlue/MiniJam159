@@ -9,6 +9,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using MiniJam159.Resources;
 
 namespace MiniJam159
 {
@@ -328,6 +329,7 @@ namespace MiniJam159
                 PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
                 return;
             }
+            IResource resource = target.GetComponent<IResource>();
 
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
@@ -339,8 +341,10 @@ namespace MiniJam159
                 MethodInfo method = ai.GetType().GetMethod("harvestAICommand");
                 if (method != null)
                 {
-                    // Invoke attack command method in ai using transform of target
-                    //method.Invoke(ai, new object[] { target.transform });
+                    // Invoke command method in ai using transform of target
+                    method.Invoke(ai, new object[] { resource });
+
+                    Debug.Log("Harvesting " + resource);
                 }
             }
 

@@ -6,6 +6,13 @@ namespace MiniJam159.AI
 {
     public class WorkerAI : GroundMeleeAI
     {
+        #region Inspector members
+
+        public float harvestRange = 2f;
+        public float depositRange = 2f;
+
+        #endregion
+
         public Vector2 basePosition; // Base location to return resources
         private IResource currentResource; // Current resource being harvested
         private bool isReturningToBase = false; // Flag to check if returning to base
@@ -72,10 +79,10 @@ namespace MiniJam159.AI
                 ReturnToBase(basePosition);
             }
 
-            Vector2 resourcePosition = currentResource.position;
-            transform.position = Vector2.MoveTowards(transform.position, resourcePosition, moveSpeed * Time.deltaTime);
+            Vector3 resourcePosition = new Vector3(currentResource.position.x, 0, currentResource.position.y);
+            transform.position = Vector3.MoveTowards(transform.position, resourcePosition, moveSpeed * Time.deltaTime);
 
-            if (Vector2.Distance(transform.position, resourcePosition) < 0.1f)
+            if (Vector3.Distance(transform.position, resourcePosition) <= harvestRange)
             {
                 if (currentResource == null || currentResource.resourceAmount <= 0)
                 {
@@ -92,9 +99,9 @@ namespace MiniJam159.AI
 
         private void MoveTowardsBase()
         {
-            transform.position = Vector2.MoveTowards(transform.position, basePosition, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(basePosition.x, 0, basePosition.y), moveSpeed * Time.deltaTime);
 
-            if (Vector2.Distance(transform.position, basePosition) < 0.1f)
+            if (Vector3.Distance(transform.position, new Vector3(basePosition.x, 0, basePosition.y)) < depositRange)
             {
                 // Deposit resources
                 DepositResources();
@@ -139,10 +146,15 @@ namespace MiniJam159.AI
             base.attackAICommand(newTarget);
         }
 
-        public void harvestAICommand(Vector2 newBasePosition, IResource newResource)
+        public void harvestAICommand(IResource newResource)
         {
-            this.basePosition = newBasePosition;
+            isMovingToPosition = false;
             HarvestResource(newResource);
+        }
+
+        public void setBasePosition(Vector2 newBasePosition)
+        {
+            basePosition = newBasePosition;
         }
 
         public void buildAICommand(Vector2 structure)

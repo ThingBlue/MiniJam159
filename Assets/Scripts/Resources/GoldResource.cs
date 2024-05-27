@@ -13,7 +13,7 @@ namespace MiniJam159.Resources
         void Start()
         {
             // Initialize with some default values or set via Inspector
-            position = transform.position;
+            position = new Vector2(transform.position.x, transform.position.z);
             size = new Vector2(1, 1);
             resourceAmount = 300f;
             resourceReplenishRate = 2f;

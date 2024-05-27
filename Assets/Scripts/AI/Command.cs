@@ -41,20 +41,6 @@ namespace MiniJam159.AI
         public override void execute()
         {
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.MOVE_TARGET;
-
-            /*
-            // TODO: Use correct selected list
-            List<GameAI> selectedAIs = new List<GameAI>();
-            foreach (var ai in selectedAIs)
-            {
-                MethodInfo method = ai.GetType().GetMethod("moveAICommand");
-                if (method != null)
-                {
-                    // TODO: Pass correct info
-                    method.Invoke(ai, new object[] { (Vector2)Input.mousePosition });
-                }
-            }
-            */
         }
     }
     public class AttackCommand : Command
@@ -67,21 +53,6 @@ namespace MiniJam159.AI
         public override void execute()
         {
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.ATTACK_TARGET;
-
-            /*
-            // TODO: Use correct selected list
-            List<GameAI> selectedAIs = new List<GameAI>();
-            foreach (var ai in selectedAIs)
-            {
-                MethodInfo method = ai.GetType().GetMethod("attackAICommand");
-                if (method != null)
-                {
-                    // TODO: Pass correct info
-                    Transform target = null;
-                    method.Invoke(ai, new object[] { target });
-                }
-            }
-            */
         }
     }
     public class HoldCommand : Command
@@ -106,20 +77,6 @@ namespace MiniJam159.AI
         public override void execute()
         {
             // Open build menu
-
-            /*
-            // TODO: Use correct selected list
-            List<GameAI> selectedAIs = new List<GameAI>();
-            foreach (var ai in selectedAIs)
-            {
-                MethodInfo method = ai.GetType().GetMethod("buildAICommand");
-                if (method != null)
-                {
-                    // TODO: Pass correct info
-                    method.Invoke(ai, new object[] { });
-                }
-            }
-            */
         }
     }
     public class HarvestCommand : Command
@@ -132,20 +89,6 @@ namespace MiniJam159.AI
         public override void execute()
         {
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
-
-            /*
-            // TODO: Use correct selected list
-            List<GameAI> selectedAIs = new List<GameAI>();
-            foreach (var ai in selectedAIs)
-            {
-                MethodInfo method = ai.GetType().GetMethod("harvestAICommand");
-                if (method != null)
-                {
-                    // TODO: Pass correct info
-                    method.Invoke(ai, new object[] { });
-                }
-            }
-            */
         }
     }
 }
