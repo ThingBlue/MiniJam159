@@ -43,7 +43,7 @@ namespace MiniJam159.AI
                     return; // No target found, do nothing
                 }
 
-                float distanceToTarget = Vector2.Distance(transform.position, Target.position);
+                float distanceToTarget = Vector3.Distance(transform.position, Target.position);
 
                 if (distanceToTarget <= attackRange)
                 {
