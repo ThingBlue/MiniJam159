@@ -37,6 +37,9 @@ namespace MiniJam159.AI
 
             // Remove velocity
             GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+            // Set mesh position
+            transform.Find("Mesh").position = new Vector3(transform.position.x, 0.4f, transform.position.z);
         }
 
         protected void MoveTowardsPosition(float moveSpeed)

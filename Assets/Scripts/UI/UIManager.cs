@@ -184,11 +184,11 @@ namespace MiniJam159.UI
 
                 GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
                 newDisplayBox.GetComponent<RectTransform>().localPosition = boxLocalPosition;
-                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<GameAI>().displaySprite;
+                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[i].GetComponent<GameAI>().displaySprite;
 
                 // Set up button
                 SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
-                newDisplayButton.selectedObjectName = selectedObjects[0].name;
+                newDisplayButton.selectedObjectName = selectedObjects[i].name;
                 newDisplayButton.selectedIndex = i;
                 newDisplayBox.GetComponent<Button>().onClick.AddListener(() => onDisplayBoxClicked(newDisplayButton.selectedIndex));
 
