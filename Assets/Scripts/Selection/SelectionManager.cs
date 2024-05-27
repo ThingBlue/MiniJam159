@@ -167,7 +167,7 @@ namespace MiniJam159.Selection
 
             // Raycast from mouse and grab first hit
             LayerMask raycastMask = unitLayer | structureLayer;
-            GameObject hitObject = InputManager.instance.mouseRaycast(raycastMask);
+            GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
 
             if (hitObject == null) return;
 
