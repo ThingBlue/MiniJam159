@@ -21,7 +21,20 @@ namespace MiniJam159.AI
             attackTimer = 0f;
         }
 
-        void Update()
+        private void Update()
+        {
+            if (attackTimer > 0) attackTimer -= Time.deltaTime;
+            if (moveIgnoreTargetTimer > 0) moveIgnoreTargetTimer -= Time.deltaTime;
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+
+            offensiveMovementUpdate();
+        }
+
+        protected virtual void offensiveMovementUpdate()
         {
             if (isMovingToPosition)
             {
@@ -49,16 +62,6 @@ namespace MiniJam159.AI
                 {
                     MoveTowardsTarget();
                 }
-            }
-
-            if (attackTimer > 0)
-            {
-                attackTimer -= Time.deltaTime;
-            }
-
-            if (moveIgnoreTargetTimer > 0)
-            {
-                moveIgnoreTargetTimer -= Time.deltaTime;
             }
         }
 

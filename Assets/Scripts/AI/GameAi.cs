@@ -30,6 +30,15 @@ namespace MiniJam159.AI
             allAIs.Remove(this);
         }
 
+        protected virtual void FixedUpdate()
+        {
+            // Set y position
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+
+            // Remove velocity
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
+        }
+
         protected void MoveTowardsPosition(float moveSpeed)
         {
             Vector2 transformPosition = new Vector2(transform.position.x, transform.position.z);

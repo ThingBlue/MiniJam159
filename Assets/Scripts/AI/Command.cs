@@ -5,7 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using MiniJam159.AI;
 using MiniJam159.GameCore;
 
 namespace MiniJam159.AI
@@ -41,10 +40,7 @@ namespace MiniJam159.AI
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
-            {
-                PlayerModeManager.instance.playerMode = PlayerMode.MOVE_TARGET;
-            }
+            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.MOVE_TARGET;
 
             /*
             // TODO: Use correct selected list
@@ -70,10 +66,7 @@ namespace MiniJam159.AI
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
-            {
-                PlayerModeManager.instance.playerMode = PlayerMode.ATTACK_TARGET;
-            }
+            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.ATTACK_TARGET;
 
             /*
             // TODO: Use correct selected list
@@ -100,16 +93,7 @@ namespace MiniJam159.AI
 
         public override void execute()
         {
-            // TODO: Use correct selected list
-            List<GameAI> selectedAIs = new List<GameAI>();
-            foreach (var ai in selectedAIs)
-            {
-                MethodInfo method = ai.GetType().GetMethod("holdAICommand");
-                if (method != null)
-                {
-                    method.Invoke(ai, new object[] { });
-                }
-            }
+            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HOLD_COMMAND;
         }
     }
     public class BuildCommand : Command
@@ -147,10 +131,7 @@ namespace MiniJam159.AI
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
-            {
-                PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
-            }
+            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
 
             /*
             // TODO: Use correct selected list

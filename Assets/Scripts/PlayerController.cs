@@ -153,6 +153,10 @@ namespace MiniJam159
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMoveTarget();
                     break;
 
+                case PlayerMode.HOLD_COMMAND:
+                    executeHoldCommand();
+                    break;
+
                 case PlayerMode.MASS_SELECT:
                     SelectionManager.instance.updateMassSelectBox();
 
@@ -287,12 +291,31 @@ namespace MiniJam159
                 {
                     // Invoke attack command method in ai using transform of target
                     method.Invoke(ai, new object[] { target.transform });
-
-                    Debug.Log("Attacking target: " + target);
                 }
             }
 
             // Finish attack command
+            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+        }
+
+        public void executeHoldCommand()
+        {
+            // Invoke command on all selected units
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                // Check that object has a GameAI
+                GameAI ai = selectedObject.GetComponent<GameAI>();
+                if (ai == null) continue;
+
+                MethodInfo method = ai.GetType().GetMethod("holdAICommand");
+                if (method != null)
+                {
+                    // Invoke command method in ai
+                    method.Invoke(ai, new object[] { });
+                }
+            }
+
+            // Finish command
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
@@ -318,8 +341,6 @@ namespace MiniJam159
                 {
                     // Invoke attack command method in ai using transform of target
                     //method.Invoke(ai, new object[] { target.transform });
-
-                    Debug.Log("Harvesting target: " + target);
                 }
             }
 

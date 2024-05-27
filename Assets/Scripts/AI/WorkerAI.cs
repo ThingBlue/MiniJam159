@@ -16,7 +16,14 @@ namespace MiniJam159.AI
             base.Start();
         }
 
-        protected override void Update()
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+
+            offensiveMovementUpdate();
+        }
+
+        protected override void offensiveMovementUpdate()
         {
             if (isMovingToPosition)
             {
@@ -32,7 +39,7 @@ namespace MiniJam159.AI
             }
             else
             {
-                base.Update();
+                base.offensiveMovementUpdate();
             }
 
             if (attackTimer > 0)
@@ -102,7 +109,7 @@ namespace MiniJam159.AI
             carriedResources = 0;
         }
 
-        public virtual void moveAICommand(Vector2 position)
+        public override void moveAICommand(Vector2 position)
         {
             // Reset any harvesting state
             currentResource = null;
@@ -112,7 +119,7 @@ namespace MiniJam159.AI
             base.moveAICommand(position);
         }
 
-        public virtual void holdAICommand()
+        public override void holdAICommand()
         {
             // Reset any harvesting state
             currentResource = null;
@@ -122,7 +129,7 @@ namespace MiniJam159.AI
             base.holdAICommand();
         }
 
-        public virtual void attackAICommand(Transform newTarget)
+        public override void attackAICommand(Transform newTarget)
         {
             // Reset any harvesting state
             currentResource = null;
@@ -140,6 +147,7 @@ namespace MiniJam159.AI
 
         public void buildAICommand(Vector2 structure)
         {
+
         }
     }
 }
