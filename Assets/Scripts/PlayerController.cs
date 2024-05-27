@@ -275,7 +275,7 @@ namespace MiniJam159
                 if (method != null)
                 {
                     // Invoke attack command method in ai using transform of target
-                    //method.Invoke(ai, new object[] { target.transform });
+                    method.Invoke(ai, new object[] { target.transform });
 
                     Debug.Log("Attacking target: " + target);
                 }

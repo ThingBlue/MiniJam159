@@ -113,29 +113,37 @@ namespace MiniJam159.AI
 
         void MoveTowardsSurroundPosition()
         {
+            Vector2 transformPosition = new Vector2(transform.position.x, transform.position.z);
             Vector2 surroundPosition = GetSurroundPosition();
-            Vector2 direction = (surroundPosition - (Vector2)transform.position).normalized;
-            transform.position = Vector2.MoveTowards(transform.position, surroundPosition, moveSpeed * Time.deltaTime);
+            Vector2 direction = (surroundPosition - transformPosition).normalized;
+            Vector2 moveTowardsResult = Vector2.MoveTowards(transformPosition, surroundPosition, moveSpeed * Time.deltaTime);
+            transform.position = new Vector3(moveTowardsResult.x, 0, moveTowardsResult.y);
         }
 
         Vector2 GetSurroundPosition()
         {
             if (Target == null)
             {
-                return transform.position;
+                return new Vector2(transform.position.x, transform.position.z);
             }
 
             // Filter the list of activeAIs to include only those targeting the same target
             List<GroundMeleeAI> sameTargetAIs = GameAI.allAIs.OfType<GroundMeleeAI>().Where(ai => ai.Target == this.Target).ToList();
-            int aiIndex = sameTargetAIs.IndexOf(this);
-            int totalAIs = sameTargetAIs.Count;
 
-            float angleIncrement = 270f / (totalAIs - 1); // 270 degrees spread over number of AIs
-            float angle = -135f + (aiIndex * angleIncrement); // Start at -135 degrees to +135 degrees
+            // Default offset for single attacker
+            Vector2 offset = new Vector2(Mathf.Cos(0), Mathf.Sin(0)) * surroundDistance; ;
+            if (sameTargetAIs.Count > 1)
+            {
+                // Calculate offset for multiple attackers
+                int aiIndex = sameTargetAIs.IndexOf(this);
+                int totalAIs = sameTargetAIs.Count;
 
-            Vector2 offset = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * surroundDistance;
+                float angleIncrement = 270f / (totalAIs - 1); // 270 degrees spread over number of AIs
+                float angle = -135f + (aiIndex * angleIncrement); // Start at -135 degrees to +135 degrees
 
-            return (Vector2)Target.position + offset;
+                offset = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * surroundDistance;
+            }
+            return new Vector2(Target.position.x, Target.position.z) + offset;
         }
 
         void Attack()
