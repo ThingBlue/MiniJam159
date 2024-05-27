@@ -125,10 +125,10 @@ namespace MiniJam159
         private void FixedUpdate()
         {
             // Camera panning
-            if (Input.mousePosition.x <= 0) CameraController.instance.PanCamera(Vector2.left);
-            if (Input.mousePosition.x >= Screen.width) CameraController.instance.PanCamera(Vector2.right);
-            if (Input.mousePosition.y >= Screen.height) CameraController.instance.PanCamera(Vector2.up);
-            if (Input.mousePosition.y <= 0) CameraController.instance.PanCamera(Vector2.down);
+            if (Input.mousePosition.x <= 0) CameraController.instance.panCamera(Vector2.left);
+            if (Input.mousePosition.x >= Screen.width) CameraController.instance.panCamera(Vector2.right);
+            if (Input.mousePosition.y >= Screen.height) CameraController.instance.panCamera(Vector2.up);
+            if (Input.mousePosition.y <= 0) CameraController.instance.panCamera(Vector2.down);
 
             switch (PlayerModeManager.instance.playerMode)
             {
@@ -264,7 +264,7 @@ namespace MiniJam159
 
         public void executeAttackTarget()
         {
-            GameObject target = InputManager.instance.mouseRaycast(enemyLayer);
+            GameObject target = InputManager.instance.mouseRaycastObject(enemyLayer);
             if (target == null)
             {
                 // No target, cancel attack command
@@ -295,7 +295,7 @@ namespace MiniJam159
 
         public void executeHarvestTarget()
         {
-            GameObject target = InputManager.instance.mouseRaycast(resourceLayer);
+            GameObject target = InputManager.instance.mouseRaycastObject(resourceLayer);
             if (target == null)
             {
                 // No target, cancel attack command

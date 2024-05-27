@@ -102,7 +102,7 @@ namespace MiniJam159.GameCore
         }
 
         // Returns first object hit by raycast
-        public GameObject mouseRaycast(LayerMask layerMask)
+        public GameObject mouseRaycastObject(LayerMask layerMask)
         {
             // Raycast from mouse and grab first hit
             Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -110,6 +110,17 @@ namespace MiniJam159.GameCore
             RaycastHit hit;
             if (Physics.Raycast(mouseRay, out hit, mouseRaycastDistance, layerMask)) return hit.collider.gameObject;
             return null;
+        }
+
+        // Returns position of first raycast hit
+        public Vector3 mouseRaycastPosition(LayerMask layerMask)
+        {
+            // Raycast from mouse and grab first hit
+            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hit;
+            if (Physics.Raycast(mouseRay, out hit, mouseRaycastDistance, layerMask)) return hit.point;
+            return Vector3.zero;
         }
 
         #endregion
