@@ -1,6 +1,5 @@
 using MiniJam159.GameCore;
 using MiniJam159.Structures;
-using MiniJam159.AI;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.YamlDotNet.Core.Tokens;

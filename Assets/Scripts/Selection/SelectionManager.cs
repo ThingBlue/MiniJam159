@@ -95,21 +95,19 @@ namespace MiniJam159.Selection
                 renderer.materials = newMaterials;
             }
 
-            // Populate command menu using the first unit in list
+            // Populate command menu using the first object in list
             GameObject focusObject = selectedObjects[0];
             if (focusObject == null) return;
 
             if (focusObject.layer == LayerMask.NameToLayer("Unit"))
             {
-                GameAI newAI = focusObject.GetComponent<GameAI>();
-
-                CommandManager.instance.populateCommands(newAI.commandTypes);
+                GameAI newUnit = focusObject.GetComponent<GameAI>();
+                newUnit.populateCommands();
             }
             else if (focusObject.layer == LayerMask.NameToLayer("Structure"))
             {
-                StructureData structureData = focusObject.GetComponent<Structure>().structureData;
-
-                CommandManager.instance.populateCommands(structureData.commands);
+                Structure newStructure = focusObject.GetComponent<Structure>();
+                newStructure.populateCommands();
             }
         }
 
@@ -144,9 +142,8 @@ namespace MiniJam159.Selection
 
             if (focusObject.layer == LayerMask.NameToLayer("Unit"))
             {
-                GameAI newAI = focusObject.GetComponent<GameAI>();
-
-                CommandManager.instance.populateCommands(newAI.commandTypes);
+                GameAI newUnit = focusObject.GetComponent<GameAI>();
+                newUnit.populateCommands();
             }
             // NOT ALLOWING MASS SELECT ON STRUCTURES FOR NOW
             /*

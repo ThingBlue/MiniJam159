@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using MiniJam159.Commands;
 
 namespace MiniJam159.AI
 {
@@ -12,11 +13,13 @@ namespace MiniJam159.AI
         #endregion
 
         public static List<GameAI> allAIs = new List<GameAI>(); // List of all AI instances
+        public List<CommandType> commands;
+
         protected Vector3 moveToPosition;
         protected bool isMovingToPosition;
         protected float moveIgnoreTargetTimer; // Timer to ignore targets while moving
         protected const float moveIgnoreTargetDuration = 10f; // Duration to ignore targets while moving
-        public List<CommandType> commandTypes;
+        protected Transform target { get; set; } // Property to be implemented by subclasses
 
         protected virtual void Start()
         {
@@ -90,6 +93,10 @@ namespace MiniJam159.AI
 
         protected abstract void FindNearestTarget();
 
-        protected Transform target { get; set; } // Property to be implemented by subclasses
+        public virtual void populateCommands()
+        {
+            CommandManager.instance.populateCommands(commands);
+        }
+
     }
 }

@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MiniJam159.AI;
 using System;
+using MiniJam159.Commands;
 
 namespace MiniJam159.Structures
 {
@@ -60,6 +60,11 @@ namespace MiniJam159.Structures
             structureData = new StructureData();
 
             // Resize blocked tiles
+        }
+
+        public virtual void populateCommands()
+        {
+            CommandManager.instance.populateCommands(structureData.commands);
         }
     }
 

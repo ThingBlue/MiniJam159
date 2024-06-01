@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using MiniJam159.GameCore;
 
-namespace MiniJam159.AI
+namespace MiniJam159.Commands
 {
     public enum CommandType
     {
