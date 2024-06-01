@@ -171,10 +171,6 @@ namespace MiniJam159
 
                         // Execute mass select
                         SelectionManager.instance.executeMassSelect();
-
-                        // Update UI
-                        UIManager.instance.showSelectedObjects(SelectionManager.instance.selectedObjects);
-                        UIManager.instance.populateCommandButtons();
                     }
                     break;
 
@@ -217,10 +213,6 @@ namespace MiniJam159
                         CommandManager.instance.clearCommands();
 
                         SelectionManager.instance.executeSingleSelect();
-
-                        // Update UI
-                        UIManager.instance.showSelectedObjects(SelectionManager.instance.selectedObjects);
-                        UIManager.instance.populateCommandButtons();
                     }
 
                     // Movement commands

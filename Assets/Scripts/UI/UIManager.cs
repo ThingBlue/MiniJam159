@@ -48,6 +48,15 @@ namespace MiniJam159.UI
             displayPanel.SetActive(false);
         }
 
+        private void Start()
+        {
+            // Subscribe to events
+            EventManager.instance.selectionStartEvent.AddListener(onSelectionStart);
+            EventManager.instance.selectionCompleteEvent.AddListener(onSelectionComplete);
+            EventManager.instance.populateCommandsStartEvent.AddListener(onPopulateCommandsStart);
+            EventManager.instance.populateCommandsCompleteEvent.AddListener(onPopulateCommandsComplete);
+        }
+
         private void Update()
         {
             // Calculate display panel background size and position
@@ -69,9 +78,7 @@ namespace MiniJam159.UI
 
         public void populateCommandButtons()
         {
-            clearCommandButtons();
-
-            // Create new ui
+            // Create new ui and populate command buttons
             for (int i = 0; i < CommandManager.instance.activeCommands.Count; i++)
             {
                 Command activeCommand = CommandManager.instance.activeCommands[i];
@@ -125,10 +132,9 @@ namespace MiniJam159.UI
             displayBoxes.Clear();
         }
 
-        public void showSelectedObjects(List<GameObject> selectedObjects)
+        public void showSelectedObjects()
         {
-            clearSelectedObjects();
-
+            List<GameObject> selectedObjects = SelectionManager.instance.selectedObjects;
             if (selectedObjects.Count == 0)
             {
                 // Hide display panel
@@ -204,9 +210,26 @@ namespace MiniJam159.UI
 
             // Select new object
             SelectionManager.instance.singleSelectObjectInList(index);
+        }
 
-            // Update UI
-            showSelectedObjects(SelectionManager.instance.selectedObjects);
+        private void onSelectionStart()
+        {
+            clearSelectedObjects();
+            clearCommandButtons();
+        }
+
+        private void onSelectionComplete()
+        {
+            showSelectedObjects();
+        }
+
+        private void onPopulateCommandsStart()
+        {
+            //clearCommandButtons();
+        }
+
+        private void onPopulateCommandsComplete()
+        {
             populateCommandButtons();
         }
 

@@ -16,7 +16,10 @@ namespace MiniJam159.Commands
         ATTACK,
         HOLD,
         BUILD,
-        HARVEST
+        HARVEST,
+
+        BUILD_NEST,
+        BUILD_WOMB
     }
 
     public class Command

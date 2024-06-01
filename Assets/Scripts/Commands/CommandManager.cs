@@ -78,6 +78,8 @@ namespace MiniJam159.Commands
                 newCommand.commandType = newCommandTypes[i];
                 activeCommands.Add(newCommand);
             }
+
+            EventManager.instance.populateCommandsCompleteEvent.Invoke();
         }
     }
 }

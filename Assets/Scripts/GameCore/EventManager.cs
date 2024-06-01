@@ -26,6 +26,11 @@ namespace MiniJam159.GameCore
         public UnityEvent pauseEvent;
         public UnityEvent unpauseEvent;
 
+        public UnityEvent selectionStartEvent;
+        public UnityEvent selectionCompleteEvent;
+        public UnityEvent populateCommandsStartEvent;
+        public UnityEvent populateCommandsCompleteEvent;
+
         #endregion
 
         private void Awake()
@@ -40,6 +45,11 @@ namespace MiniJam159.GameCore
             // Initialize events
             if (pauseEvent == null) pauseEvent = new UnityEvent();
             if (unpauseEvent == null) unpauseEvent = new UnityEvent();
+
+            if (selectionStartEvent == null) selectionStartEvent = new UnityEvent();
+            if (selectionCompleteEvent == null) selectionCompleteEvent = new UnityEvent();
+            if (populateCommandsStartEvent == null) populateCommandsStartEvent = new UnityEvent();
+            if (populateCommandsCompleteEvent == null) populateCommandsCompleteEvent = new UnityEvent();
         }
     }
 }

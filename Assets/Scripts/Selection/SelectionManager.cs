@@ -162,6 +162,8 @@ namespace MiniJam159.Selection
             // Clear current selection regardless of if we hit amything
             clearSelectedObjects();
 
+            EventManager.instance.selectionStartEvent.Invoke();
+
             // Raycast from mouse and grab first hit
             LayerMask raycastMask = unitLayer | structureLayer;
             GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
@@ -185,12 +187,15 @@ namespace MiniJam159.Selection
                 selectedObjects.Add(hitObject.transform.parent.gameObject);
             }
             setSingleSelectObject();
+            EventManager.instance.selectionCompleteEvent.Invoke();
         }
 
         public void executeMassSelect()
         {
             // Clear current selection
             clearSelectedObjects();
+
+            EventManager.instance.selectionStartEvent.Invoke();
 
             // Find boundaries of selection box in screen space
             Vector3 bottomLeft = massSelectBoxTransform.position;
@@ -357,6 +362,7 @@ namespace MiniJam159.Selection
                 }
             }
             setMassSelectObjects();
+            EventManager.instance.selectionCompleteEvent.Invoke();
 
             // Reset mass select
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
@@ -391,12 +397,16 @@ namespace MiniJam159.Selection
             // Store the one object we want to keep
             GameObject selectedObject = selectedObjects[index];
 
+            EventManager.instance.selectionStartEvent.Invoke();
+
             // Clear list
             clearSelectedObjects();
 
             // Add object back in
             selectedObjects.Add(selectedObject);
             setSingleSelectObject();
+
+            EventManager.instance.selectionCompleteEvent.Invoke();
         }
 
         private void OnDrawGizmos()

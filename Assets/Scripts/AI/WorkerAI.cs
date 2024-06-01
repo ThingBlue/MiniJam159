@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using MiniJam159.Resources;
 using MiniJam159.AICore;
+using MiniJam159.Commands;
+using MiniJam159.Structures;
 
 namespace MiniJam159.AI
 {
@@ -11,6 +13,8 @@ namespace MiniJam159.AI
 
         public float harvestRange = 2f;
         public float depositRange = 2f;
+
+        public StructureDataList structureDataList;
 
         #endregion
 
@@ -159,7 +163,32 @@ namespace MiniJam159.AI
 
         public void buildAICommand(Vector3 structure)
         {
+            // Convert structure datas into commands
+            List<CommandType> structureCommands = new List<CommandType>();
+            foreach (StructureData structureData in structureDataList.structureDatas)
+            {
+                switch (structureData.structureType)
+                {
+                    case StructureType.NEST:
+                        structureCommands.Add(CommandType.BUILD_NEST);
+                        break;
+                    case StructureType.WOMB:
+                        structureCommands.Add(CommandType.BUILD_WOMB);
+                        break;
+                    case StructureType.NULL:
+                        structureCommands.Add(CommandType.NULL);
+                        break;
+                }
+            }
 
+            // Populate command menu with buildable objects
+            CommandManager.instance.populateCommands(structureCommands);
+        }
+
+        public void cancelBuildCommand(Vector3 structure)
+        {
+            // Populate command menu with standard commands
+            base.populateCommands();
         }
     }
 }
