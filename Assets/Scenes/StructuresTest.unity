@@ -1978,8 +1978,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9005adae390f2345bd4037ef77d5c25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraBoundaryStart: {x: 0, y: -12}
-  cameraBoundaryEnd: {x: 100, y: 88}
+  cameraBoundaryStart: {x: 0, y: 0, z: -12}
+  cameraBoundaryEnd: {x: 100, y: 0, z: 88}
   disablePan: 0
   panSpeed: 0.4
   smoothTime: 0.05
@@ -2357,7 +2357,7 @@ MonoBehaviour:
   selectionRaycastDistance: 50
   defaultMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   selectedOutlineMaterial: {fileID: 2100000, guid: 2cd68e4b28dbb8c429577e2a5e049d53, type: 2}
-  massSelectStartPosition: {x: 0, y: 0}
+  massSelectStartPosition: {x: 0, y: 0, z: 0}
   selectedObjects: []
 --- !u!114 &1855134518
 MonoBehaviour:

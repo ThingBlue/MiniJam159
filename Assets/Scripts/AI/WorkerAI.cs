@@ -13,7 +13,7 @@ namespace MiniJam159.AI
 
         #endregion
 
-        public Vector2 basePosition; // Base location to return resources
+        public Vector3 basePosition; // Base location to return resources
         private IResource currentResource; // Current resource being harvested
         private bool isReturningToBase = false; // Flag to check if returning to base
         private float carriedResources = 0; // Amount of resources currently carried
@@ -66,7 +66,7 @@ namespace MiniJam159.AI
             isReturningToBase = false;
         }
 
-        public void ReturnToBase(Vector2 basePosition)
+        public void ReturnToBase(Vector3 basePosition)
         {
             this.basePosition = basePosition;
             isReturningToBase = true;
@@ -79,10 +79,9 @@ namespace MiniJam159.AI
                 ReturnToBase(basePosition);
             }
 
-            Vector3 resourcePosition = new Vector3(currentResource.position.x, 0, currentResource.position.y);
-            transform.position = Vector3.MoveTowards(transform.position, resourcePosition, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, currentResource.position, moveSpeed * Time.deltaTime);
 
-            if (Vector3.Distance(transform.position, resourcePosition) <= harvestRange)
+            if (Vector3.Distance(transform.position, currentResource.position) <= harvestRange)
             {
                 if (currentResource == null || currentResource.resourceAmount <= 0)
                 {
@@ -99,9 +98,9 @@ namespace MiniJam159.AI
 
         private void MoveTowardsBase()
         {
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(basePosition.x, 0, basePosition.y), moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, basePosition, moveSpeed * Time.deltaTime);
 
-            if (Vector3.Distance(transform.position, new Vector3(basePosition.x, 0, basePosition.y)) < depositRange)
+            if (Vector3.Distance(transform.position, basePosition) < depositRange)
             {
                 // Deposit resources
                 DepositResources();
@@ -116,7 +115,7 @@ namespace MiniJam159.AI
             carriedResources = 0;
         }
 
-        public override void moveAICommand(Vector2 position)
+        public override void moveAICommand(Vector3 position)
         {
             // Reset any harvesting state
             currentResource = null;
@@ -152,12 +151,12 @@ namespace MiniJam159.AI
             HarvestResource(newResource);
         }
 
-        public void setBasePosition(Vector2 newBasePosition)
+        public void setBasePosition(Vector3 newBasePosition)
         {
             basePosition = newBasePosition;
         }
 
-        public void buildAICommand(Vector2 structure)
+        public void buildAICommand(Vector3 structure)
         {
 
         }

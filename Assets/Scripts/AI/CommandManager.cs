@@ -68,7 +68,7 @@ namespace MiniJam159.AI
                         newCommand = new HoldCommand();
                         break;
                     case CommandType.BUILD:
-                        newCommand = new BuildCommand();
+                        newCommand = new BuildMenuCommand();
                         break;
                     case CommandType.HARVEST:
                         newCommand = new HarvestCommand();

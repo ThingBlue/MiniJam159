@@ -6,8 +6,8 @@ namespace MiniJam159.Resources
 {
     public interface IResource
     {
-        Vector2 position { get; set; }
-        Vector2 size { get; set; }
+        Vector3 position { get; set; }
+        Vector3 size { get; set; }
 
         float resourceAmount { get; set; }
         float resourceReplenishRate { get; set; }

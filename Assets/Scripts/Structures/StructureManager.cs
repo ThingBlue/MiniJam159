@@ -66,7 +66,7 @@ namespace MiniJam159
                 gridTilesMaterial.SetVector("_PlacementPosition", mousePosition);
 
                 // Transform placement guide
-                placementGuide.transform.localScale = new Vector3(placementStructureData.size.x / 10.0f, 1, placementStructureData.size.y / 10.0f);
+                placementGuide.transform.localScale = new Vector3(placementStructureData.size.x / 10.0f, 1, placementStructureData.size.z / 10.0f);
 
                 Vector3 roundedPosition = mousePosition;
                 roundedPosition.x = Mathf.Round(mousePosition.x);
@@ -74,17 +74,18 @@ namespace MiniJam159
 
                 Vector3 snappedPosition = roundedPosition;
                 if (placementStructureData.size.x % 2 == 1) snappedPosition.x += 0.5f;
-                if (placementStructureData.size.y % 2 == 1) snappedPosition.z += 0.5f;
+                if (placementStructureData.size.z % 2 == 1) snappedPosition.z += 0.5f;
                 placementGuide.transform.SetPositionAndRotation(snappedPosition, Quaternion.identity);
 
                 // Check if placement is outside of the grid
-                Vector2 startPosition = new Vector2(
+                Vector3 startPosition = new Vector3(
                     roundedPosition.x - Mathf.Floor(placementStructureData.size.x / 2.0f),
-                    roundedPosition.z - Mathf.Floor(placementStructureData.size.y / 2.0f)
+                    0,
+                    roundedPosition.z - Mathf.Floor(placementStructureData.size.z / 2.0f)
                 );
-                Vector2 endPosition = startPosition + placementStructureData.size;
-                if (startPosition.x < 0 || startPosition.y < 0 ||
-                    endPosition.x > GridManager.instance.mapXLength || endPosition.y > GridManager.instance.mapZLength)
+                Vector3 endPosition = startPosition + placementStructureData.size;
+                if (startPosition.x < 0 || startPosition.z < 0 ||
+                    endPosition.x > GridManager.instance.mapXLength || endPosition.z > GridManager.instance.mapZLength)
                 {
                     placementGuide.GetComponent<MeshRenderer>().material = blockedTilesMaterial;
                 }
@@ -114,12 +115,13 @@ namespace MiniJam159
 
             Vector3 snappedPosition = roundedPosition;
             if (placementStructureData.size.x % 2 == 1) snappedPosition.x += 0.5f;
-            if (placementStructureData.size.y % 2 == 1) snappedPosition.z += 0.5f;
+            if (placementStructureData.size.z % 2 == 1) snappedPosition.z += 0.5f;
 
             // Check for blocked tiles
-            Vector2 startPosition = new Vector2(
+            Vector3 startPosition = new Vector3(
                 roundedPosition.x - Mathf.Floor(placementStructureData.size.x / 2.0f),
-                roundedPosition.z - Mathf.Floor(placementStructureData.size.y / 2.0f)
+                0,
+                roundedPosition.z - Mathf.Floor(placementStructureData.size.z / 2.0f)
             );
 
             // Check if placement location is valid
@@ -147,7 +149,7 @@ namespace MiniJam159
                 GameObject newBlockedTilesObject = newStructureObject.transform.Find("BlockedTiles").gameObject;
 
                 // Set scale of blocked tiles
-                newBlockedTilesObject.transform.localScale = new Vector3(placementStructureData.size.x / 10.0f, 1, placementStructureData.size.y / 10.0f);
+                newBlockedTilesObject.transform.localScale = new Vector3(placementStructureData.size.x / 10.0f, 1, placementStructureData.size.z / 10.0f);
 
                 // Create duplicate material to fix shader graph weirdness
                 Renderer renderer = newBlockedTilesObject.GetComponent<MeshRenderer>();
@@ -155,7 +157,7 @@ namespace MiniJam159
 
                 // Set properties in structure data class
                 newStructureObject.GetComponent<Structure>().structureData = new StructureData(placementStructureData);
-                //newStructureData.position = new Vector2(snappedPosition.x, snappedPosition.z);
+                //newStructureData.position = new Vector2(snappedPosition.x, 0, snappedPosition.z);
                 //newStructureData.size = placementStructureData.size;
                 //newStructureData.commands = new List<CommandType>(placementStructureData.commands);
                 //newStructureData.displaySprite = placementStructureData.displaySprite;
@@ -173,15 +175,15 @@ namespace MiniJam159
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
-        private bool placementBlocked(Vector2 startPosition)
+        private bool placementBlocked(Vector3 startPosition)
         {
             for (int i = 0; i < placementStructureData.size.x; i++)
             {
-                for (int j = 0; j < placementStructureData.size.y; j++)
+                for (int j = 0; j < placementStructureData.size.z; j++)
                 {
-                    if ((int)startPosition.x + i < 0 || (int)startPosition.y + j < 0 ||
-                        (int)startPosition.x + i >= GridManager.instance.mapXLength || (int)startPosition.y + j >= GridManager.instance.mapXLength ||
-                        GridManager.instance.isCellOccupied((int)startPosition.x + i, (int)startPosition.y + j))
+                    if ((int)startPosition.x + i < 0 || (int)startPosition.z + j < 0 ||
+                        (int)startPosition.x + i >= GridManager.instance.mapXLength || (int)startPosition.z + j >= GridManager.instance.mapXLength ||
+                        GridManager.instance.isCellOccupied((int)startPosition.x + i, (int)startPosition.z + j))
                     {
                         return true;
                     }

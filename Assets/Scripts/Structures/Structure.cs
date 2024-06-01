@@ -18,15 +18,15 @@ namespace MiniJam159.Structures
     {
         public StructureType structureType;
 
-        public Vector2 position;
-        public Vector2 size;
+        public Vector3 position;
+        public Vector3 size;
 
         public float maxHealth;
         public float contructionTime;
 
         public List<CommandType> commands;
 
-        public Sprite displaySprite;
+        public Sprite displayIcon;
 
         public StructureData()
         {
@@ -41,7 +41,7 @@ namespace MiniJam159.Structures
             maxHealth = other.maxHealth;
             contructionTime = other.contructionTime;
             commands = new List<CommandType>(other.commands);
-            displaySprite = other.displaySprite;
+            displayIcon = other.displayIcon;
         }
     }
 

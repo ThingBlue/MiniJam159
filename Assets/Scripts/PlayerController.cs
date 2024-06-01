@@ -75,7 +75,7 @@ namespace MiniJam159
             {
                 StructureData newStructureData = new StructureData();
                 newStructureData.structureType = StructureType.NULL;
-                newStructureData.size = new Vector2(2, 3);
+                newStructureData.size = new Vector3(2, 1, 3);
                 newStructureData.commands = new List<CommandType>();
 
                 newStructureData.commands.Add(CommandType.MOVE);
@@ -93,7 +93,7 @@ namespace MiniJam159
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
 
-                newStructureData.displaySprite = testStructureSprite;
+                newStructureData.displayIcon = testStructureSprite;
 
                 StructureManager.instance.beginPlacement(newStructureData);
             }
@@ -101,7 +101,7 @@ namespace MiniJam159
             {
                 StructureData newStructureData = new StructureData();
                 newStructureData.structureType = StructureType.NEST;
-                newStructureData.size = new Vector2(5, 5);
+                newStructureData.size = new Vector3(5, 1, 5);
                 newStructureData.commands = new List<CommandType>();
 
                 newStructureData.commands.Add(CommandType.NULL);
@@ -119,7 +119,7 @@ namespace MiniJam159
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
 
-                newStructureData.displaySprite = testStructureSprite;
+                newStructureData.displayIcon = testStructureSprite;
 
                 StructureManager.instance.beginPlacement(newStructureData);
             }
@@ -128,10 +128,10 @@ namespace MiniJam159
         private void FixedUpdate()
         {
             // Camera panning
-            if (Input.mousePosition.x <= 0) CameraController.instance.panCamera(Vector2.left);
-            if (Input.mousePosition.x >= Screen.width) CameraController.instance.panCamera(Vector2.right);
-            if (Input.mousePosition.y >= Screen.height) CameraController.instance.panCamera(Vector2.up);
-            if (Input.mousePosition.y <= 0) CameraController.instance.panCamera(Vector2.down);
+            if (Input.mousePosition.x <= 0) CameraController.instance.panCamera(Vector3.left);
+            if (Input.mousePosition.x >= Screen.width) CameraController.instance.panCamera(Vector3.right);
+            if (Input.mousePosition.y >= Screen.height) CameraController.instance.panCamera(Vector3.forward);
+            if (Input.mousePosition.y <= 0) CameraController.instance.panCamera(Vector3.back);
 
             switch (PlayerModeManager.instance.playerMode)
             {
@@ -193,12 +193,12 @@ namespace MiniJam159
                     {
                         massSelectStartTimer += Time.deltaTime;
                         if (massSelectStartTimer >= SelectionManager.instance.massSelectDelay ||
-                            Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition) > SelectionManager.instance.massSelectMouseMoveDistance)
+                            Vector3.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition) > SelectionManager.instance.massSelectMouseMoveDistance)
                         {
                             // Start mass select
                             PlayerModeManager.instance.playerMode = PlayerMode.MASS_SELECT;
 
-                            Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition));
+                            Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector3.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition));
                         }
                     }
                     else
@@ -263,8 +263,7 @@ namespace MiniJam159
                 {
                     // Invoke move command method in ai using mouse position in world
                     Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
-                    Vector2 movementDestination = new Vector2(mousePositionInWorld.x, mousePositionInWorld.z);
-                    method.Invoke(ai, new object[] { movementDestination });
+                    method.Invoke(ai, new object[] { mousePositionInWorld });
                 }
             }
 

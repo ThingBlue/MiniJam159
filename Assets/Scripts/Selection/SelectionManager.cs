@@ -29,7 +29,7 @@ namespace MiniJam159.Selection
 
         #endregion
 
-        public Vector2 massSelectStartPosition;
+        public Vector3 massSelectStartPosition;
 
         public List<GameObject> selectedObjects;
 
@@ -177,7 +177,7 @@ namespace MiniJam159.Selection
                 // Hit the paernt ai
                 selectedObjects.Add(hitObject);
             }
-            if (hitObject.GetComponent<Structure>())
+            else if (hitObject.GetComponent<Structure>())
             {
                 // Hit the parent structure
                 selectedObjects.Add(hitObject);

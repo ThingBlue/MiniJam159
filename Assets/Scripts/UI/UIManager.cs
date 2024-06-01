@@ -143,7 +143,7 @@ namespace MiniJam159.UI
             {
                 GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
                 newDisplayBox.GetComponent<RectTransform>().localPosition = new Vector3(0f, displayCenterHeight, 0f);
-                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().structureData.displaySprite;
+                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().structureData.displayIcon;
 
                 // Set up button
                 SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();

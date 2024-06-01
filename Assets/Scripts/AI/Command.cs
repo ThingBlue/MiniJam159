@@ -67,7 +67,19 @@ namespace MiniJam159.AI
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HOLD_COMMAND;
         }
     }
-    public class BuildCommand : Command
+    public class HarvestCommand : Command
+    {
+        public override void initialize()
+        {
+            tooltip = "<b>Harvest</b>\nHarvests the target resource";
+        }
+
+        public override void execute()
+        {
+            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
+        }
+    }
+    public class BuildMenuCommand : Command
     {
         public override void initialize()
         {
@@ -79,16 +91,29 @@ namespace MiniJam159.AI
             // Open build menu
         }
     }
-    public class HarvestCommand : Command
+
+    public class BuildHiveCommand : Command
     {
         public override void initialize()
         {
-            tooltip = "<b>Harvest</b>\nHarvests the target resource";
+            tooltip = "<b>Build</b>\nOpens the build menu";
         }
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
+            // Open build menu
+        }
+    }
+    public class BuildWombCommand : Command
+    {
+        public override void initialize()
+        {
+            tooltip = "<b>Build</b>\nOpens the build menu";
+        }
+
+        public override void execute()
+        {
+            // Open build menu
         }
     }
 }

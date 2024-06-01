@@ -12,7 +12,7 @@ namespace MiniJam159.AI
         #endregion
 
         public static List<GameAI> allAIs = new List<GameAI>(); // List of all AI instances
-        protected Vector2 moveToPosition;
+        protected Vector3 moveToPosition;
         protected bool isMovingToPosition;
         protected float moveIgnoreTargetTimer; // Timer to ignore targets while moving
         protected const float moveIgnoreTargetDuration = 10f; // Duration to ignore targets while moving
@@ -44,17 +44,15 @@ namespace MiniJam159.AI
 
         protected void MoveTowardsPosition(float moveSpeed)
         {
-            Vector2 transformPosition = new Vector2(transform.position.x, transform.position.z);
-            Vector2 direction = (moveToPosition - transformPosition).normalized;
-            Vector2 moveTowardsDestination = Vector2.MoveTowards(transformPosition, moveToPosition, moveSpeed * Time.deltaTime);
-            transform.position = new Vector3(moveTowardsDestination.x, 0, moveTowardsDestination.y);
+            Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, moveToPosition, moveSpeed * Time.deltaTime);
+            transform.position = moveTowardsDestination;
 
             if (moveIgnoreTargetTimer <= 0)
             {
                 // Check for targets while moving if the ignore timer is not active
                 FindNearestTarget();
 
-                if (Target != null)
+                if (target != null)
                 {
                     isMovingToPosition = false;
                     return; // Stop moving to position if a target is found
@@ -62,36 +60,36 @@ namespace MiniJam159.AI
             }
 
             // Stop moving to position if reached
-            if (Vector2.Distance(transformPosition, moveToPosition) <= 0.5f)
+            if (Vector3.Distance(transform.position, moveToPosition) <= 0.5f)
             {
                 isMovingToPosition = false;
             }
         }
 
-        public void MoveTo(Vector2 position)
+        public void MoveTo(Vector3 position)
         {
             moveToPosition = position;
             isMovingToPosition = true;
-            Target = null; // Reset target
+            target = null; // Reset target
             moveIgnoreTargetTimer = moveIgnoreTargetDuration; // Start ignore target timer
         }
 
-        public virtual void moveAICommand(Vector2 position)
+        public virtual void moveAICommand(Vector3 position)
         {
             MoveTo(position);
         }
 
         public virtual void holdAICommand()
         {
-            Target = null; // Reset target
+            target = null; // Reset target
             
             // Stop moving to position if hold command is issued
             isMovingToPosition = false;
-            moveToPosition = new Vector2(transform.position.x, transform.position.z);
+            moveToPosition = transform.position;
         }
 
         protected abstract void FindNearestTarget();
 
-        protected Transform Target { get; set; } // Property to be implemented by subclasses
+        protected Transform target { get; set; } // Property to be implemented by subclasses
     }
 }
