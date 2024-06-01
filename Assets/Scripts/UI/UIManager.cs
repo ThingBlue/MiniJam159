@@ -23,8 +23,8 @@ namespace MiniJam159.UI
         public Sprite attackCommandSprite;
         public Sprite holdCommandSprite;
         public Sprite harvestCommandSprite;
-        public Sprite buildCommandSprite;
-        public Sprite cancelBuildCommandSprite;
+        public Sprite openBuildMenuCommandSprite;
+        public Sprite cancelBuildMenuCommandSprite;
 
         public Sprite buildNestCommandSprite;
         public Sprite buildWombCommandSprite;
@@ -119,11 +119,11 @@ namespace MiniJam159.UI
                     case CommandType.HARVEST:
                         newButtonObject.GetComponent<Image>().sprite = harvestCommandSprite;
                         break;
-                    case CommandType.BUILD:
-                        newButtonObject.GetComponent<Image>().sprite = buildCommandSprite;
+                    case CommandType.OPEN_BUILD_MENU:
+                        newButtonObject.GetComponent<Image>().sprite = openBuildMenuCommandSprite;
                         break;
-                    case CommandType.CANCEL_BUILD:
-                        newButtonObject.GetComponent<Image>().sprite = cancelBuildCommandSprite;
+                    case CommandType.CANCEL_BUILD_MENU:
+                        newButtonObject.GetComponent<Image>().sprite = cancelBuildMenuCommandSprite;
                         break;
 
                     case CommandType.BUILD_NEST:

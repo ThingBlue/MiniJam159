@@ -173,7 +173,7 @@ namespace MiniJam159.AI
             basePosition = newBasePosition;
         }
 
-        public void buildAICommand()
+        public void openBuildMenuAICommand()
         {
             // THERE MUST BE EXACTLY 11 STRUCTURE BUILD COMMANDS
             // Convert structure datas into commands
@@ -194,18 +194,12 @@ namespace MiniJam159.AI
                 }
             }
 
-            if (structureCommands.Count == 11) structureCommands.Add(CommandType.CANCEL_BUILD);
-            else if (structureCommands.Count == 12) structureCommands[11] = CommandType.CANCEL_BUILD;
+            if (structureCommands.Count == 11) structureCommands.Add(CommandType.CANCEL_BUILD_MENU);
+            else if (structureCommands.Count == 12) structureCommands[11] = CommandType.CANCEL_BUILD_MENU;
             else Debug.LogError("Build menu command count is not 12");
 
             // Populate command menu with buildable objects
             CommandManager.instance.populateCommands(structureCommands);
-        }
-
-        public void cancelBuildCommand(Vector3 structure)
-        {
-            // Populate command menu with standard commands
-            base.populateCommands();
         }
     }
 }

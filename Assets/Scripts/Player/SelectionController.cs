@@ -41,8 +41,8 @@ namespace MiniJam159.Player
         private void Start()
         {
             // Subscribe to events
-            EventManager.instance.buildCommandEvent.AddListener(onBuildCommandCallback);
-            EventManager.instance.cancelBuildCommandEvent.AddListener(onCancelBuildCommandCallback);
+            EventManager.instance.openBuildMenuCommandEvent.AddListener(onOpenBuildMenuCommandCallback);
+            EventManager.instance.cancelBuildMenuCommandEvent.AddListener(onCancelBuildMenuCommandCallback);
         }
 
         public void updateMassSelectBox()
@@ -325,7 +325,7 @@ namespace MiniJam159.Player
             }
         }
 
-        private void onBuildCommandCallback()
+        private void onOpenBuildMenuCommandCallback()
         {
             // First selected unit must be a worker
             if (SelectionManager.instance.selectedObjects.Count == 0) return;
@@ -337,7 +337,7 @@ namespace MiniJam159.Player
             if (selectedUnit == null) return;
 
             // Populate commands using worker's structure data list
-            MethodInfo method = selectedUnit.GetType().GetMethod("buildAICommand");
+            MethodInfo method = selectedUnit.GetType().GetMethod("openBuildMenuAICommand");
             if (method != null)
             {
                 // Invoke attack command method in ai using transform of target
@@ -345,7 +345,7 @@ namespace MiniJam159.Player
             }
         }
 
-        private void onCancelBuildCommandCallback()
+        private void onCancelBuildMenuCommandCallback()
         {
             populateCommands();
         }

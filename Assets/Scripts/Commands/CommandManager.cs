@@ -72,18 +72,18 @@ namespace MiniJam159.Commands
                     case CommandType.HARVEST:
                         newCommand = new HarvestCommand();
                         break;
-                    case CommandType.BUILD:
-                        newCommand = new BuildMenuCommand();
+                    case CommandType.OPEN_BUILD_MENU:
+                        newCommand = new OpenBuildMenuCommand();
                         break;
-                    case CommandType.CANCEL_BUILD:
-                        newCommand = new BuildMenuCommand();
+                    case CommandType.CANCEL_BUILD_MENU:
+                        newCommand = new CancelBuildMenuCommand();
                         break;
 
                     case CommandType.BUILD_NEST:
-                        newCommand = new BuildMenuCommand();
+                        newCommand = new BuildNestCommand();
                         break;
                     case CommandType.BUILD_WOMB:
-                        newCommand = new BuildMenuCommand();
+                        newCommand = new BuildWombCommand();
                         break;
                 }
                 newCommand.initialize();

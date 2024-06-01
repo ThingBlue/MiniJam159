@@ -88,7 +88,7 @@ namespace MiniJam159.Player
                 newStructureData.commands.Add(CommandType.NULL);
 
                 newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.BUILD);
+                newStructureData.commands.Add(CommandType.OPEN_BUILD_MENU);
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
 
@@ -108,7 +108,7 @@ namespace MiniJam159.Player
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.MOVE);
 
-                newStructureData.commands.Add(CommandType.BUILD);
+                newStructureData.commands.Add(CommandType.OPEN_BUILD_MENU);
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.ATTACK);

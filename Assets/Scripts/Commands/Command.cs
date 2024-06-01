@@ -16,8 +16,8 @@ namespace MiniJam159.Commands
         ATTACK,
         HOLD,
         HARVEST,
-        BUILD,
-        CANCEL_BUILD,
+        OPEN_BUILD_MENU,
+        CANCEL_BUILD_MENU,
 
         BUILD_NEST,
         BUILD_WOMB
@@ -86,7 +86,7 @@ namespace MiniJam159.Commands
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
         }
     }
-    public class BuildMenuCommand : Command
+    public class OpenBuildMenuCommand : Command
     {
         public override void initialize()
         {
@@ -95,7 +95,19 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            EventManager.instance.buildCommandEvent.Invoke();
+            EventManager.instance.openBuildMenuCommandEvent.Invoke();
+        }
+    }
+    public class CancelBuildMenuCommand : Command
+    {
+        public override void initialize()
+        {
+            tooltip = "<b>Cancel</b>\nCloses the build menu";
+        }
+
+        public override void execute()
+        {
+            EventManager.instance.cancelBuildMenuCommandEvent.Invoke();
         }
     }
 
@@ -103,11 +115,11 @@ namespace MiniJam159.Commands
 
     #region Building specific commands
 
-    public class BuildHiveCommand : Command
+    public class BuildNestCommand : Command
     {
         public override void initialize()
         {
-            tooltip = "<b>Hive</b>\nThe core of the colony.";
+            tooltip = "<b>Nest</b>\nThe core of the colony.";
         }
 
         public override void execute()
