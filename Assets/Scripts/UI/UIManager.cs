@@ -8,6 +8,7 @@ using MiniJam159.AICore;
 using MiniJam159.Commands;
 using MiniJam159.Structures;
 using MiniJam159.Selection;
+using MiniJam159.Player;
 
 namespace MiniJam159.UI
 {
@@ -156,7 +157,7 @@ namespace MiniJam159.UI
                 SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
                 newDisplayButton.selectedObjectName = selectedObjects[0].name;
                 newDisplayButton.selectedIndex = 0;
-                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => SelectionManager.instance.singleSelectObjectInList(newDisplayButton.selectedIndex));
+                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => SelectionController.instance.singleSelectObjectInList(newDisplayButton.selectedIndex));
 
                 displayBoxes.Add(newDisplayBox);
                 return;
@@ -209,7 +210,7 @@ namespace MiniJam159.UI
             CommandManager.instance.clearCommands();
 
             // Select new object
-            SelectionManager.instance.singleSelectObjectInList(index);
+            SelectionController.instance.singleSelectObjectInList(index);
         }
 
         private void onSelectionStart()
@@ -225,7 +226,7 @@ namespace MiniJam159.UI
 
         private void onPopulateCommandsStart()
         {
-            //clearCommandButtons();
+            clearCommandButtons();
         }
 
         private void onPopulateCommandsComplete()

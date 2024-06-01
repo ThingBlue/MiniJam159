@@ -34,6 +34,9 @@ namespace MiniJam159.Commands
             Debug.LogWarning("Attempted to execute a null command!");
         }
     }
+
+    #region General commands
+
     public class MoveCommand : Command
     {
         public override void initialize()
@@ -95,28 +98,35 @@ namespace MiniJam159.Commands
         }
     }
 
+    #endregion
+
+    #region Building specific commands
+
     public class BuildHiveCommand : Command
     {
         public override void initialize()
         {
-            tooltip = "<b>Build</b>\nOpens the build menu";
+            tooltip = "<b>Hive</b>\nThe core of the colony.";
         }
 
         public override void execute()
         {
-            // Open build menu
+            if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL) return;
         }
     }
     public class BuildWombCommand : Command
     {
         public override void initialize()
         {
-            tooltip = "<b>Build</b>\nOpens the build menu";
+            tooltip = "<b>Womb</b>\nBreeds basic offensive units.";
         }
 
         public override void execute()
         {
             // Open build menu
+            if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL) return;
         }
     }
+
+    #endregion
 }

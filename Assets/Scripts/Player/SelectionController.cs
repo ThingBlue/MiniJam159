@@ -1,17 +1,15 @@
-using MiniJam159;
-using MiniJam159.GameCore;
 using MiniJam159.AICore;
+using MiniJam159.GameCore;
+using MiniJam159.Selection;
 using MiniJam159.Structures;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using System;
 using UnityEngine.UI;
 
-namespace MiniJam159.Selection
+namespace MiniJam159.Player
 {
-    public class SelectionManager : MonoBehaviour
+    public class SelectionController : MonoBehaviour
     {
         #region Inspector members
 
@@ -24,143 +22,26 @@ namespace MiniJam159.Selection
 
         public float selectionRaycastDistance;
 
-        public Material defaultMaterial;
-        public Material selectedOutlineMaterial;
-
         #endregion
 
         public Vector3 massSelectStartPosition;
 
-        public List<GameObject> selectedObjects;
-
         // Singleton
-        public static SelectionManager instance;
+        public static SelectionController instance;
 
         private void Awake()
         {
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
-        }
 
-        private void Start()
-        {
-            selectedObjects = new List<GameObject>();
-        }
-
-        public void clearSelectedObjects()
-        {
-            // Clear outlines
-            foreach (GameObject selectedObject in selectedObjects)
-            {
-                MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
-                Material[] newMaterials = new Material[2];
-                renderer.materials.CopyTo(newMaterials, 0);
-                for (int i = 0; i < renderer.materials.Length; i++)
-                {
-                    if (renderer.materials[i].name == selectedOutlineMaterial.name + " (Instance)")
-                    {
-                        //renderer.materials[i] = defaultMaterial;
-                        newMaterials[i] = null;
-                    }
-                }
-                renderer.materials = newMaterials;
-            }
-
-            selectedObjects.Clear();
-        }
-
-        public void setSingleSelectObject()
-        {
-            if (selectedObjects.Count == 0 || selectedObjects[0] == null) return;
-            GameObject selectedObject = selectedObjects[0];
-
-            Debug.Log(selectedObject);
-
-            // Add outline
-            MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
-            Material[] newMaterials = renderer.materials;
-            bool hasOutlineMaterial = false;
-            for (int i = 0; i < newMaterials.Length; i++)
-            {
-                if (newMaterials[i].name == selectedOutlineMaterial.name + " (Instance)")
-                {
-                    hasOutlineMaterial = true;
-                    break;
-                }
-            }
-            if (!hasOutlineMaterial)
-            {
-                newMaterials[0] = new Material(selectedOutlineMaterial);
-                renderer.materials = newMaterials;
-            }
-
-            // Populate command menu using the first object in list
-            GameObject focusObject = selectedObjects[0];
-            if (focusObject == null) return;
-
-            if (focusObject.layer == LayerMask.NameToLayer("Unit"))
-            {
-                GameAI newUnit = focusObject.GetComponent<GameAI>();
-                newUnit.populateCommands();
-            }
-            else if (focusObject.layer == LayerMask.NameToLayer("Structure"))
-            {
-                Structure newStructure = focusObject.GetComponent<Structure>();
-                newStructure.populateCommands();
-            }
-        }
-
-        public void setMassSelectObjects()
-        {
-            if (selectedObjects.Count == 0) return;
-
-            // Add outlines
-            foreach (GameObject selectedObject in selectedObjects)
-            {
-                MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
-                Material[] newMaterials = renderer.materials;
-                bool hasOutlineMaterial = false;
-                for (int i = 0; i < newMaterials.Length; i++)
-                {
-                    if (newMaterials[i].name == selectedOutlineMaterial.name + " (Instance)")
-                    {
-                        hasOutlineMaterial = true;
-                        break;
-                    }
-                }
-                if (!hasOutlineMaterial)
-                {
-                    newMaterials[0] = new Material(selectedOutlineMaterial);
-                    renderer.materials = newMaterials;
-                }
-            }
-
-            // Populate command menu using the first unit in list
-            GameObject focusObject = selectedObjects[0];
-            if (focusObject == null) return;
-
-            if (focusObject.layer == LayerMask.NameToLayer("Unit"))
-            {
-                GameAI newUnit = focusObject.GetComponent<GameAI>();
-                newUnit.populateCommands();
-            }
-            // NOT ALLOWING MASS SELECT ON STRUCTURES FOR NOW
-            /*
-            else if (focusObject.layer == LayerMask.NameToLayer("Structure"))
-            {
-                StructureData structureData = focusObject.GetComponent<Structure>().structureData;
-
-                CommandManager.instance.populateCommands(structureData.commands);
-                UIManager.instance.populateCommandButtons();
-            }
-            */
+            massSelectStartPosition = Vector3.zero;
         }
 
         public void executeSingleSelect()
         {
             // Clear current selection regardless of if we hit amything
-            clearSelectedObjects();
+            SelectionManager.instance.clearSelectedObjects();
 
             EventManager.instance.selectionStartEvent.Invoke();
 
@@ -174,26 +55,42 @@ namespace MiniJam159.Selection
             if (hitObject.GetComponent<GameAI>())
             {
                 // Hit the paernt ai
-                selectedObjects.Add(hitObject);
+                SelectionManager.instance.selectedObjects.Add(hitObject);
             }
             else if (hitObject.GetComponent<Structure>())
             {
                 // Hit the parent structure
-                selectedObjects.Add(hitObject);
+                SelectionManager.instance.selectedObjects.Add(hitObject);
             }
             else
             {
                 // Hit the child
-                selectedObjects.Add(hitObject.transform.parent.gameObject);
+                SelectionManager.instance.selectedObjects.Add(hitObject.transform.parent.gameObject);
             }
-            setSingleSelectObject();
+            SelectionManager.instance.addOutlinesToSelectedObjects();
+
+            // Populate command menu using the first object in list
+            GameObject focusObject = SelectionManager.instance.selectedObjects[0];
+            if (focusObject == null) return;
+
+            if (focusObject.layer == LayerMask.NameToLayer("Unit"))
+            {
+                GameAI newUnit = focusObject.GetComponent<GameAI>();
+                newUnit.populateCommands();
+            }
+            else if (focusObject.layer == LayerMask.NameToLayer("Structure"))
+            {
+                Structure newStructure = focusObject.GetComponent<Structure>();
+                newStructure.populateCommands();
+            }
+
             EventManager.instance.selectionCompleteEvent.Invoke();
         }
 
         public void executeMassSelect()
         {
             // Clear current selection
-            clearSelectedObjects();
+            SelectionManager.instance.clearSelectedObjects();
 
             EventManager.instance.selectionStartEvent.Invoke();
 
@@ -358,10 +255,31 @@ namespace MiniJam159.Selection
                 if (!separated)
                 {
                     // Inside selection if not separated
-                    selectedObjects.Add(unitObject);
+                    SelectionManager.instance.selectedObjects.Add(unitObject);
                 }
             }
-            setMassSelectObjects();
+            SelectionManager.instance.addOutlinesToSelectedObjects();
+
+            // Populate command menu using the first unit in list
+            GameObject focusObject = SelectionManager.instance.selectedObjects[0];
+            if (focusObject == null) return;
+
+            if (focusObject.layer == LayerMask.NameToLayer("Unit"))
+            {
+                GameAI newUnit = focusObject.GetComponent<GameAI>();
+                newUnit.populateCommands();
+            }
+            // NOT ALLOWING MASS SELECT ON STRUCTURES FOR NOW
+            /*
+            else if (focusObject.layer == LayerMask.NameToLayer("Structure"))
+            {
+                StructureData structureData = focusObject.GetComponent<Structure>().structureData;
+
+                CommandManager.instance.populateCommands(structureData.commands);
+                UIManager.instance.populateCommandButtons();
+            }
+            */
+
             EventManager.instance.selectionCompleteEvent.Invoke();
 
             // Reset mass select
@@ -395,16 +313,31 @@ namespace MiniJam159.Selection
         public void singleSelectObjectInList(int index)
         {
             // Store the one object we want to keep
-            GameObject selectedObject = selectedObjects[index];
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[index];
 
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Clear list
-            clearSelectedObjects();
+            SelectionManager.instance.clearSelectedObjects();
 
             // Add object back in
-            selectedObjects.Add(selectedObject);
-            setSingleSelectObject();
+            SelectionManager.instance.selectedObjects.Add(selectedObject);
+            SelectionManager.instance.addOutlinesToSelectedObjects();
+
+            // Populate command menu using the first object in list
+            GameObject focusObject = SelectionManager.instance.selectedObjects[0];
+            if (focusObject == null) return;
+
+            if (focusObject.layer == LayerMask.NameToLayer("Unit"))
+            {
+                GameAI newUnit = focusObject.GetComponent<GameAI>();
+                newUnit.populateCommands();
+            }
+            else if (focusObject.layer == LayerMask.NameToLayer("Structure"))
+            {
+                Structure newStructure = focusObject.GetComponent<Structure>();
+                newStructure.populateCommands();
+            }
 
             EventManager.instance.selectionCompleteEvent.Invoke();
         }

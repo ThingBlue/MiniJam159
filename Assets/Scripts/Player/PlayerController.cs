@@ -1,6 +1,5 @@
 using MiniJam159.GameCore;
 using MiniJam159.Structures;
-using MiniJam159.UI;
 using MiniJam159.AICore;
 using MiniJam159.Selection;
 using MiniJam159.Commands;
@@ -12,7 +11,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace MiniJam159
+namespace MiniJam159.Player
 {
     public class PlayerController : MonoBehaviour
     {
@@ -162,7 +161,7 @@ namespace MiniJam159
                     break;
 
                 case PlayerMode.MASS_SELECT:
-                    SelectionManager.instance.updateMassSelectBox();
+                    SelectionController.instance.updateMassSelectBox();
 
                     if (mouse0Up)
                     {
@@ -170,7 +169,7 @@ namespace MiniJam159
                         CommandManager.instance.clearCommands();
 
                         // Execute mass select
-                        SelectionManager.instance.executeMassSelect();
+                        SelectionController.instance.executeMassSelect();
                     }
                     break;
 
@@ -178,7 +177,7 @@ namespace MiniJam159
                     // Set start position for mass select
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
                     {
-                        SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                        SelectionController.instance.massSelectStartPosition = Input.mousePosition;
                         canSelect = true;
                     }
                     if (mouse0Down && EventSystem.current.IsPointerOverGameObject())
@@ -189,22 +188,22 @@ namespace MiniJam159
                     if (InputManager.instance.getKey("Mouse0") && canSelect)
                     {
                         massSelectStartTimer += Time.deltaTime;
-                        if (massSelectStartTimer >= SelectionManager.instance.massSelectDelay ||
-                            Vector3.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition) > SelectionManager.instance.massSelectMouseMoveDistance)
+                        if (massSelectStartTimer >= SelectionController.instance.massSelectDelay ||
+                            Vector3.Distance(SelectionController.instance.massSelectStartPosition, Input.mousePosition) > SelectionController.instance.massSelectMouseMoveDistance)
                         {
                             // Start mass select
                             PlayerModeManager.instance.playerMode = PlayerMode.MASS_SELECT;
 
-                            Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector3.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition));
+                            Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector3.Distance(SelectionController.instance.massSelectStartPosition, Input.mousePosition));
                         }
                     }
                     else
                     {
                         // Reset mass select timer
                         massSelectStartTimer = 0.0f;
-                        SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                        SelectionController.instance.massSelectStartPosition = Input.mousePosition;
                     }
-                    SelectionManager.instance.updateMassSelectBox();
+                    SelectionController.instance.updateMassSelectBox();
 
                     // Execute single select
                     if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject())
@@ -212,7 +211,7 @@ namespace MiniJam159
                         // Clear commands
                         CommandManager.instance.clearCommands();
 
-                        SelectionManager.instance.executeSingleSelect();
+                        SelectionController.instance.executeSingleSelect();
                     }
 
                     // Movement commands
@@ -231,7 +230,7 @@ namespace MiniJam159
             // Don't allow start of mass select when occupied
             if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL && PlayerModeManager.instance.playerMode != PlayerMode.MASS_SELECT)
             {
-                SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                SelectionController.instance.massSelectStartPosition = Input.mousePosition;
                 canSelect = false;
             }
 

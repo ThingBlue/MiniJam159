@@ -31,6 +31,8 @@ namespace MiniJam159.GameCore
         public UnityEvent populateCommandsStartEvent;
         public UnityEvent populateCommandsCompleteEvent;
 
+        public UnityEvent buildStructureEvent;
+
         #endregion
 
         private void Awake()

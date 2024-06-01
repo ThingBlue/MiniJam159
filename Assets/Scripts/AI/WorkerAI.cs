@@ -7,6 +7,16 @@ using MiniJam159.Structures;
 
 namespace MiniJam159.AI
 {
+    public enum WorkerJob
+    {
+        IDLE = 0,
+        MOVE_TO_POSITION,
+        RETURN_TO_BASE,
+        HARVEST_RESOURCE,
+        ATTACK,
+        BUILD
+    }
+
     public class WorkerAI : GroundMeleeAI
     {
         #region Inspector members
