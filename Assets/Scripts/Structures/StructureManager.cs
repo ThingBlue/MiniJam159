@@ -58,6 +58,7 @@ namespace MiniJam159
                 previousInPlacementMode = inPlacementMode;
             }
 
+            // Update during placement mode
             if (inPlacementMode)
             {
                 Vector3 mousePosition = InputManager.instance.getMousePositionInWorld();
@@ -124,11 +125,11 @@ namespace MiniJam159
             );
 
             // Check if placement location is valid
-            if (!placementBlocked(startPosition))
+            if (!isPlacementBlocked(startPosition))
             {
                 // Complete placement
                 PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-                GridManager.instance.occupyCells(startPosition, placementStructureData.size);
+                GridManager.instance.occupyCells(startPosition, placementStructureData.size, CellType.BUILDING);
 
                 // Instantiate strucutre
                 GameObject newStructureObject = null;
@@ -174,14 +175,14 @@ namespace MiniJam159
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
-        private bool placementBlocked(Vector3 startPosition)
+        private bool isPlacementBlocked(Vector3 startPosition)
         {
             for (int i = 0; i < placementStructureData.size.x; i++)
             {
                 for (int j = 0; j < placementStructureData.size.z; j++)
                 {
                     if ((int)startPosition.x + i < 0 || (int)startPosition.z + j < 0 ||
-                        (int)startPosition.x + i >= GridManager.instance.mapXLength || (int)startPosition.z + j >= GridManager.instance.mapXLength ||
+                        (int)startPosition.x + i >= GridManager.instance.mapXLength || (int)startPosition.z + j >= GridManager.instance.mapZLength ||
                         GridManager.instance.isCellOccupied((int)startPosition.x + i, (int)startPosition.z + j))
                     {
                         return true;
