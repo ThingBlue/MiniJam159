@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using MiniJam159.GameCore;
 
-namespace MiniJam159.AI
+namespace MiniJam159.Commands
 {
     public enum CommandType
     {
@@ -15,8 +15,12 @@ namespace MiniJam159.AI
         MOVE,
         ATTACK,
         HOLD,
-        BUILD,
-        HARVEST
+        HARVEST,
+        OPEN_BUILD_MENU,
+        CANCEL_BUILD_MENU,
+
+        BUILD_NEST,
+        BUILD_WOMB
     }
 
     public class Command
@@ -31,6 +35,9 @@ namespace MiniJam159.AI
             Debug.LogWarning("Attempted to execute a null command!");
         }
     }
+
+    #region General commands
+
     public class MoveCommand : Command
     {
         public override void initialize()
@@ -64,19 +71,7 @@ namespace MiniJam159.AI
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HOLD_COMMAND;
-        }
-    }
-    public class BuildCommand : Command
-    {
-        public override void initialize()
-        {
-            tooltip = "<b>Build</b>\nOpens the build menu";
-        }
-
-        public override void execute()
-        {
-            // Open build menu
+            EventManager.instance.holdCommandEvent.Invoke();
         }
     }
     public class HarvestCommand : Command
@@ -91,4 +86,60 @@ namespace MiniJam159.AI
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
         }
     }
+    public class OpenBuildMenuCommand : Command
+    {
+        public override void initialize()
+        {
+            tooltip = "<b>Build</b>\nOpens the build menu";
+        }
+
+        public override void execute()
+        {
+            EventManager.instance.openBuildMenuCommandEvent.Invoke();
+        }
+    }
+    public class CancelBuildMenuCommand : Command
+    {
+        public override void initialize()
+        {
+            tooltip = "<b>Cancel</b>\nCloses the build menu";
+        }
+
+        public override void execute()
+        {
+            EventManager.instance.cancelBuildMenuCommandEvent.Invoke();
+        }
+    }
+
+    #endregion
+
+    #region Building specific commands
+
+    public class BuildNestCommand : Command
+    {
+        public override void initialize()
+        {
+            tooltip = "<b>Nest</b>\nThe core of the colony.";
+        }
+
+        public override void execute()
+        {
+            if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL) return;
+        }
+    }
+    public class BuildWombCommand : Command
+    {
+        public override void initialize()
+        {
+            tooltip = "<b>Womb</b>\nBreeds basic offensive units.";
+        }
+
+        public override void execute()
+        {
+            // Open build menu
+            if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL) return;
+        }
+    }
+
+    #endregion
 }

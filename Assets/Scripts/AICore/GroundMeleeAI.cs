@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using MiniJam159.GameCore;
 
-namespace MiniJam159.AI
+namespace MiniJam159.AICore
 {
     public class GroundMeleeAI : GameAI
     {
@@ -23,6 +24,9 @@ namespace MiniJam159.AI
             base.Start();
             attackTimer = 0f;
             isLeader = false;
+
+            // Subscribe to events
+            EventManager.instance.holdCommandEvent.AddListener(onHoldCommandCallback);
         }
 
         private void Update()
@@ -46,17 +50,17 @@ namespace MiniJam159.AI
             }
             else
             {
-                if (Target == null)
+                if (target == null)
                 {
                     FindNearestTarget();
                 }
 
-                if (Target == null)
+                if (target == null)
                 {
                     return; // No target found, do nothing
                 }
 
-                float distanceToTarget = Vector3.Distance(transform.position, Target.position);
+                float distanceToTarget = Vector3.Distance(transform.position, target.position);
 
                 if (distanceToTarget <= attackRange)
                 {
@@ -88,6 +92,7 @@ namespace MiniJam159.AI
                 return; // Ignore finding targets if timer is active
             }
 
+            // EDIT EDIT EDIT
             Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
             float nearestDistance = Mathf.Infinity;
             Transform nearestTarget = null;
@@ -96,7 +101,7 @@ namespace MiniJam159.AI
             {
                 if (hitCollider.CompareTag(targetTag))
                 {
-                    float distanceToTarget = Vector2.Distance(transform.position, hitCollider.transform.position);
+                    float distanceToTarget = Vector3.Distance(transform.position, hitCollider.transform.position);
                     if (distanceToTarget < nearestDistance)
                     {
                         nearestDistance = distanceToTarget;
@@ -105,10 +110,10 @@ namespace MiniJam159.AI
                 }
             }
 
-            Target = nearestTarget;
+            target = nearestTarget;
 
             // Assign leader dynamically
-            if (Target != null)
+            if (target != null)
             {
                 AssignLeader();
             }
@@ -116,25 +121,20 @@ namespace MiniJam159.AI
 
         void MoveTowardsSurroundPosition()
         {
-            Vector2 transformPosition = new Vector2(transform.position.x, transform.position.z);
-            Vector2 surroundPosition = GetSurroundPosition();
-            Vector2 direction = (surroundPosition - transformPosition).normalized;
-            Vector2 moveTowardsResult = Vector2.MoveTowards(transformPosition, surroundPosition, moveSpeed * Time.deltaTime);
-            transform.position = new Vector3(moveTowardsResult.x, 0, moveTowardsResult.y);
+            Vector3 surroundPosition = GetSurroundPosition();
+            Vector3 direction = (surroundPosition - transform.position).normalized;
+            transform.position = Vector3.MoveTowards(transform.position, surroundPosition, moveSpeed * Time.deltaTime);
         }
 
-        Vector2 GetSurroundPosition()
+        Vector3 GetSurroundPosition()
         {
-            if (Target == null)
-            {
-                return new Vector2(transform.position.x, transform.position.z);
-            }
+            if (target == null) return transform.position;
 
             // Filter the list of activeAIs to include only those targeting the same target
-            List<GroundMeleeAI> sameTargetAIs = GameAI.allAIs.OfType<GroundMeleeAI>().Where(ai => ai.Target == this.Target).ToList();
+            List<GroundMeleeAI> sameTargetAIs = GameAI.allAIs.OfType<GroundMeleeAI>().Where(ai => ai.target == this.target).ToList();
 
             // Default offset for single attacker
-            Vector2 offset = new Vector2(Mathf.Cos(0), Mathf.Sin(0)) * surroundDistance; ;
+            Vector3 offset = new Vector3(Mathf.Cos(0), 0, Mathf.Sin(0)) * surroundDistance;
             if (sameTargetAIs.Count > 1)
             {
                 // Calculate offset for multiple attackers
@@ -144,9 +144,9 @@ namespace MiniJam159.AI
                 float angleIncrement = 270f / (totalAIs - 1); // 270 degrees spread over number of AIs
                 float angle = -135f + (aiIndex * angleIncrement); // Start at -135 degrees to +135 degrees
 
-                offset = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * surroundDistance;
+                offset = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), 0, Mathf.Sin(angle * Mathf.Deg2Rad)) * surroundDistance;
             }
-            return new Vector2(Target.position.x, Target.position.z) + offset;
+            return target.position + offset;
         }
 
         void Attack()
@@ -164,7 +164,7 @@ namespace MiniJam159.AI
         {
             foreach (var ai in GameAI.allAIs.OfType<GroundMeleeAI>())
             {
-                if (ai.Target == this.Target && Vector2.Distance(transform.position, ai.transform.position) <= coordinationRadius)
+                if (ai.target == this.target && Vector3.Distance(transform.position, ai.transform.position) <= coordinationRadius)
                 {
                     ai.Attack();
                 }
@@ -178,9 +178,9 @@ namespace MiniJam159.AI
 
             foreach (var ai in GameAI.allAIs.OfType<GroundMeleeAI>())
             {
-                if (ai.Target == this.Target)
+                if (ai.target == this.target)
                 {
-                    float distanceToTarget = Vector2.Distance(ai.transform.position, Target.position);
+                    float distanceToTarget = Vector3.Distance(ai.transform.position, target.position);
                     if (distanceToTarget < minDistance)
                     {
                         minDistance = distanceToTarget;
@@ -204,8 +204,13 @@ namespace MiniJam159.AI
 
         public virtual void attackAICommand(Transform newTarget)
         {
-            Target = newTarget;
+            target = newTarget;
             isMovingToPosition = false;
+        }
+
+        protected virtual void onHoldCommandCallback()
+        {
+            holdAICommand();
         }
 
         void OnDrawGizmosSelected()

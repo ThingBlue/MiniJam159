@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using MiniJam159.AI;
 
 namespace MiniJam159.UI
 {

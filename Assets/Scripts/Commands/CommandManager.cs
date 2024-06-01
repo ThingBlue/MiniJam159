@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MiniJam159.GameCore;
 
-namespace MiniJam159.AI
+namespace MiniJam159.Commands
 {
     public class CommandManager : MonoBehaviour
     {
@@ -42,6 +42,8 @@ namespace MiniJam159.AI
         {
             activeCommands.Clear();
 
+            EventManager.instance.populateCommandsStartEvent.Invoke();
+
             // Create new ui
             for (int i = 0; i < newCommandTypes.Count; i++)
             {
@@ -67,17 +69,29 @@ namespace MiniJam159.AI
                     case CommandType.HOLD:
                         newCommand = new HoldCommand();
                         break;
-                    case CommandType.BUILD:
-                        newCommand = new BuildCommand();
-                        break;
                     case CommandType.HARVEST:
                         newCommand = new HarvestCommand();
+                        break;
+                    case CommandType.OPEN_BUILD_MENU:
+                        newCommand = new OpenBuildMenuCommand();
+                        break;
+                    case CommandType.CANCEL_BUILD_MENU:
+                        newCommand = new CancelBuildMenuCommand();
+                        break;
+
+                    case CommandType.BUILD_NEST:
+                        newCommand = new BuildNestCommand();
+                        break;
+                    case CommandType.BUILD_WOMB:
+                        newCommand = new BuildWombCommand();
                         break;
                 }
                 newCommand.initialize();
                 newCommand.commandType = newCommandTypes[i];
                 activeCommands.Add(newCommand);
             }
+
+            EventManager.instance.populateCommandsCompleteEvent.Invoke();
         }
     }
 }

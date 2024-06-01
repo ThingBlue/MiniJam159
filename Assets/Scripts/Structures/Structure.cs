@@ -1,32 +1,81 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MiniJam159.AI;
+using System;
+using MiniJam159.Commands;
 
 namespace MiniJam159.Structures
 {
+    public enum StructureType
+    {
+        NULL = 0,
+        NEST,
+        WOMB
+    }
+
+    [Serializable]
     public class StructureData
     {
-        public Vector2 position;
-        public Vector2 size;
+        public StructureType structureType;
+
+        public Vector3 position;
+        public Vector3 size;
 
         public float maxHealth;
-        public float health;
-
         public float contructionTime;
 
         public List<CommandType> commands;
 
-        public Sprite displaySprite;
+        public Sprite displayIcon;
+
+        public StructureData()
+        {
+            commands = new List<CommandType>();
+        }
+
+        public StructureData(StructureData other)
+        {
+            structureType = other.structureType;
+            position = other.position;
+            size = other.size;
+            maxHealth = other.maxHealth;
+            contructionTime = other.contructionTime;
+            commands = new List<CommandType>(other.commands);
+            displayIcon = other.displayIcon;
+        }
     }
 
     public class Structure : MonoBehaviour
     {
+        #region Inspector members
+
         public StructureData structureData;
 
-        private void Awake()
+        #endregion
+
+        public float health;
+
+        protected virtual void Awake()
         {
             structureData = new StructureData();
+
+            // Resize blocked tiles
+        }
+
+        public virtual void populateCommands()
+        {
+            CommandManager.instance.populateCommands(structureData.commands);
         }
     }
+
+    public class NestStructure : Structure
+    {
+
+    }
+
+    public class WombStructure : Structure
+    {
+
+    }
+
 }

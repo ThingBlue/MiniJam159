@@ -1,17 +1,16 @@
 using MiniJam159.GameCore;
 using MiniJam159.Structures;
-using MiniJam159.UI;
-using MiniJam159.AI;
-using MiniJam159.Selection;
+using MiniJam159.AICore;
+using MiniJam159.Commands;
+using MiniJam159.Resources;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using MiniJam159.Resources;
 
-namespace MiniJam159
+namespace MiniJam159.Player
 {
     public class PlayerController : MonoBehaviour
     {
@@ -74,7 +73,8 @@ namespace MiniJam159
             if (InputManager.instance.getKeyDown("PlacementTest"))
             {
                 StructureData newStructureData = new StructureData();
-                newStructureData.size = new Vector2(2, 3);
+                newStructureData.structureType = StructureType.NULL;
+                newStructureData.size = new Vector3(2, 1, 3);
                 newStructureData.commands = new List<CommandType>();
 
                 newStructureData.commands.Add(CommandType.MOVE);
@@ -88,18 +88,19 @@ namespace MiniJam159
                 newStructureData.commands.Add(CommandType.NULL);
 
                 newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.BUILD);
+                newStructureData.commands.Add(CommandType.OPEN_BUILD_MENU);
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
 
-                newStructureData.displaySprite = testStructureSprite;
+                newStructureData.displayIcon = testStructureSprite;
 
                 StructureManager.instance.beginPlacement(newStructureData);
             }
             if (InputManager.instance.getKeyDown("PlacementTest2"))
             {
                 StructureData newStructureData = new StructureData();
-                newStructureData.size = new Vector2(6, 4);
+                newStructureData.structureType = StructureType.NEST;
+                newStructureData.size = new Vector3(5, 1, 5);
                 newStructureData.commands = new List<CommandType>();
 
                 newStructureData.commands.Add(CommandType.NULL);
@@ -107,7 +108,7 @@ namespace MiniJam159
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.MOVE);
 
-                newStructureData.commands.Add(CommandType.BUILD);
+                newStructureData.commands.Add(CommandType.OPEN_BUILD_MENU);
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.ATTACK);
@@ -117,7 +118,7 @@ namespace MiniJam159
                 newStructureData.commands.Add(CommandType.NULL);
                 newStructureData.commands.Add(CommandType.NULL);
 
-                newStructureData.displaySprite = testStructureSprite;
+                newStructureData.displayIcon = testStructureSprite;
 
                 StructureManager.instance.beginPlacement(newStructureData);
             }
@@ -126,10 +127,10 @@ namespace MiniJam159
         private void FixedUpdate()
         {
             // Camera panning
-            if (Input.mousePosition.x <= 0) CameraController.instance.panCamera(Vector2.left);
-            if (Input.mousePosition.x >= Screen.width) CameraController.instance.panCamera(Vector2.right);
-            if (Input.mousePosition.y >= Screen.height) CameraController.instance.panCamera(Vector2.up);
-            if (Input.mousePosition.y <= 0) CameraController.instance.panCamera(Vector2.down);
+            if (Input.mousePosition.x <= 0) CameraController.instance.panCamera(Vector3.left);
+            if (Input.mousePosition.x >= Screen.width) CameraController.instance.panCamera(Vector3.right);
+            if (Input.mousePosition.y >= Screen.height) CameraController.instance.panCamera(Vector3.forward);
+            if (Input.mousePosition.y <= 0) CameraController.instance.panCamera(Vector3.back);
 
             switch (PlayerModeManager.instance.playerMode)
             {
@@ -154,12 +155,8 @@ namespace MiniJam159
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMoveTarget();
                     break;
 
-                case PlayerMode.HOLD_COMMAND:
-                    executeHoldCommand();
-                    break;
-
                 case PlayerMode.MASS_SELECT:
-                    SelectionManager.instance.updateMassSelectBox();
+                    SelectionController.instance.updateMassSelectBox();
 
                     if (mouse0Up)
                     {
@@ -167,11 +164,7 @@ namespace MiniJam159
                         CommandManager.instance.clearCommands();
 
                         // Execute mass select
-                        SelectionManager.instance.executeMassSelect();
-
-                        // Update UI
-                        UIManager.instance.showSelectedObjects(SelectionManager.instance.selectedObjects);
-                        UIManager.instance.populateCommandButtons();
+                        SelectionController.instance.executeMassSelect();
                     }
                     break;
 
@@ -179,7 +172,7 @@ namespace MiniJam159
                     // Set start position for mass select
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
                     {
-                        SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                        SelectionController.instance.massSelectStartPosition = Input.mousePosition;
                         canSelect = true;
                     }
                     if (mouse0Down && EventSystem.current.IsPointerOverGameObject())
@@ -190,22 +183,22 @@ namespace MiniJam159
                     if (InputManager.instance.getKey("Mouse0") && canSelect)
                     {
                         massSelectStartTimer += Time.deltaTime;
-                        if (massSelectStartTimer >= SelectionManager.instance.massSelectDelay ||
-                            Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition) > SelectionManager.instance.massSelectMouseMoveDistance)
+                        if (massSelectStartTimer >= SelectionController.instance.massSelectDelay ||
+                            Vector3.Distance(SelectionController.instance.massSelectStartPosition, Input.mousePosition) > SelectionController.instance.massSelectMouseMoveDistance)
                         {
                             // Start mass select
                             PlayerModeManager.instance.playerMode = PlayerMode.MASS_SELECT;
 
-                            Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector2.Distance(SelectionManager.instance.massSelectStartPosition, Input.mousePosition));
+                            Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector3.Distance(SelectionController.instance.massSelectStartPosition, Input.mousePosition));
                         }
                     }
                     else
                     {
                         // Reset mass select timer
                         massSelectStartTimer = 0.0f;
-                        SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                        SelectionController.instance.massSelectStartPosition = Input.mousePosition;
                     }
-                    SelectionManager.instance.updateMassSelectBox();
+                    SelectionController.instance.updateMassSelectBox();
 
                     // Execute single select
                     if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject())
@@ -213,11 +206,7 @@ namespace MiniJam159
                         // Clear commands
                         CommandManager.instance.clearCommands();
 
-                        SelectionManager.instance.executeSingleSelect();
-
-                        // Update UI
-                        UIManager.instance.showSelectedObjects(SelectionManager.instance.selectedObjects);
-                        UIManager.instance.populateCommandButtons();
+                        SelectionController.instance.executeSingleSelect();
                     }
 
                     // Movement commands
@@ -236,7 +225,7 @@ namespace MiniJam159
             // Don't allow start of mass select when occupied
             if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL && PlayerModeManager.instance.playerMode != PlayerMode.MASS_SELECT)
             {
-                SelectionManager.instance.massSelectStartPosition = Input.mousePosition;
+                SelectionController.instance.massSelectStartPosition = Input.mousePosition;
                 canSelect = false;
             }
 
@@ -261,8 +250,7 @@ namespace MiniJam159
                 {
                     // Invoke move command method in ai using mouse position in world
                     Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
-                    Vector2 movementDestination = new Vector2(mousePositionInWorld.x, mousePositionInWorld.z);
-                    method.Invoke(ai, new object[] { movementDestination });
+                    method.Invoke(ai, new object[] { mousePositionInWorld });
                 }
             }
 
@@ -296,27 +284,6 @@ namespace MiniJam159
             }
 
             // Finish attack command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-        }
-
-        public void executeHoldCommand()
-        {
-            // Invoke command on all selected units
-            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
-            {
-                // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
-                if (ai == null) continue;
-
-                MethodInfo method = ai.GetType().GetMethod("holdAICommand");
-                if (method != null)
-                {
-                    // Invoke command method in ai
-                    method.Invoke(ai, new object[] { });
-                }
-            }
-
-            // Finish command
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 

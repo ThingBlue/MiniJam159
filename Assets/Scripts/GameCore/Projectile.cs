@@ -5,10 +5,10 @@ namespace MiniJam159.GameCore
     public class Projectile : MonoBehaviour
     {
         public float speed = 10f;
-        private Vector2 targetPosition;
+        private Vector3 targetPosition;
         private int damage;
 
-        public void Initialize(Vector2 target, int damageAmount)
+        public void Initialize(Vector3 target, int damageAmount)
         {
             targetPosition = target;
             damage = damageAmount;
@@ -16,16 +16,17 @@ namespace MiniJam159.GameCore
 
         void Update()
         {
-            Vector2 direction = (targetPosition - (Vector2)transform.position).normalized;
-            transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+            Vector3 direction = (targetPosition - transform.position).normalized;
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
 
-            if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
+            if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
                 Destroy(gameObject);
                 // Handle collision with target and apply damage
             }
         }
 
+        // EDIT EDIT EDIT
         void OnTriggerEnter2D(Collider2D other)
         {
             // Apply damage

@@ -1,9 +1,24 @@
 using UnityEngine;
 using System.Collections.Generic;
 using MiniJam159.Resources;
+using MiniJam159.AICore;
+using MiniJam159.Commands;
+using MiniJam159.Structures;
+using MiniJam159.GameCore;
+using System.Linq;
 
 namespace MiniJam159.AI
 {
+    public enum WorkerJob
+    {
+        IDLE = 0,
+        MOVE_TO_POSITION,
+        RETURN_TO_BASE,
+        HARVEST_RESOURCE,
+        ATTACK,
+        BUILD
+    }
+
     public class WorkerAI : GroundMeleeAI
     {
         #region Inspector members
@@ -11,9 +26,11 @@ namespace MiniJam159.AI
         public float harvestRange = 2f;
         public float depositRange = 2f;
 
+        public StructureDataList structureDataList;
+
         #endregion
 
-        public Vector2 basePosition; // Base location to return resources
+        public Vector3 basePosition; // Base location to return resources
         private IResource currentResource; // Current resource being harvested
         private bool isReturningToBase = false; // Flag to check if returning to base
         private float carriedResources = 0; // Amount of resources currently carried
@@ -66,7 +83,7 @@ namespace MiniJam159.AI
             isReturningToBase = false;
         }
 
-        public void ReturnToBase(Vector2 basePosition)
+        public void ReturnToBase(Vector3 basePosition)
         {
             this.basePosition = basePosition;
             isReturningToBase = true;
@@ -79,10 +96,9 @@ namespace MiniJam159.AI
                 ReturnToBase(basePosition);
             }
 
-            Vector3 resourcePosition = new Vector3(currentResource.position.x, 0, currentResource.position.y);
-            transform.position = Vector3.MoveTowards(transform.position, resourcePosition, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, currentResource.position, moveSpeed * Time.deltaTime);
 
-            if (Vector3.Distance(transform.position, resourcePosition) <= harvestRange)
+            if (Vector3.Distance(transform.position, currentResource.position) <= harvestRange)
             {
                 if (currentResource == null || currentResource.resourceAmount <= 0)
                 {
@@ -99,9 +115,9 @@ namespace MiniJam159.AI
 
         private void MoveTowardsBase()
         {
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(basePosition.x, 0, basePosition.y), moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, basePosition, moveSpeed * Time.deltaTime);
 
-            if (Vector3.Distance(transform.position, new Vector3(basePosition.x, 0, basePosition.y)) < depositRange)
+            if (Vector3.Distance(transform.position, basePosition) < depositRange)
             {
                 // Deposit resources
                 DepositResources();
@@ -116,7 +132,7 @@ namespace MiniJam159.AI
             carriedResources = 0;
         }
 
-        public override void moveAICommand(Vector2 position)
+        public override void moveAICommand(Vector3 position)
         {
             // Reset any harvesting state
             currentResource = null;
@@ -152,14 +168,38 @@ namespace MiniJam159.AI
             HarvestResource(newResource);
         }
 
-        public void setBasePosition(Vector2 newBasePosition)
+        public void setBasePosition(Vector3 newBasePosition)
         {
             basePosition = newBasePosition;
         }
 
-        public void buildAICommand(Vector2 structure)
+        public void openBuildMenuAICommand()
         {
+            // THERE MUST BE EXACTLY 11 STRUCTURE BUILD COMMANDS
+            // Convert structure datas into commands
+            List<CommandType> structureCommands = new List<CommandType>();
+            foreach (StructureData structureData in structureDataList.structureDatas)
+            {
+                switch (structureData.structureType)
+                {
+                    case StructureType.NEST:
+                        structureCommands.Add(CommandType.BUILD_NEST);
+                        break;
+                    case StructureType.WOMB:
+                        structureCommands.Add(CommandType.BUILD_WOMB);
+                        break;
+                    case StructureType.NULL:
+                        structureCommands.Add(CommandType.NULL);
+                        break;
+                }
+            }
 
+            if (structureCommands.Count == 11) structureCommands.Add(CommandType.CANCEL_BUILD_MENU);
+            else if (structureCommands.Count == 12) structureCommands[11] = CommandType.CANCEL_BUILD_MENU;
+            else Debug.LogError("Build menu command count is not 12");
+
+            // Populate command menu with buildable objects
+            CommandManager.instance.populateCommands(structureCommands);
         }
     }
 }

@@ -6,9 +6,10 @@ namespace MiniJam159.GameCore
 {
     public enum CellType
     {
-        Empty = 0,
-        Building = 1,
-        Resource = 2
+        EMPTY = 0,
+        BUILDING,
+        RESOURCE,
+        OBSTRUCTION
     }
 
     public class GridManager : MonoBehaviour
@@ -40,7 +41,7 @@ namespace MiniJam159.GameCore
                 List<CellType> newList = new List<CellType>();
                 for (int j = 0; j < mapXLength; j++)
                 {
-                    newList.Add(CellType.Empty);
+                    newList.Add(CellType.EMPTY);
                 }
                 gridMatrix.Add(newList);
             }
@@ -53,16 +54,27 @@ namespace MiniJam159.GameCore
                 throw new System.Exception("Invalid cell position");
             }
 
-            return gridMatrix[z][x] != CellType.Empty;
+            return gridMatrix[z][x] != CellType.EMPTY;
         }
 
-        public void occupyCells(Vector2 startPosition, Vector2 size, CellType occupationType = CellType.Building)
+        public void occupyCells(Vector2 startPosition, Vector2 size, CellType occupationType = CellType.BUILDING)
         {
             for (int i = 0; i < size.x; i++)
             {
                 for (int j = 0; j < size.y; j++)
                 {
                     gridMatrix[(int)startPosition.y + j][(int)startPosition.x + i] = occupationType;
+                }
+            }
+        }
+
+        public void occupyCells(Vector3 startPosition, Vector3 size, CellType occupationType = CellType.BUILDING)
+        {
+            for (int i = 0; i < size.x; i++)
+            {
+                for (int j = 0; j < size.z; j++)
+                {
+                    gridMatrix[(int)startPosition.z + j][(int)startPosition.x + i] = occupationType;
                 }
             }
         }

@@ -44,8 +44,8 @@ namespace MiniJam159.GameCore
         private void Start()
         {
             // Subscribe to events
-            EventManager.instance.pauseEvent.AddListener(onPause);
-            EventManager.instance.unpauseEvent.AddListener(onUnpause);
+            EventManager.instance.pauseEvent.AddListener(onPauseCallback);
+            EventManager.instance.unpauseEvent.AddListener(onUnpauseCallback);
 
             // Apply keybinds
             applyKeybinds();
@@ -74,14 +74,14 @@ namespace MiniJam159.GameCore
 
         #region Event system callbacks
 
-        private void onPause()
+        private void onPauseCallback()
         {
             gameState = GameState.PAUSED;
             timeScaleBeforePause = Time.timeScale;
             Time.timeScale = 0;
         }
 
-        private void onUnpause()
+        private void onUnpauseCallback()
         {
             gameState = GameState.GAME;
             Time.timeScale = timeScaleBeforePause;

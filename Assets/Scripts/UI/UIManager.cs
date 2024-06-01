@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using MiniJam159.GameCore;
-using MiniJam159.AI;
+using MiniJam159.AICore;
+using MiniJam159.Commands;
 using MiniJam159.Structures;
-using MiniJam159.Selection;
+using MiniJam159.Player;
 
 namespace MiniJam159.UI
 {
@@ -21,8 +22,12 @@ namespace MiniJam159.UI
         public Sprite moveCommandSprite;
         public Sprite attackCommandSprite;
         public Sprite holdCommandSprite;
-        public Sprite buildCommandSprite;
         public Sprite harvestCommandSprite;
+        public Sprite openBuildMenuCommandSprite;
+        public Sprite cancelBuildMenuCommandSprite;
+
+        public Sprite buildNestCommandSprite;
+        public Sprite buildWombCommandSprite;
 
         public GameObject displayPanel;
         public GameObject displayBoxPrefab;
@@ -47,6 +52,15 @@ namespace MiniJam159.UI
             displayPanel.SetActive(false);
         }
 
+        private void Start()
+        {
+            // Subscribe to events
+            EventManager.instance.selectionStartEvent.AddListener(onSelectionStartCallback);
+            EventManager.instance.selectionCompleteEvent.AddListener(onSelectionCompleteCallback);
+            EventManager.instance.populateCommandsStartEvent.AddListener(onPopulateCommandsStartCallback);
+            EventManager.instance.populateCommandsCompleteEvent.AddListener(onPopulateCommandsCompleteCallback);
+        }
+
         private void Update()
         {
             // Calculate display panel background size and position
@@ -68,9 +82,7 @@ namespace MiniJam159.UI
 
         public void populateCommandButtons()
         {
-            clearCommandButtons();
-
-            // Create new ui
+            // Create new ui and populate command buttons
             for (int i = 0; i < CommandManager.instance.activeCommands.Count; i++)
             {
                 Command activeCommand = CommandManager.instance.activeCommands[i];
@@ -104,11 +116,21 @@ namespace MiniJam159.UI
                     case CommandType.HOLD:
                         newButtonObject.GetComponent<Image>().sprite = holdCommandSprite;
                         break;
-                    case CommandType.BUILD:
-                        newButtonObject.GetComponent<Image>().sprite = buildCommandSprite;
-                        break;
                     case CommandType.HARVEST:
                         newButtonObject.GetComponent<Image>().sprite = harvestCommandSprite;
+                        break;
+                    case CommandType.OPEN_BUILD_MENU:
+                        newButtonObject.GetComponent<Image>().sprite = openBuildMenuCommandSprite;
+                        break;
+                    case CommandType.CANCEL_BUILD_MENU:
+                        newButtonObject.GetComponent<Image>().sprite = cancelBuildMenuCommandSprite;
+                        break;
+
+                    case CommandType.BUILD_NEST:
+                        newButtonObject.GetComponent<Image>().sprite = buildNestCommandSprite;
+                        break;
+                    case CommandType.BUILD_WOMB:
+                        newButtonObject.GetComponent<Image>().sprite = buildWombCommandSprite;
                         break;
                 }
                 commandButtons.Add(newButtonObject);
@@ -124,10 +146,9 @@ namespace MiniJam159.UI
             displayBoxes.Clear();
         }
 
-        public void showSelectedObjects(List<GameObject> selectedObjects)
+        public void showSelectedObjects()
         {
-            clearSelectedObjects();
-
+            List<GameObject> selectedObjects = SelectionManager.instance.selectedObjects;
             if (selectedObjects.Count == 0)
             {
                 // Hide display panel
@@ -143,13 +164,13 @@ namespace MiniJam159.UI
             {
                 GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
                 newDisplayBox.GetComponent<RectTransform>().localPosition = new Vector3(0f, displayCenterHeight, 0f);
-                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().structureData.displaySprite;
+                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().structureData.displayIcon;
 
                 // Set up button
                 SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
                 newDisplayButton.selectedObjectName = selectedObjects[0].name;
                 newDisplayButton.selectedIndex = 0;
-                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => SelectionManager.instance.singleSelectObjectInList(newDisplayButton.selectedIndex));
+                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => SelectionController.instance.singleSelectObjectInList(newDisplayButton.selectedIndex));
 
                 displayBoxes.Add(newDisplayBox);
                 return;
@@ -202,10 +223,27 @@ namespace MiniJam159.UI
             CommandManager.instance.clearCommands();
 
             // Select new object
-            SelectionManager.instance.singleSelectObjectInList(index);
+            SelectionController.instance.singleSelectObjectInList(index);
+        }
 
-            // Update UI
-            showSelectedObjects(SelectionManager.instance.selectedObjects);
+        private void onSelectionStartCallback()
+        {
+            clearSelectedObjects();
+            clearCommandButtons();
+        }
+
+        private void onSelectionCompleteCallback()
+        {
+            showSelectedObjects();
+        }
+
+        private void onPopulateCommandsStartCallback()
+        {
+            clearCommandButtons();
+        }
+
+        private void onPopulateCommandsCompleteCallback()
+        {
             populateCommandButtons();
         }
 

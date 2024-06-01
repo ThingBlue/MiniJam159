@@ -1,7 +1,7 @@
 using UnityEngine;
 using MiniJam159.GameCore;
 
-namespace MiniJam159.AI
+namespace MiniJam159.AICore
 {
     public class RangedAI : GameAI
     {
@@ -42,17 +42,17 @@ namespace MiniJam159.AI
             }
             else
             {
-                if (Target == null)
+                if (target == null)
                 {
                     FindNearestTarget();
                 }
 
-                if (Target == null)
+                if (target == null)
                 {
                     return; // No target found, do nothing
                 }
 
-                float distanceToTarget = Vector2.Distance(transform.position, Target.position);
+                float distanceToTarget = Vector3.Distance(transform.position, target.position);
 
                 if (distanceToTarget <= attackRange)
                 {
@@ -77,6 +77,7 @@ namespace MiniJam159.AI
                 return; // Ignore finding targets if timer is active
             }
 
+            // EDIT EDIT EDIT
             Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
             float nearestDistance = Mathf.Infinity;
             Transform nearestTarget = null;
@@ -85,7 +86,7 @@ namespace MiniJam159.AI
             {
                 if (hitCollider.CompareTag(targetTag))
                 {
-                    float distanceToTarget = Vector2.Distance(transform.position, hitCollider.transform.position);
+                    float distanceToTarget = Vector3.Distance(transform.position, hitCollider.transform.position);
                     if (distanceToTarget < nearestDistance)
                     {
                         nearestDistance = distanceToTarget;
@@ -94,13 +95,13 @@ namespace MiniJam159.AI
                 }
             }
 
-            Target = nearestTarget;
+            target = nearestTarget;
         }
 
         void MoveTowardsTarget()
         {
-            Vector2 direction = (Target.position - transform.position).normalized;
-            transform.position = Vector2.MoveTowards(transform.position, Target.position, moveSpeed * Time.deltaTime);
+            Vector3 direction = (target.position - transform.position).normalized;
+            transform.position = Vector3.MoveTowards(transform.position, target.position, moveSpeed * Time.deltaTime);
         }
 
         void Attack()
@@ -112,7 +113,7 @@ namespace MiniJam159.AI
                 if (projectilePrefab != null)
                 {
                     GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-                    projectile.GetComponent<Projectile>().Initialize(Target.position, attackDamage);
+                    projectile.GetComponent<Projectile>().Initialize(target.position, attackDamage);
                 }
 
                 attackTimer = attackCooldown;
@@ -121,7 +122,7 @@ namespace MiniJam159.AI
 
         public virtual void attackAICommand(Transform newTarget)
         {
-            Target = newTarget;
+            target = newTarget;
             isMovingToPosition = false;
         }
 

@@ -9,8 +9,8 @@ namespace MiniJam159.GameCore
     {
         #region Inspector members
 
-        public Vector2 cameraBoundaryStart;
-        public Vector2 cameraBoundaryEnd;
+        public Vector3 cameraBoundaryStart;
+        public Vector3 cameraBoundaryEnd;
 
         public bool disablePan = false;
         public float panSpeed;
@@ -42,25 +42,25 @@ namespace MiniJam159.GameCore
             transform.position = new Vector3(
                 Mathf.Clamp(transform.position.x, cameraBoundaryStart.x, cameraBoundaryEnd.x),
                 transform.position.y,
-                Mathf.Clamp(transform.position.z, cameraBoundaryStart.y, cameraBoundaryEnd.y)
+                Mathf.Clamp(transform.position.z, cameraBoundaryStart.z, cameraBoundaryEnd.z)
                 );
         }
 
-        public void panCamera(Vector2 direction)
+        public void panCamera(Vector3 direction)
         {
             if (disablePan) return;
 
             // Pan towards direction
-            if (direction == Vector2.up) targetPosition = new Vector3(targetPosition.x, targetPosition.y, targetPosition.z + panSpeed);
-            if (direction == Vector2.down) targetPosition = new Vector3(targetPosition.x, targetPosition.y, targetPosition.z - panSpeed);
-            if (direction == Vector2.left) targetPosition = new Vector3(targetPosition.x - panSpeed, targetPosition.y, targetPosition.z);
-            if (direction == Vector2.right) targetPosition = new Vector3(targetPosition.x + panSpeed, targetPosition.y, targetPosition.z);
+            if (direction == Vector3.forward) targetPosition = new Vector3(targetPosition.x, transform.position.y, targetPosition.z + panSpeed);
+            if (direction == Vector3.back) targetPosition = new Vector3(targetPosition.x, transform.position.y, targetPosition.z - panSpeed);
+            if (direction == Vector3.left) targetPosition = new Vector3(targetPosition.x - panSpeed, transform.position.y, targetPosition.z);
+            if (direction == Vector3.right) targetPosition = new Vector3(targetPosition.x + panSpeed, transform.position.y, targetPosition.z);
 
             // Clamp to boundary
             targetPosition = new Vector3(
                 Mathf.Clamp(targetPosition.x, cameraBoundaryStart.x, cameraBoundaryEnd.x),
                 targetPosition.y,
-                Mathf.Clamp(targetPosition.z, cameraBoundaryStart.y, cameraBoundaryEnd.y)
+                Mathf.Clamp(targetPosition.z, cameraBoundaryStart.z, cameraBoundaryEnd.z)
                 );
 
             // Stuff for 45 degree camera
@@ -76,8 +76,8 @@ namespace MiniJam159.GameCore
         {
             Vector3 newTargetPosition = new Vector3(
                 cameraBoundaryStart.x + positionPercent.x * (cameraBoundaryEnd.x - cameraBoundaryStart.x),
-                targetPosition.y,
-                cameraBoundaryStart.y + positionPercent.y * (cameraBoundaryEnd.y - cameraBoundaryStart.y)
+                transform.position.y,
+                cameraBoundaryStart.z + positionPercent.y * (cameraBoundaryEnd.z - cameraBoundaryStart.z)
                 );
             targetPosition = newTargetPosition;
         }
