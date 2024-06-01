@@ -42,6 +42,8 @@ namespace MiniJam159.Commands
         {
             activeCommands.Clear();
 
+            EventManager.instance.populateCommandsStartEvent.Invoke();
+
             // Create new ui
             for (int i = 0; i < newCommandTypes.Count; i++)
             {
@@ -67,11 +69,21 @@ namespace MiniJam159.Commands
                     case CommandType.HOLD:
                         newCommand = new HoldCommand();
                         break;
+                    case CommandType.HARVEST:
+                        newCommand = new HarvestCommand();
+                        break;
                     case CommandType.BUILD:
                         newCommand = new BuildMenuCommand();
                         break;
-                    case CommandType.HARVEST:
-                        newCommand = new HarvestCommand();
+                    case CommandType.CANCEL_BUILD:
+                        newCommand = new BuildMenuCommand();
+                        break;
+
+                    case CommandType.BUILD_NEST:
+                        newCommand = new BuildMenuCommand();
+                        break;
+                    case CommandType.BUILD_WOMB:
+                        newCommand = new BuildMenuCommand();
                         break;
                 }
                 newCommand.initialize();

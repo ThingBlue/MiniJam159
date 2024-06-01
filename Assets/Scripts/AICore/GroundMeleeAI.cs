@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using MiniJam159.GameCore;
 
 namespace MiniJam159.AICore
 {
@@ -23,6 +24,9 @@ namespace MiniJam159.AICore
             base.Start();
             attackTimer = 0f;
             isLeader = false;
+
+            // Subscribe to events
+            EventManager.instance.holdCommandEvent.AddListener(onHoldCommandCallback);
         }
 
         private void Update()
@@ -202,6 +206,11 @@ namespace MiniJam159.AICore
         {
             target = newTarget;
             isMovingToPosition = false;
+        }
+
+        protected virtual void onHoldCommandCallback()
+        {
+            holdAICommand();
         }
 
         void OnDrawGizmosSelected()

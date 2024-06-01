@@ -15,8 +15,9 @@ namespace MiniJam159.Commands
         MOVE,
         ATTACK,
         HOLD,
-        BUILD,
         HARVEST,
+        BUILD,
+        CANCEL_BUILD,
 
         BUILD_NEST,
         BUILD_WOMB
@@ -70,7 +71,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HOLD_COMMAND;
+            EventManager.instance.holdCommandEvent.Invoke();
         }
     }
     public class HarvestCommand : Command
@@ -94,7 +95,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            // Open build menu
+            EventManager.instance.buildCommandEvent.Invoke();
         }
     }
 

@@ -364,6 +364,15 @@ MonoBehaviour:
   populateCommandsCompleteEvent:
     m_PersistentCalls:
       m_Calls: []
+  holdCommandEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  buildCommandEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  cancelBuildCommandEvent:
+    m_PersistentCalls:
+      m_Calls: []
   buildStructureEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1147,8 +1156,11 @@ MonoBehaviour:
   moveCommandSprite: {fileID: 21300000, guid: 95683849944b4fb4e93945933966f87d, type: 3}
   attackCommandSprite: {fileID: 21300000, guid: 2b30954fa39e1ff409176e8484478604, type: 3}
   holdCommandSprite: {fileID: 21300000, guid: 818d78a5e97f47b4e9db1261d96cd462, type: 3}
-  buildCommandSprite: {fileID: 21300000, guid: cf09fcd436e2c7448ba3b3f468bf1095, type: 3}
   harvestCommandSprite: {fileID: 21300000, guid: 487c10d71a22f7640abebc4de6e3689a, type: 3}
+  buildCommandSprite: {fileID: 21300000, guid: cf09fcd436e2c7448ba3b3f468bf1095, type: 3}
+  cancelBuildCommandSprite: {fileID: 21300000, guid: 059119e69eb40b74489a005110b6b7a7, type: 3}
+  buildNestCommandSprite: {fileID: 21300000, guid: f489cf0343145d84e985744045e57628, type: 3}
+  buildWombCommandSprite: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
   displayPanel: {fileID: 764688800}
   displayBoxPrefab: {fileID: 819183560958668974, guid: d2c93924818aa414e9e0b5c36104e6e1, type: 3}
   displayCenterHeight: 0
@@ -1570,29 +1582,9 @@ PrefabInstance:
       value: WorkerUnitPrefab (1)
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[7]
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[8]
-      value: 4
-      objectReference: {fileID: 0}
+      propertyPath: structureDataList
+      value: 
+      objectReference: {fileID: 11400000, guid: 4398406aa8f4bb94ea5a3af7aead3e03, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
 --- !u!1001 &1096690017
@@ -2857,29 +2849,9 @@ PrefabInstance:
       value: WorkerUnitPrefab (2)
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[7]
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[8]
-      value: 4
-      objectReference: {fileID: 0}
+      propertyPath: structureDataList
+      value: 
+      objectReference: {fileID: 11400000, guid: 4398406aa8f4bb94ea5a3af7aead3e03, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
 --- !u!1001 &5728134502757782928
@@ -2938,28 +2910,8 @@ PrefabInstance:
       value: WorkerUnitPrefab
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[7]
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
-      propertyPath: commands.Array.data[8]
-      value: 4
-      objectReference: {fileID: 0}
+      propertyPath: structureDataList
+      value: 
+      objectReference: {fileID: 11400000, guid: 4398406aa8f4bb94ea5a3af7aead3e03, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c61f2a1d3675e294394c774d8c312780, type: 3}

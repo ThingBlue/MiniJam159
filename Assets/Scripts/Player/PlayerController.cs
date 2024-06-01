@@ -1,7 +1,6 @@
 using MiniJam159.GameCore;
 using MiniJam159.Structures;
 using MiniJam159.AICore;
-using MiniJam159.Selection;
 using MiniJam159.Commands;
 using MiniJam159.Resources;
 using System.Collections;
@@ -156,10 +155,6 @@ namespace MiniJam159.Player
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMoveTarget();
                     break;
 
-                case PlayerMode.HOLD_COMMAND:
-                    executeHoldCommand();
-                    break;
-
                 case PlayerMode.MASS_SELECT:
                     SelectionController.instance.updateMassSelectBox();
 
@@ -289,27 +284,6 @@ namespace MiniJam159.Player
             }
 
             // Finish attack command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-        }
-
-        public void executeHoldCommand()
-        {
-            // Invoke command on all selected units
-            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
-            {
-                // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
-                if (ai == null) continue;
-
-                MethodInfo method = ai.GetType().GetMethod("holdAICommand");
-                if (method != null)
-                {
-                    // Invoke command method in ai
-                    method.Invoke(ai, new object[] { });
-                }
-            }
-
-            // Finish command
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 

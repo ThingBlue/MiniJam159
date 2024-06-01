@@ -162,7 +162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displaySprite: {fileID: 21300000, guid: 059119e69eb40b74489a005110b6b7a7, type: 3}
-  commandTypes: 010000000200000003000000000000000000000000000000000000000500000004000000000000000000000000000000
+  commands: 010000000200000000000000030000000000000000000000000000000000000004000000000000000000000005000000
   targetTag: Enemy
   detectionRadius: 15
   attackRange: 2
@@ -173,7 +173,8 @@ MonoBehaviour:
   coordinationRadius: 5
   harvestRange: 2
   depositRange: 2
-  basePosition: {x: 0, y: 0}
+  structureDataList: {fileID: 0}
+  basePosition: {x: 0, y: 0, z: 0}
 --- !u!1 &9206874893626697354
 GameObject:
   m_ObjectHideFlags: 0

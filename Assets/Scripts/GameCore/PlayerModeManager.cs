@@ -8,11 +8,10 @@ namespace MiniJam159.GameCore
     {
         NORMAL = 0,
         MASS_SELECT,
+        STRUCTURE_PLACEMENT,
         MOVE_TARGET,
         ATTACK_TARGET,
-        HARVEST_TARGET,
-        STRUCTURE_PLACEMENT,
-        HOLD_COMMAND
+        HARVEST_TARGET
     }
 
     public class PlayerModeManager : MonoBehaviour

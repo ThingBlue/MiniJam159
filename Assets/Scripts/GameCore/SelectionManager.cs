@@ -7,7 +7,7 @@ using UnityEngine;
 using System;
 using UnityEngine.UI;
 
-namespace MiniJam159.Selection
+namespace MiniJam159.GameCore
 {
     public class SelectionManager : MonoBehaviour
     {

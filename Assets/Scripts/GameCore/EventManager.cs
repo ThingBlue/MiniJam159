@@ -31,6 +31,9 @@ namespace MiniJam159.GameCore
         public UnityEvent populateCommandsStartEvent;
         public UnityEvent populateCommandsCompleteEvent;
 
+        public UnityEvent holdCommandEvent;
+        public UnityEvent buildCommandEvent;
+        public UnityEvent cancelBuildCommandEvent;
         public UnityEvent buildStructureEvent;
 
         #endregion
@@ -40,10 +43,7 @@ namespace MiniJam159.GameCore
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
-        }
 
-        private void Start()
-        {
             // Initialize events
             if (pauseEvent == null) pauseEvent = new UnityEvent();
             if (unpauseEvent == null) unpauseEvent = new UnityEvent();
@@ -52,6 +52,11 @@ namespace MiniJam159.GameCore
             if (selectionCompleteEvent == null) selectionCompleteEvent = new UnityEvent();
             if (populateCommandsStartEvent == null) populateCommandsStartEvent = new UnityEvent();
             if (populateCommandsCompleteEvent == null) populateCommandsCompleteEvent = new UnityEvent();
+
+            if (holdCommandEvent == null) holdCommandEvent = new UnityEvent();
+            if (buildCommandEvent == null) buildCommandEvent = new UnityEvent();
+            if (cancelBuildCommandEvent == null) cancelBuildCommandEvent = new UnityEvent();
+            if (buildStructureEvent == null) buildStructureEvent = new UnityEvent();
         }
     }
 }

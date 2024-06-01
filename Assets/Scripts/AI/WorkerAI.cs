@@ -4,6 +4,8 @@ using MiniJam159.Resources;
 using MiniJam159.AICore;
 using MiniJam159.Commands;
 using MiniJam159.Structures;
+using MiniJam159.GameCore;
+using System.Linq;
 
 namespace MiniJam159.AI
 {
@@ -171,8 +173,9 @@ namespace MiniJam159.AI
             basePosition = newBasePosition;
         }
 
-        public void buildAICommand(Vector3 structure)
+        public void buildAICommand()
         {
+            // THERE MUST BE EXACTLY 11 STRUCTURE BUILD COMMANDS
             // Convert structure datas into commands
             List<CommandType> structureCommands = new List<CommandType>();
             foreach (StructureData structureData in structureDataList.structureDatas)
@@ -190,6 +193,10 @@ namespace MiniJam159.AI
                         break;
                 }
             }
+
+            if (structureCommands.Count == 11) structureCommands.Add(CommandType.CANCEL_BUILD);
+            else if (structureCommands.Count == 12) structureCommands[11] = CommandType.CANCEL_BUILD;
+            else Debug.LogError("Build menu command count is not 12");
 
             // Populate command menu with buildable objects
             CommandManager.instance.populateCommands(structureCommands);

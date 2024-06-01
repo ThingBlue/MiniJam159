@@ -7,7 +7,6 @@ using MiniJam159.GameCore;
 using MiniJam159.AICore;
 using MiniJam159.Commands;
 using MiniJam159.Structures;
-using MiniJam159.Selection;
 using MiniJam159.Player;
 
 namespace MiniJam159.UI
@@ -23,8 +22,12 @@ namespace MiniJam159.UI
         public Sprite moveCommandSprite;
         public Sprite attackCommandSprite;
         public Sprite holdCommandSprite;
-        public Sprite buildCommandSprite;
         public Sprite harvestCommandSprite;
+        public Sprite buildCommandSprite;
+        public Sprite cancelBuildCommandSprite;
+
+        public Sprite buildNestCommandSprite;
+        public Sprite buildWombCommandSprite;
 
         public GameObject displayPanel;
         public GameObject displayBoxPrefab;
@@ -52,10 +55,10 @@ namespace MiniJam159.UI
         private void Start()
         {
             // Subscribe to events
-            EventManager.instance.selectionStartEvent.AddListener(onSelectionStart);
-            EventManager.instance.selectionCompleteEvent.AddListener(onSelectionComplete);
-            EventManager.instance.populateCommandsStartEvent.AddListener(onPopulateCommandsStart);
-            EventManager.instance.populateCommandsCompleteEvent.AddListener(onPopulateCommandsComplete);
+            EventManager.instance.selectionStartEvent.AddListener(onSelectionStartCallback);
+            EventManager.instance.selectionCompleteEvent.AddListener(onSelectionCompleteCallback);
+            EventManager.instance.populateCommandsStartEvent.AddListener(onPopulateCommandsStartCallback);
+            EventManager.instance.populateCommandsCompleteEvent.AddListener(onPopulateCommandsCompleteCallback);
         }
 
         private void Update()
@@ -113,11 +116,21 @@ namespace MiniJam159.UI
                     case CommandType.HOLD:
                         newButtonObject.GetComponent<Image>().sprite = holdCommandSprite;
                         break;
+                    case CommandType.HARVEST:
+                        newButtonObject.GetComponent<Image>().sprite = harvestCommandSprite;
+                        break;
                     case CommandType.BUILD:
                         newButtonObject.GetComponent<Image>().sprite = buildCommandSprite;
                         break;
-                    case CommandType.HARVEST:
-                        newButtonObject.GetComponent<Image>().sprite = harvestCommandSprite;
+                    case CommandType.CANCEL_BUILD:
+                        newButtonObject.GetComponent<Image>().sprite = cancelBuildCommandSprite;
+                        break;
+
+                    case CommandType.BUILD_NEST:
+                        newButtonObject.GetComponent<Image>().sprite = buildNestCommandSprite;
+                        break;
+                    case CommandType.BUILD_WOMB:
+                        newButtonObject.GetComponent<Image>().sprite = buildWombCommandSprite;
                         break;
                 }
                 commandButtons.Add(newButtonObject);
@@ -213,23 +226,23 @@ namespace MiniJam159.UI
             SelectionController.instance.singleSelectObjectInList(index);
         }
 
-        private void onSelectionStart()
+        private void onSelectionStartCallback()
         {
             clearSelectedObjects();
             clearCommandButtons();
         }
 
-        private void onSelectionComplete()
+        private void onSelectionCompleteCallback()
         {
             showSelectedObjects();
         }
 
-        private void onPopulateCommandsStart()
+        private void onPopulateCommandsStartCallback()
         {
             clearCommandButtons();
         }
 
-        private void onPopulateCommandsComplete()
+        private void onPopulateCommandsCompleteCallback()
         {
             populateCommandButtons();
         }

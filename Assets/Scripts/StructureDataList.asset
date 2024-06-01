@@ -14,16 +14,79 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   structureDatas:
   - structureType: 1
-    position: {x: 0, y: 0}
-    size: {x: 5, y: 5}
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 5, y: 5, z: 0}
     maxHealth: 2000
     contructionTime: 60
     commands: 
     displayIcon: {fileID: 21300000, guid: f489cf0343145d84e985744045e57628, type: 3}
   - structureType: 2
-    position: {x: 0, y: 0}
-    size: {x: 3, y: 4}
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 3, y: 4, z: 0}
     maxHealth: 500
     contructionTime: 30
+    commands: 
+    displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  - structureType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    maxHealth: 0
+    contructionTime: 0
+    commands: 
+    displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  - structureType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    maxHealth: 0
+    contructionTime: 0
+    commands: 
+    displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  - structureType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    maxHealth: 0
+    contructionTime: 0
+    commands: 
+    displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  - structureType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    maxHealth: 0
+    contructionTime: 0
+    commands: 
+    displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  - structureType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    maxHealth: 0
+    contructionTime: 0
+    commands: 
+    displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  - structureType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    maxHealth: 0
+    contructionTime: 0
+    commands: 
+    displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  - structureType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    maxHealth: 0
+    contructionTime: 0
+    commands: 
+    displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  - structureType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    maxHealth: 0
+    contructionTime: 0
+    commands: 
+    displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  - structureType: 0
+    position: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    maxHealth: 0
+    contructionTime: 0
     commands: 
     displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
