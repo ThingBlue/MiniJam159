@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MiniJam159.AI
+namespace MiniJam159.AICore
 {
     public class GroundMeleeAI : GameAI
     {

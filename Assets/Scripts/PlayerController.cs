@@ -1,15 +1,16 @@
 using MiniJam159.GameCore;
 using MiniJam159.Structures;
 using MiniJam159.UI;
-using MiniJam159.AI;
+using MiniJam159.AICore;
 using MiniJam159.Selection;
+using MiniJam159.Commands;
+using MiniJam159.Resources;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using MiniJam159.Resources;
 
 namespace MiniJam159
 {

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using MiniJam159.Resources;
+using MiniJam159.AICore;
 
 namespace MiniJam159.AI
 {

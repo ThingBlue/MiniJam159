@@ -1,7 +1,7 @@
 using UnityEngine;
 using MiniJam159.GameCore;
 
-namespace MiniJam159.AI
+namespace MiniJam159.AICore
 {
     public class RangedAI : GameAI
     {

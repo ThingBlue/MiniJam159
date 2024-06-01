@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using MiniJam159.GameCore;
-using MiniJam159.AI;
+using MiniJam159.AICore;
 using MiniJam159.Commands;
 using MiniJam159.Structures;
 using MiniJam159.Selection;

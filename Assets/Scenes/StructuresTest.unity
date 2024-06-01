@@ -174,6 +174,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[3]
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (3)
@@ -842,6 +858,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[3]
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (4)
@@ -1422,6 +1454,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: WorkerUnitPrefab (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[3]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[7]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[8]
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
 --- !u!1001 &1096690017
@@ -1474,6 +1530,22 @@ PrefabInstance:
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[3]
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
@@ -1875,6 +1947,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[3]
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (1)
@@ -2035,6 +2123,22 @@ PrefabInstance:
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[3]
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
@@ -2546,6 +2650,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: commands.Array.data[3]
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (5)
@@ -2615,6 +2735,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: WorkerUnitPrefab (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[3]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[7]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[8]
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
 --- !u!1001 &5728134502757782928
@@ -2671,6 +2815,30 @@ PrefabInstance:
     - target: {fileID: 3731014612963296188, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: m_Name
       value: WorkerUnitPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[3]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[7]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: commands.Array.data[8]
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
