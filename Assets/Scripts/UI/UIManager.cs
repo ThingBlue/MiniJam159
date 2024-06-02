@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MiniJam159.GameCore;
 using MiniJam159.AICore;
-using MiniJam159.Commands;
+using MiniJam159.CommandCore;
 using MiniJam159.Structures;
 using MiniJam159.Player;
 
@@ -83,9 +83,9 @@ namespace MiniJam159.UI
         public void populateCommandButtons()
         {
             // Create new ui and populate command buttons
-            for (int i = 0; i < CommandManager.instance.activeCommands.Count; i++)
+            for (int i = 0; i < CommandManagerBase.instance.activeCommands.Count; i++)
             {
-                Command activeCommand = CommandManager.instance.activeCommands[i];
+                Command activeCommand = CommandManagerBase.instance.activeCommands[i];
 
                 // Skip null commands
                 if (activeCommand == null) continue;
@@ -97,7 +97,7 @@ namespace MiniJam159.UI
                 // Assign command to button
                 newCommandButton.command = activeCommand;
                 newCommandButton.commandIndex = i;
-                newButtonObject.GetComponent<Button>().onClick.AddListener(() => CommandManager.instance.executeCommand(newCommandButton.commandIndex));
+                newButtonObject.GetComponent<Button>().onClick.AddListener(() => CommandManagerBase.instance.executeCommand(newCommandButton.commandIndex));
 
                 // Set button position
                 float xOffset = (i % 4) * 64.0f;
@@ -220,7 +220,7 @@ namespace MiniJam159.UI
         public void onDisplayBoxClicked(int index)
         {
             // Clear commands
-            CommandManager.instance.clearCommands();
+            CommandManagerBase.instance.clearCommands();
 
             // Select new object
             SelectionController.instance.singleSelectObjectInList(index);

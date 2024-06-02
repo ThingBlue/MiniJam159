@@ -9,5 +9,8 @@ namespace MiniJam159.Structures
     public class StructureDataList : ScriptableObject
     {
         public List<StructureData> structureDatas;
+
+        public StructureData nestStructureData;
+        public StructureData wombStructureData;
     }
 }

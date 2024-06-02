@@ -1,7 +1,7 @@
 using MiniJam159.GameCore;
 using MiniJam159.Structures;
 using MiniJam159.AICore;
-using MiniJam159.Commands;
+using MiniJam159.CommandCore;
 using MiniJam159.Resources;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,18 +55,18 @@ namespace MiniJam159.Player
             // Keyboard
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
             {
-                if (InputManager.instance.getKeyDown("QCommand")) CommandManager.instance.executeCommand(0);
-                if (InputManager.instance.getKeyDown("WCommand")) CommandManager.instance.executeCommand(1);
-                if (InputManager.instance.getKeyDown("ECommand")) CommandManager.instance.executeCommand(2);
-                if (InputManager.instance.getKeyDown("RCommand")) CommandManager.instance.executeCommand(3);
-                if (InputManager.instance.getKeyDown("ACommand")) CommandManager.instance.executeCommand(4);
-                if (InputManager.instance.getKeyDown("SCommand")) CommandManager.instance.executeCommand(5);
-                if (InputManager.instance.getKeyDown("DCommand")) CommandManager.instance.executeCommand(6);
-                if (InputManager.instance.getKeyDown("FCommand")) CommandManager.instance.executeCommand(7);
-                if (InputManager.instance.getKeyDown("ZCommand")) CommandManager.instance.executeCommand(8);
-                if (InputManager.instance.getKeyDown("XCommand")) CommandManager.instance.executeCommand(9);
-                if (InputManager.instance.getKeyDown("CCommand")) CommandManager.instance.executeCommand(10);
-                if (InputManager.instance.getKeyDown("VCommand")) CommandManager.instance.executeCommand(11);
+                if (InputManager.instance.getKeyDown("QCommand")) CommandManagerBase.instance.executeCommand(0);
+                if (InputManager.instance.getKeyDown("WCommand")) CommandManagerBase.instance.executeCommand(1);
+                if (InputManager.instance.getKeyDown("ECommand")) CommandManagerBase.instance.executeCommand(2);
+                if (InputManager.instance.getKeyDown("RCommand")) CommandManagerBase.instance.executeCommand(3);
+                if (InputManager.instance.getKeyDown("ACommand")) CommandManagerBase.instance.executeCommand(4);
+                if (InputManager.instance.getKeyDown("SCommand")) CommandManagerBase.instance.executeCommand(5);
+                if (InputManager.instance.getKeyDown("DCommand")) CommandManagerBase.instance.executeCommand(6);
+                if (InputManager.instance.getKeyDown("FCommand")) CommandManagerBase.instance.executeCommand(7);
+                if (InputManager.instance.getKeyDown("ZCommand")) CommandManagerBase.instance.executeCommand(8);
+                if (InputManager.instance.getKeyDown("XCommand")) CommandManagerBase.instance.executeCommand(9);
+                if (InputManager.instance.getKeyDown("CCommand")) CommandManagerBase.instance.executeCommand(10);
+                if (InputManager.instance.getKeyDown("VCommand")) CommandManagerBase.instance.executeCommand(11);
             }
 
             // DEBUG DEBUG DEBUG TEST TEST TEST
@@ -161,7 +161,7 @@ namespace MiniJam159.Player
                     if (mouse0Up)
                     {
                         // Clear commands
-                        CommandManager.instance.clearCommands();
+                        CommandManagerBase.instance.clearCommands();
 
                         // Execute mass select
                         SelectionController.instance.executeMassSelect();
@@ -204,7 +204,7 @@ namespace MiniJam159.Player
                     if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject())
                     {
                         // Clear commands
-                        CommandManager.instance.clearCommands();
+                        CommandManagerBase.instance.clearCommands();
 
                         SelectionController.instance.executeSingleSelect();
                     }

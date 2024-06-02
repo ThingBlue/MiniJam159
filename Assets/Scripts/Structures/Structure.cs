@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using MiniJam159.Commands;
+using MiniJam159.CommandCore;
 
 namespace MiniJam159.Structures
 {
@@ -64,7 +64,7 @@ namespace MiniJam159.Structures
 
         public virtual void populateCommands()
         {
-            CommandManager.instance.populateCommands(structureData.commands);
+            CommandManagerBase.instance.populateCommands(structureData.commands);
         }
     }
 

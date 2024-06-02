@@ -23,18 +23,24 @@ namespace MiniJam159.GameCore
 
         #region Events
 
+        // Game events
         public UnityEvent pauseEvent;
         public UnityEvent unpauseEvent;
 
+        // Player events
         public UnityEvent selectionStartEvent;
         public UnityEvent selectionCompleteEvent;
         public UnityEvent populateCommandsStartEvent;
         public UnityEvent populateCommandsCompleteEvent;
 
+        // Command events
         public UnityEvent holdCommandEvent;
         public UnityEvent openBuildMenuCommandEvent;
         public UnityEvent cancelBuildMenuCommandEvent;
-        public UnityEvent buildStructureEvent;
+
+        // Build structure commands
+        public UnityEvent buildNestCommandEvent;
+        public UnityEvent buildWombCommandEvent;
 
         #endregion
 
@@ -45,18 +51,24 @@ namespace MiniJam159.GameCore
             else Destroy(this);
 
             // Initialize events
+            // Game events
             if (pauseEvent == null) pauseEvent = new UnityEvent();
             if (unpauseEvent == null) unpauseEvent = new UnityEvent();
 
+            // Player events
             if (selectionStartEvent == null) selectionStartEvent = new UnityEvent();
             if (selectionCompleteEvent == null) selectionCompleteEvent = new UnityEvent();
             if (populateCommandsStartEvent == null) populateCommandsStartEvent = new UnityEvent();
             if (populateCommandsCompleteEvent == null) populateCommandsCompleteEvent = new UnityEvent();
 
+            // Command events
             if (holdCommandEvent == null) holdCommandEvent = new UnityEvent();
             if (openBuildMenuCommandEvent == null) openBuildMenuCommandEvent = new UnityEvent();
             if (cancelBuildMenuCommandEvent == null) cancelBuildMenuCommandEvent = new UnityEvent();
-            if (buildStructureEvent == null) buildStructureEvent = new UnityEvent();
+
+            // Build structure commands
+            if (buildNestCommandEvent == null) buildNestCommandEvent = new UnityEvent();
+            if (buildWombCommandEvent == null) buildWombCommandEvent = new UnityEvent();
         }
     }
 }

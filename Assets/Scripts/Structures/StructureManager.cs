@@ -9,7 +9,7 @@ namespace MiniJam159
 {
     public class StructureManager : MonoBehaviour
     {
-        #region Inspector memberes
+        #region Inspector members
 
         public GameObject placementGuide;
 
@@ -23,6 +23,8 @@ namespace MiniJam159
         public GameObject nestStructurePrefab;
         public GameObject wombStructurePrefab;
         public GameObject testStructurePrefab;
+
+        public StructureDataList structureDataList;
 
         #endregion
 
@@ -39,6 +41,13 @@ namespace MiniJam159
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
+        }
+
+        private void Start()
+        {
+            // Subscribe to events
+            EventManager.instance.buildNestCommandEvent.AddListener(onBuildNestCommandCallback);
+            EventManager.instance.buildWombCommandEvent.AddListener(onBuildWombCommandCallback);
         }
 
         private void FixedUpdate()
@@ -99,8 +108,6 @@ namespace MiniJam159
         public void beginPlacement(StructureData structureData)
         {
             placementStructureData = new StructureData(structureData);
-            //placementStructureData.commands = new List<CommandType>(structureData.commands);
-            //placementStructureData.displaySprite = structureData.displaySprite;
             PlayerModeManager.instance.playerMode = PlayerMode.STRUCTURE_PLACEMENT;
         }
 
@@ -157,10 +164,6 @@ namespace MiniJam159
 
                 // Set properties in structure data class
                 newStructureObject.GetComponent<Structure>().structureData = new StructureData(placementStructureData);
-                //newStructureData.position = new Vector2(snappedPosition.x, 0, snappedPosition.z);
-                //newStructureData.size = placementStructureData.size;
-                //newStructureData.commands = new List<CommandType>(placementStructureData.commands);
-                //newStructureData.displaySprite = placementStructureData.displaySprite;
 
                 structures.Add(newStructureObject);
             }
@@ -191,5 +194,21 @@ namespace MiniJam159
             }
             return false;
         }
+
+        #region Command callbacks
+
+        private void onBuildNestCommandCallback()
+        {
+            beginPlacement(structureDataList.nestStructureData);
+        }
+
+        private void onBuildWombCommandCallback()
+        {
+            beginPlacement(structureDataList.wombStructureData);
+        }
+
+        #endregion
+
+
     }
 }

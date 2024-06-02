@@ -6,38 +6,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using MiniJam159.GameCore;
+using MiniJam159.CommandCore;
+using MiniJam159.Structures;
 
 namespace MiniJam159.Commands
 {
-    public enum CommandType
-    {
-        NULL = 0,
-        MOVE,
-        ATTACK,
-        HOLD,
-        HARVEST,
-        OPEN_BUILD_MENU,
-        CANCEL_BUILD_MENU,
-
-        BUILD_NEST,
-        BUILD_WOMB
-    }
-
-    public class Command
-    {
-        public CommandType commandType;
-        public string tooltip = "DEFAULT COMMAND TOOLTIP";
-
-        public virtual void initialize() { }
-
-        public virtual void execute()
-        {
-            Debug.LogWarning("Attempted to execute a null command!");
-        }
-    }
-
-    #region General commands
-
     public class MoveCommand : Command
     {
         public override void initialize()
@@ -110,13 +83,10 @@ namespace MiniJam159.Commands
             EventManager.instance.cancelBuildMenuCommandEvent.Invoke();
         }
     }
-
-    #endregion
-
-    #region Building specific commands
-
     public class BuildNestCommand : Command
     {
+        StructureData structureData;
+
         public override void initialize()
         {
             tooltip = "<b>Nest</b>\nThe core of the colony.";
@@ -125,21 +95,25 @@ namespace MiniJam159.Commands
         public override void execute()
         {
             if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL) return;
+
+            EventManager.instance.buildNestCommandEvent.Invoke();
         }
     }
     public class BuildWombCommand : Command
     {
+        StructureData structureData;
+
         public override void initialize()
         {
-            tooltip = "<b>Womb</b>\nBreeds basic offensive units.";
+            tooltip = "<b>Nest</b>\nThe core of the colony.";
         }
 
         public override void execute()
         {
-            // Open build menu
             if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL) return;
+
+            EventManager.instance.buildWombCommandEvent.Invoke();
         }
     }
 
-    #endregion
 }

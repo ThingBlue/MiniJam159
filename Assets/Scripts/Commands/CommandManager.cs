@@ -2,43 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MiniJam159.GameCore;
+using MiniJam159.CommandCore;
+using MiniJam159.Structures;
 
 namespace MiniJam159.Commands
 {
-    public class CommandManager : MonoBehaviour
+    public class CommandManager : CommandManagerBase
     {
-        public List<Command> activeCommands;
-
-        // Singleton
-        public static CommandManager instance;
-
-        private void Awake()
-        {
-            // Singleton
-            if (instance == null) instance = this;
-            else Destroy(this);
-        }
-
-        private void Start()
-        {
-            activeCommands = new List<Command>();
-        }
-
-        public void executeCommand(int index)
-        {
-            Debug.Log("Executing command: " + activeCommands[index]);
-            if (activeCommands[index] == null) return;
-
-            activeCommands[index].execute();
-        }
-
-        public void clearCommands()
-        {
-            activeCommands.Clear();
-            for (int i = 0; i < 12; i++) activeCommands.Add(null);
-        }
-
-        public void populateCommands(List<CommandType> newCommandTypes)
+        public override void populateCommands(List<CommandType> newCommandTypes)
         {
             activeCommands.Clear();
 
@@ -93,5 +64,6 @@ namespace MiniJam159.Commands
 
             EventManager.instance.populateCommandsCompleteEvent.Invoke();
         }
+
     }
 }

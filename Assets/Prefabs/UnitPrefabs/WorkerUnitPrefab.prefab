@@ -173,7 +173,7 @@ MonoBehaviour:
   coordinationRadius: 5
   harvestRange: 2
   depositRange: 2
-  structureDataList: {fileID: 0}
+  buildMenuCommands: 080000000000000000000000000000000000000000000000000000000000000007000000000000000000000006000000
   basePosition: {x: 0, y: 0, z: 0}
 --- !u!1 &9206874893626697354
 GameObject:

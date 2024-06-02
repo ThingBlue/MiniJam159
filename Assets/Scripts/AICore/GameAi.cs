@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using MiniJam159.Commands;
+using MiniJam159.CommandCore;
 
 namespace MiniJam159.AICore
 {
@@ -95,7 +95,7 @@ namespace MiniJam159.AICore
 
         public virtual void populateCommands()
         {
-            CommandManager.instance.populateCommands(commands);
+            CommandManagerBase.instance.populateCommands(commands);
         }
 
     }

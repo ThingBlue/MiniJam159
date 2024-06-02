@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using MiniJam159.Resources;
 using MiniJam159.AICore;
-using MiniJam159.Commands;
+using MiniJam159.CommandCore;
 using MiniJam159.Structures;
 using MiniJam159.GameCore;
 using System.Linq;
@@ -26,7 +26,7 @@ namespace MiniJam159.AI
         public float harvestRange = 2f;
         public float depositRange = 2f;
 
-        public StructureDataList structureDataList;
+        public List<CommandType> buildMenuCommands;
 
         #endregion
 
@@ -175,6 +175,17 @@ namespace MiniJam159.AI
 
         public void openBuildMenuAICommand()
         {
+            CommandManagerBase.instance.populateCommands(buildMenuCommands);
+        }
+
+        /*
+        public override void populateBuildMenuCommands(GameObject caller)
+        {
+            List<StructureData> structureDatas = caller.GetComponent<WorkerAI>();
+            activeCommands.Clear();
+
+            EventManager.instance.populateCommandsStartEvent.Invoke();
+
             // THERE MUST BE EXACTLY 11 STRUCTURE BUILD COMMANDS
             // Convert structure datas into commands
             List<CommandType> structureCommands = new List<CommandType>();
@@ -200,6 +211,9 @@ namespace MiniJam159.AI
 
             // Populate command menu with buildable objects
             CommandManager.instance.populateCommands(structureCommands);
+
+            EventManager.instance.populateCommandsCompleteEvent.Invoke();
         }
+        */
     }
 }
