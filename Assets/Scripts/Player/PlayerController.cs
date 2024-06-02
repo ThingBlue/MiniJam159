@@ -9,6 +9,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 namespace MiniJam159.Player
 {
@@ -16,10 +17,14 @@ namespace MiniJam159.Player
     {
         #region Inspector members
 
-        public LayerMask enemyLayer;
+        public LayerMask unitLayer;
+        public LayerMask structureLayer;
         public LayerMask resourceLayer;
 
+        public string enemyTag;
+
         public Sprite testStructureSprite;
+
 
         #endregion
 
@@ -213,7 +218,9 @@ namespace MiniJam159.Player
                     if (mouse1Down && !EventSystem.current.IsPointerOverGameObject())
                     {
                         // Attack if hovering over enemy
-                        if (InputManager.instance.mouseRaycastObject(enemyLayer)) executeAttackTarget();
+                        LayerMask layerMask = unitLayer | structureLayer;
+                        GameObject target = InputManager.instance.mouseRaycastObject(layerMask);
+                        if (target != null && target.tag == enemyTag) executeAttackTarget();
                         // Interact if hovering over interactable
                         else if (InputManager.instance.mouseRaycastObject(resourceLayer)) executeHarvestTarget();
                         // Move if none of the above
@@ -248,23 +255,46 @@ namespace MiniJam159.Player
                 MethodInfo method = ai.GetType().GetMethod("moveAICommand");
                 if (method != null)
                 {
-                    // Invoke move command method in ai using mouse position in world
+                    // Invoke command method in ai using mouse position in world
                     Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
                     method.Invoke(ai, new object[] { mousePositionInWorld });
                 }
             }
 
-            // Finish move command
+            // Finish command
+            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+        }
+
+        public void executeAttackMoveTarget()
+        {
+            // Invoke command on all selected units
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                // Check that object has a GameAI
+                GameAI ai = selectedObject.GetComponent<GameAI>();
+                if (ai == null) continue;
+
+                MethodInfo method = ai.GetType().GetMethod("attackMoveAICommand");
+                if (method != null)
+                {
+                    // Invoke command method in ai using mouse position in world
+                    Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
+                    method.Invoke(ai, new object[] { mousePositionInWorld });
+                }
+            }
+
+            // Finish command
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
         public void executeAttackTarget()
         {
-            GameObject target = InputManager.instance.mouseRaycastObject(enemyLayer);
-            if (target == null)
+            LayerMask layerMask = unitLayer | structureLayer;
+            GameObject target = InputManager.instance.mouseRaycastObject(layerMask);
+            if (target == null || target.tag != enemyTag)
             {
-                // No target, cancel attack command
-                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                // No target, execute attack move instead
+                executeAttackMoveTarget();
                 return;
             }
 

@@ -71,10 +71,7 @@ namespace MiniJam159.AI
                 attackTimer -= Time.deltaTime;
             }
 
-            if (moveIgnoreTargetTimer > 0)
-            {
-                moveIgnoreTargetTimer -= Time.deltaTime;
-            }
+            //if (moveIgnoreTargetTimer > 0) moveIgnoreTargetTimer -= Time.deltaTime;
         }
 
         public void HarvestResource(IResource resource)

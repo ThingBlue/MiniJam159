@@ -17,7 +17,9 @@ namespace MiniJam159.AICore
 
         protected Vector3 moveToPosition;
         protected bool isMovingToPosition;
-        protected float moveIgnoreTargetTimer; // Timer to ignore targets while moving
+        protected bool moveIgnoreEnemies;
+
+        //protected float moveIgnoreTargetTimer; // Timer to ignore targets while moving
         protected const float moveIgnoreTargetDuration = 10f; // Duration to ignore targets while moving
         protected Transform target { get; set; } // Property to be implemented by subclasses
 
@@ -25,7 +27,8 @@ namespace MiniJam159.AICore
         {
             allAIs.Add(this);
             isMovingToPosition = false;
-            moveIgnoreTargetTimer = 0f;
+            moveIgnoreEnemies = false;
+            //moveIgnoreTargetTimer = 0f;
         }
 
         protected virtual void OnDestroy()
@@ -47,10 +50,7 @@ namespace MiniJam159.AICore
 
         protected void MoveTowardsPosition(float moveSpeed)
         {
-            Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, moveToPosition, moveSpeed * Time.deltaTime);
-            transform.position = moveTowardsDestination;
-
-            if (moveIgnoreTargetTimer <= 0)
+            if (!moveIgnoreEnemies)// || moveIgnoreTargetTimer <= 0)
             {
                 // Check for targets while moving if the ignore timer is not active
                 FindNearestTarget();
@@ -58,6 +58,7 @@ namespace MiniJam159.AICore
                 if (target != null)
                 {
                     isMovingToPosition = false;
+                    moveIgnoreEnemies = false;
                     return; // Stop moving to position if a target is found
                 }
             }
@@ -66,20 +67,30 @@ namespace MiniJam159.AICore
             if (Vector3.Distance(transform.position, moveToPosition) <= 0.5f)
             {
                 isMovingToPosition = false;
+                moveIgnoreEnemies = false;
             }
+
+            Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, moveToPosition, moveSpeed * Time.deltaTime);
+            transform.position = moveTowardsDestination;
         }
 
-        public void MoveTo(Vector3 position)
+        public void MoveTo(Vector3 position, bool ignoreEnemies)
         {
             moveToPosition = position;
             isMovingToPosition = true;
             target = null; // Reset target
-            moveIgnoreTargetTimer = moveIgnoreTargetDuration; // Start ignore target timer
+            moveIgnoreEnemies = ignoreEnemies;
+            //moveIgnoreTargetTimer = moveIgnoreTargetDuration; // Start ignore target timer
         }
 
         public virtual void moveAICommand(Vector3 position)
         {
-            MoveTo(position);
+            MoveTo(position, true);
+        }
+
+        public virtual void attackMoveAICommand(Vector3 position)
+        {
+            MoveTo(position, false);
         }
 
         public virtual void holdAICommand()

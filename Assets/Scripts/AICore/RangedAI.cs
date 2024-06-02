@@ -24,7 +24,7 @@ namespace MiniJam159.AICore
         private void Update()
         {
             if (attackTimer > 0) attackTimer -= Time.deltaTime;
-            if (moveIgnoreTargetTimer > 0) moveIgnoreTargetTimer -= Time.deltaTime;
+            //if (moveIgnoreTargetTimer > 0) moveIgnoreTargetTimer -= Time.deltaTime;
         }
 
         protected override void FixedUpdate()
@@ -72,13 +72,12 @@ namespace MiniJam159.AICore
 
         protected override void FindNearestTarget()
         {
-            if (moveIgnoreTargetTimer > 0)
+            if (moveIgnoreEnemies)// moveIgnoreTargetTimer > 0)
             {
                 return; // Ignore finding targets if timer is active
             }
 
-            // EDIT EDIT EDIT
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius);
             float nearestDistance = Mathf.Infinity;
             Transform nearestTarget = null;
 
