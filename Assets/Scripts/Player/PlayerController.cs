@@ -1,4 +1,5 @@
 using MiniJam159.GameCore;
+using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
 using MiniJam159.AICore;
 using MiniJam159.CommandCore;
@@ -10,6 +11,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
+using MiniJam159.AI;
+using Mono.Cecil;
 
 namespace MiniJam159.Player
 {
@@ -142,7 +145,12 @@ namespace MiniJam159.Player
                 case PlayerMode.STRUCTURE_PLACEMENT:
                     if (mouse0Down)
                     {
-                        StructureManager.instance.finishPlacement();
+                        // Create structure
+                        GameObject newStructureObject = StructureManager.instance.finishPlacement();
+
+                        // Send selected workers to build structure
+                        if (newStructureObject) executeBuildStructure(newStructureObject);
+
                         ignoreNextMouse0Up = true;
                     }
                     if (mouse1Down) StructureManager.instance.cancelPlacement();
@@ -280,6 +288,8 @@ namespace MiniJam159.Player
                     // Invoke command method in ai using mouse position in world
                     Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
                     method.Invoke(ai, new object[] { mousePositionInWorld });
+
+                    Debug.Log("Attack moving");
                 }
             }
 
@@ -310,6 +320,8 @@ namespace MiniJam159.Player
                 {
                     // Invoke attack command method in ai using transform of target
                     method.Invoke(ai, new object[] { target.transform });
+
+                    Debug.Log("Attacking " + target);
                 }
             }
 
@@ -342,6 +354,29 @@ namespace MiniJam159.Player
                     method.Invoke(ai, new object[] { resource });
 
                     Debug.Log("Harvesting " + resource);
+                }
+            }
+
+            // Finish attack command
+            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+        }
+
+        public void executeBuildStructure(GameObject structureObject)
+        {
+            // Invoke command on all selected units
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                // Check that object has a GameAI
+                GameAI ai = selectedObject.GetComponent<GameAI>();
+                if (ai == null) continue;
+
+                MethodInfo method = ai.GetType().GetMethod("buildStructureCommand");
+                if (method != null)
+                {
+                    // Invoke command method in ai using transform of target
+                    method.Invoke(ai, new object[] { structureObject });
+
+                    Debug.Log("Building " + structureObject);
                 }
             }
 

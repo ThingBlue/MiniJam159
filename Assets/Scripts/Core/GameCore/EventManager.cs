@@ -30,6 +30,7 @@ namespace MiniJam159.GameCore
         // Player events
         public UnityEvent selectionStartEvent;
         public UnityEvent selectionCompleteEvent;
+        public UnityEvent selectionSortedEvent;
         public UnityEvent populateCommandsStartEvent;
         public UnityEvent populateCommandsCompleteEvent;
 
@@ -58,6 +59,7 @@ namespace MiniJam159.GameCore
             // Player events
             if (selectionStartEvent == null) selectionStartEvent = new UnityEvent();
             if (selectionCompleteEvent == null) selectionCompleteEvent = new UnityEvent();
+            if (selectionSortedEvent == null) selectionSortedEvent = new UnityEvent();
             if (populateCommandsStartEvent == null) populateCommandsStartEvent = new UnityEvent();
             if (populateCommandsCompleteEvent == null) populateCommandsCompleteEvent = new UnityEvent();
 

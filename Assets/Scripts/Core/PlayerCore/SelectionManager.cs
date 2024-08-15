@@ -1,5 +1,3 @@
-using MiniJam159;
-using MiniJam159.GameCore;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +5,10 @@ using UnityEngine;
 using System;
 using UnityEngine.UI;
 
-namespace MiniJam159.GameCore
+using MiniJam159.GameCore;
+using MiniJam159.AICore;
+
+namespace MiniJam159.PlayerCore
 {
     public class SelectionManager : MonoBehaviour
     {
@@ -30,6 +31,12 @@ namespace MiniJam159.GameCore
             else Destroy(this);
 
             selectedObjects = new List<GameObject>();
+        }
+
+        private void Start()
+        {
+            // Subscribe to events
+            EventManager.instance.selectionCompleteEvent.AddListener(onSelectionCompleteCallback);
         }
 
         public void clearSelectedObjects()
@@ -78,6 +85,13 @@ namespace MiniJam159.GameCore
                     renderer.materials = newMaterials;
                 }
             }
+        }
+
+        private void onSelectionCompleteCallback()
+        {
+            // Sort selection
+            selectedObjects.Sort(new GameAIGameObjectComparer());
+            EventManager.instance.selectionSortedEvent.Invoke();
         }
 
     }

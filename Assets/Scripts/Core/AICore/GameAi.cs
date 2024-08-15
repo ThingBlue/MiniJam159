@@ -1,22 +1,38 @@
 using UnityEngine;
 using System.Collections.Generic;
 using MiniJam159.CommandCore;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace MiniJam159.AICore
 {
+    public enum AIJob
+    {
+        // Common jobs
+        IDLE = 0,
+        MOVE_TO_POSITION,
+        ATTACK,
+
+        // Worker jobs
+        HARVEST_RESOURCE,
+        RETURN_TO_BASE,
+        BUILD
+    }
+
     public abstract class GameAI : MonoBehaviour
     {
         #region Inspector members
 
         public Sprite displaySprite;
+        public int sortPriority = 0;
 
         #endregion
 
         public static List<GameAI> allAIs = new List<GameAI>(); // List of all AI instances
+
+        public AIJob currentAIJob = AIJob.IDLE;
         public List<CommandType> commands;
 
         protected Vector3 moveToPosition;
-        protected bool isMovingToPosition;
         protected bool moveIgnoreEnemies;
 
         //protected float moveIgnoreTargetTimer; // Timer to ignore targets while moving
@@ -26,9 +42,8 @@ namespace MiniJam159.AICore
         protected virtual void Start()
         {
             allAIs.Add(this);
-            isMovingToPosition = false;
+            currentAIJob = AIJob.IDLE;
             moveIgnoreEnemies = false;
-            //moveIgnoreTargetTimer = 0f;
         }
 
         protected virtual void OnDestroy()
@@ -48,7 +63,7 @@ namespace MiniJam159.AICore
             transform.Find("Mesh").position = new Vector3(transform.position.x, 0.4f, transform.position.z);
         }
 
-        protected void MoveTowardsPosition(float moveSpeed)
+        protected virtual void MoveTowardsPosition(float moveSpeed)
         {
             if (!moveIgnoreEnemies)// || moveIgnoreTargetTimer <= 0)
             {
@@ -57,7 +72,7 @@ namespace MiniJam159.AICore
 
                 if (target != null)
                 {
-                    isMovingToPosition = false;
+                    currentAIJob = AIJob.IDLE;
                     moveIgnoreEnemies = false;
                     return; // Stop moving to position if a target is found
                 }
@@ -66,7 +81,7 @@ namespace MiniJam159.AICore
             // Stop moving to position if reached
             if (Vector3.Distance(transform.position, moveToPosition) <= 0.5f)
             {
-                isMovingToPosition = false;
+                currentAIJob = AIJob.IDLE;
                 moveIgnoreEnemies = false;
             }
 
@@ -77,10 +92,9 @@ namespace MiniJam159.AICore
         public void MoveTo(Vector3 position, bool ignoreEnemies)
         {
             moveToPosition = position;
-            isMovingToPosition = true;
+            currentAIJob = AIJob.MOVE_TO_POSITION;
             target = null; // Reset target
             moveIgnoreEnemies = ignoreEnemies;
-            //moveIgnoreTargetTimer = moveIgnoreTargetDuration; // Start ignore target timer
         }
 
         public virtual void moveAICommand(Vector3 position)
@@ -98,7 +112,7 @@ namespace MiniJam159.AICore
             target = null; // Reset target
             
             // Stop moving to position if hold command is issued
-            isMovingToPosition = false;
+            currentAIJob = AIJob.IDLE;
             moveToPosition = transform.position;
         }
 
@@ -108,6 +122,35 @@ namespace MiniJam159.AICore
         {
             CommandManagerBase.instance.populateCommands(commands);
         }
-
     }
+
+    // Custom comparer class for units
+    public class GameAIComparer : IComparer<GameAI>
+    {
+        public int Compare(GameAI gameAI1, GameAI gameAI2)
+        {
+            if (gameAI1 == null || gameAI2 == null) return 0;
+
+            // Sort in descending order
+            return gameAI2.sortPriority.CompareTo(gameAI1.sortPriority);
+        }
+    }
+
+    public class GameAIGameObjectComparer : IComparer<GameObject>
+    {
+        public int Compare(GameObject gameObject1, GameObject gameObject2)
+        {
+            GameAI gameAI1 = gameObject1.GetComponent<GameAI>();
+            GameAI gameAI2 = gameObject2.GetComponent<GameAI>();
+
+            // Make sure we have GameAIs attached
+            if (gameAI1 == null && gameAI2 == null) return 0;
+            if (gameAI1 == null) return -1;
+            if (gameAI2 == null) return 1;
+
+            // Sort in descending order
+            return gameAI2.sortPriority.CompareTo(gameAI1.sortPriority);
+        }
+    }
+
 }

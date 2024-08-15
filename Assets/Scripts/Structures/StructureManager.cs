@@ -1,8 +1,8 @@
 using MiniJam159.GameCore;
+using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 
 namespace MiniJam159
@@ -111,7 +111,7 @@ namespace MiniJam159
             PlayerModeManager.instance.playerMode = PlayerMode.STRUCTURE_PLACEMENT;
         }
 
-        public void finishPlacement()
+        public GameObject finishPlacement()
         {
             // Get start position
             Vector3 mousePosition = InputManager.instance.getMousePositionInWorld();
@@ -166,10 +166,13 @@ namespace MiniJam159
                 newStructureObject.GetComponent<Structure>().structureData = new StructureData(placementStructureData);
 
                 structures.Add(newStructureObject);
+
+                return newStructureObject;
             }
             else
             {
                 Debug.Log("Blocked");
+                return null;
             }
         }
 

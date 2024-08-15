@@ -1,11 +1,13 @@
-using MiniJam159.AICore;
-using MiniJam159.GameCore;
-using MiniJam159.Structures;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
+
+using MiniJam159.AICore;
+using MiniJam159.GameCore;
+using MiniJam159.PlayerCore;
+using MiniJam159.Structures;
 
 namespace MiniJam159.Player
 {

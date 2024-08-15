@@ -32,7 +32,6 @@ namespace MiniJam159.AICore
         private void Update()
         {
             if (attackTimer > 0) attackTimer -= Time.deltaTime;
-            //if (moveIgnoreTargetTimer > 0) moveIgnoreTargetTimer -= Time.deltaTime;
         }
 
         protected override void FixedUpdate()
@@ -44,39 +43,33 @@ namespace MiniJam159.AICore
 
         protected virtual void offensiveMovementUpdate()
         {
-            if (isMovingToPosition)
+            switch (currentAIJob)
             {
-                MoveTowardsPosition(moveSpeed);
-            }
-            else
-            {
-                if (target == null)
-                {
-                    FindNearestTarget();
-                }
+                case AIJob.MOVE_TO_POSITION:
+                    MoveTowardsPosition(moveSpeed);
+                    break;
+                default:
+                    if (target == null) FindNearestTarget();
+                    if (target == null) return; // No target found, do nothing
 
-                if (target == null)
-                {
-                    return; // No target found, do nothing
-                }
-
-                float distanceToTarget = Vector3.Distance(transform.position, target.position);
-
-                if (distanceToTarget <= attackRange)
-                {
-                    if (isLeader)
+                    // Target found
+                    float distanceToTarget = Vector3.Distance(transform.position, target.position);
+                    if (distanceToTarget <= attackRange)
                     {
-                        CoordinatedAttack();
+                        if (isLeader)
+                        {
+                            CoordinatedAttack();
+                        }
+                        else
+                        {
+                            Attack();
+                        }
                     }
                     else
                     {
-                        Attack();
+                        MoveTowardsSurroundPosition();
                     }
-                }
-                else
-                {
-                    MoveTowardsSurroundPosition();
-                }
+                    break;
             }
         }
 
@@ -87,10 +80,8 @@ namespace MiniJam159.AICore
 
         protected override void FindNearestTarget()
         {
-            if (moveIgnoreEnemies)// moveIgnoreTargetTimer > 0)
-            {
-                return; // Ignore finding targets if timer is active
-            }
+            // Don't find targets during pure movement command
+            if (moveIgnoreEnemies) return; 
 
             Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius);
             float nearestDistance = Mathf.Infinity;
@@ -204,7 +195,7 @@ namespace MiniJam159.AICore
         public virtual void attackAICommand(Transform newTarget)
         {
             target = newTarget;
-            isMovingToPosition = false;
+            currentAIJob = AIJob.ATTACK;
         }
 
         protected virtual void onHoldCommandCallback()

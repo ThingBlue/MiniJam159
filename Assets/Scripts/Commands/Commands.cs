@@ -5,8 +5,10 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
 using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
+using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
 
 namespace MiniJam159.Commands

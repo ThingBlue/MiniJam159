@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using MiniJam159.GameCore;
+
 using MiniJam159.AICore;
 using MiniJam159.CommandCore;
-using MiniJam159.Structures;
+using MiniJam159.GameCore;
 using MiniJam159.Player;
+using MiniJam159.PlayerCore;
+using MiniJam159.Structures;
 
 namespace MiniJam159.UI
 {
@@ -56,7 +58,7 @@ namespace MiniJam159.UI
         {
             // Subscribe to events
             EventManager.instance.selectionStartEvent.AddListener(onSelectionStartCallback);
-            EventManager.instance.selectionCompleteEvent.AddListener(onSelectionCompleteCallback);
+            EventManager.instance.selectionSortedEvent.AddListener(onSelectionSortedCallback);
             EventManager.instance.populateCommandsStartEvent.AddListener(onPopulateCommandsStartCallback);
             EventManager.instance.populateCommandsCompleteEvent.AddListener(onPopulateCommandsCompleteCallback);
         }
@@ -232,7 +234,7 @@ namespace MiniJam159.UI
             clearCommandButtons();
         }
 
-        private void onSelectionCompleteCallback()
+        private void onSelectionSortedCallback()
         {
             showSelectedObjects();
         }

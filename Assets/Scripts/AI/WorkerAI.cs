@@ -1,30 +1,22 @@
 using UnityEngine;
 using System.Collections.Generic;
-using MiniJam159.Resources;
+using System.Linq;
+
 using MiniJam159.AICore;
 using MiniJam159.CommandCore;
-using MiniJam159.Structures;
 using MiniJam159.GameCore;
-using System.Linq;
+using MiniJam159.Resources;
+using MiniJam159.Structures;
 
 namespace MiniJam159.AI
 {
-    public enum WorkerJob
-    {
-        IDLE = 0,
-        MOVE_TO_POSITION,
-        RETURN_TO_BASE,
-        HARVEST_RESOURCE,
-        ATTACK,
-        BUILD
-    }
-
     public class WorkerAI : GroundMeleeAI
     {
         #region Inspector members
 
         public float harvestRange = 2f;
         public float depositRange = 2f;
+        public float buildRange = 2f;
 
         public List<CommandType> buildMenuCommands;
 
@@ -32,7 +24,8 @@ namespace MiniJam159.AI
 
         public Vector3 basePosition; // Base location to return resources
         private IResource currentResource; // Current resource being harvested
-        private bool isReturningToBase = false; // Flag to check if returning to base
+        private GameObject currentBuildStructureObject;
+        
         private float carriedResources = 0; // Amount of resources currently carried
 
         protected override void Start()
@@ -49,41 +42,40 @@ namespace MiniJam159.AI
 
         protected override void offensiveMovementUpdate()
         {
-            if (isMovingToPosition)
+            switch (currentAIJob)
             {
-                MoveTowardsPosition(moveSpeed);
-            }
-            else if (isReturningToBase)
-            {
-                MoveTowardsBase();
-            }
-            else if (currentResource != null)
-            {
-                MoveTowardsResource();
-            }
-            else
-            {
-                base.offensiveMovementUpdate();
-            }
+                case AIJob.HARVEST_RESOURCE:
+                    MoveTowardsResource();
+                    break;
+                case AIJob.RETURN_TO_BASE:
+                    MoveTowardsBase();
+                    break;
+                case AIJob.BUILD:
+                    MoveTowardsStructure();
+                    break;
+                default:
+                    if (currentAIJob == AIJob.IDLE && currentResource != null)
+                    {
+                        // Resource deposited, resume harvest
+                        currentAIJob = AIJob.HARVEST_RESOURCE;
+                    }
 
-            if (attackTimer > 0)
-            {
-                attackTimer -= Time.deltaTime;
+                    // Current job is a default job, let the base class handle it
+                    base.offensiveMovementUpdate();
+                    break;
             }
-
-            //if (moveIgnoreTargetTimer > 0) moveIgnoreTargetTimer -= Time.deltaTime;
         }
 
         public void HarvestResource(IResource resource)
         {
+            currentAIJob = AIJob.HARVEST_RESOURCE;
             currentResource = resource;
-            isReturningToBase = false;
         }
 
         public void ReturnToBase(Vector3 basePosition)
         {
+            currentAIJob = AIJob.RETURN_TO_BASE;
             this.basePosition = basePosition;
-            isReturningToBase = true;
         }
 
         private void MoveTowardsResource()
@@ -118,7 +110,17 @@ namespace MiniJam159.AI
             {
                 // Deposit resources
                 DepositResources();
-                isReturningToBase = false;
+                currentAIJob = AIJob.IDLE;
+            }
+        }
+
+        private void MoveTowardsStructure()
+        {
+            transform.position = Vector3.MoveTowards(transform.position, currentBuildStructureObject.transform.position, moveSpeed * Time.deltaTime);
+
+            if (Vector3.Distance(transform.position, currentBuildStructureObject.transform.position) < buildRange)
+            {
+
             }
         }
 
@@ -129,12 +131,15 @@ namespace MiniJam159.AI
             carriedResources = 0;
         }
 
+        public void setBasePosition(Vector3 newBasePosition)
+        {
+            basePosition = newBasePosition;
+        }
+
         public override void moveAICommand(Vector3 position)
         {
             // Reset any harvesting state
             currentResource = null;
-            isReturningToBase = false;
-            carriedResources = 0;
 
             base.moveAICommand(position);
         }
@@ -143,8 +148,6 @@ namespace MiniJam159.AI
         {
             // Reset any harvesting state
             currentResource = null;
-            isReturningToBase = false;
-            carriedResources = 0;
 
             base.holdAICommand();
         }
@@ -153,21 +156,23 @@ namespace MiniJam159.AI
         {
             // Reset any harvesting state
             currentResource = null;
-            isReturningToBase = false;
-            carriedResources = 0;
 
             base.attackAICommand(newTarget);
         }
 
         public void harvestAICommand(IResource newResource)
         {
-            isMovingToPosition = false;
             HarvestResource(newResource);
         }
 
-        public void setBasePosition(Vector3 newBasePosition)
+        public void buildStructureCommand(GameObject structureObject)
         {
-            basePosition = newBasePosition;
+            // Move towards structure
+            currentAIJob = AIJob.BUILD;
+            currentBuildStructureObject = structureObject;
+
+            // Reset harvesting state
+            currentResource = null;
         }
 
         public void openBuildMenuAICommand()
@@ -175,42 +180,5 @@ namespace MiniJam159.AI
             CommandManagerBase.instance.populateCommands(buildMenuCommands);
         }
 
-        /*
-        public override void populateBuildMenuCommands(GameObject caller)
-        {
-            List<StructureData> structureDatas = caller.GetComponent<WorkerAI>();
-            activeCommands.Clear();
-
-            EventManager.instance.populateCommandsStartEvent.Invoke();
-
-            // THERE MUST BE EXACTLY 11 STRUCTURE BUILD COMMANDS
-            // Convert structure datas into commands
-            List<CommandType> structureCommands = new List<CommandType>();
-            foreach (StructureData structureData in structureDataList.structureDatas)
-            {
-                switch (structureData.structureType)
-                {
-                    case StructureType.NEST:
-                        structureCommands.Add(CommandType.BUILD_NEST);
-                        break;
-                    case StructureType.WOMB:
-                        structureCommands.Add(CommandType.BUILD_WOMB);
-                        break;
-                    case StructureType.NULL:
-                        structureCommands.Add(CommandType.NULL);
-                        break;
-                }
-            }
-
-            if (structureCommands.Count == 11) structureCommands.Add(CommandType.CANCEL_BUILD_MENU);
-            else if (structureCommands.Count == 12) structureCommands[11] = CommandType.CANCEL_BUILD_MENU;
-            else Debug.LogError("Build menu command count is not 12");
-
-            // Populate command menu with buildable objects
-            CommandManager.instance.populateCommands(structureCommands);
-
-            EventManager.instance.populateCommandsCompleteEvent.Invoke();
-        }
-        */
     }
 }

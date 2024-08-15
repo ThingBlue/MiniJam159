@@ -1,8 +1,10 @@
-using MiniJam159.GameCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+
+using MiniJam159.GameCore;
+using MiniJam159.PlayerCore;
 
 namespace MiniJam.UI
 {

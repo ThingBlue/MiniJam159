@@ -36,32 +36,27 @@ namespace MiniJam159.AICore
 
         protected virtual void offensiveMovementUpdate()
         {
-            if (isMovingToPosition)
+            switch (currentAIJob)
             {
-                MoveTowardsPosition(moveSpeed);
-            }
-            else
-            {
-                if (target == null)
-                {
-                    FindNearestTarget();
-                }
+                case AIJob.MOVE_TO_POSITION:
+                    MoveTowardsPosition(moveSpeed);
+                    break;
+                default:
+                    // Search for target
+                    if (target == null) FindNearestTarget();
+                    if (target == null) return; // No target found, do nothing
 
-                if (target == null)
-                {
-                    return; // No target found, do nothing
-                }
-
-                float distanceToTarget = Vector3.Distance(transform.position, target.position);
-
-                if (distanceToTarget <= attackRange)
-                {
-                    Attack();
-                }
-                else
-                {
-                    MoveTowardsTarget();
-                }
+                    // Target found
+                    float distanceToTarget = Vector3.Distance(transform.position, target.position);
+                    if (distanceToTarget <= attackRange)
+                    {
+                        Attack();
+                    }
+                    else
+                    {
+                        MoveTowardsTarget();
+                    }
+                    break;
             }
         }
 
@@ -122,7 +117,7 @@ namespace MiniJam159.AICore
         public virtual void attackAICommand(Transform newTarget)
         {
             target = newTarget;
-            isMovingToPosition = false;
+            currentAIJob = AIJob.ATTACK;
         }
 
         void OnDrawGizmosSelected()
