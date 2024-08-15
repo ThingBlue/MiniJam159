@@ -87,8 +87,6 @@ namespace MiniJam159.Commands
     }
     public class BuildNestCommand : Command
     {
-        StructureData structureData;
-
         public override void initialize()
         {
             tooltip = "<b>Nest</b>\nThe core of the colony.";
@@ -103,8 +101,6 @@ namespace MiniJam159.Commands
     }
     public class BuildWombCommand : Command
     {
-        StructureData structureData;
-
         public override void initialize()
         {
             tooltip = "<b>Nest</b>\nThe core of the colony.";

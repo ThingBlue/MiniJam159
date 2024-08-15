@@ -13,9 +13,10 @@ namespace MiniJam159.Structures
         WOMB
     }
 
-    [Serializable]
-    public class StructureData
+    public class Structure : MonoBehaviour
     {
+        #region Inspector members
+    
         public StructureType structureType;
 
         public Vector3 position;
@@ -28,43 +29,19 @@ namespace MiniJam159.Structures
 
         public Sprite displayIcon;
 
-        public StructureData()
-        {
-            commands = new List<CommandType>();
-        }
-
-        public StructureData(StructureData other)
-        {
-            structureType = other.structureType;
-            position = other.position;
-            size = other.size;
-            maxHealth = other.maxHealth;
-            contructionTime = other.contructionTime;
-            commands = new List<CommandType>(other.commands);
-            displayIcon = other.displayIcon;
-        }
-    }
-
-    public class Structure : MonoBehaviour
-    {
-        #region Inspector members
-
-        public StructureData structureData;
-
         #endregion
 
         public float health;
 
         protected virtual void Awake()
         {
-            structureData = new StructureData();
-
-            // Resize blocked tiles
+            // Initialization
+            commands = new List<CommandType>();
         }
 
         public virtual void populateCommands()
         {
-            CommandManagerBase.instance.populateCommands(structureData.commands);
+            CommandManagerBase.instance.populateCommands(commands);
         }
     }
 

@@ -80,55 +80,11 @@ namespace MiniJam159.Player
             // DEBUG DEBUG DEBUG TEST TEST TEST
             if (InputManager.instance.getKeyDown("PlacementTest"))
             {
-                StructureData newStructureData = new StructureData();
-                newStructureData.structureType = StructureType.NULL;
-                newStructureData.size = new Vector3(2, 1, 3);
-                newStructureData.commands = new List<CommandType>();
-
-                newStructureData.commands.Add(CommandType.MOVE);
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.HOLD);
-                newStructureData.commands.Add(CommandType.NULL);
-
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.ATTACK);
-                newStructureData.commands.Add(CommandType.NULL);
-
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.OPEN_BUILD_MENU);
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.NULL);
-
-                newStructureData.displayIcon = testStructureSprite;
-
-                StructureManager.instance.beginPlacement(newStructureData);
+                EventManager.instance.buildWombCommandEvent.Invoke();
             }
             if (InputManager.instance.getKeyDown("PlacementTest2"))
             {
-                StructureData newStructureData = new StructureData();
-                newStructureData.structureType = StructureType.NEST;
-                newStructureData.size = new Vector3(5, 1, 5);
-                newStructureData.commands = new List<CommandType>();
-
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.MOVE);
-
-                newStructureData.commands.Add(CommandType.OPEN_BUILD_MENU);
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.ATTACK);
-
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.HOLD);
-                newStructureData.commands.Add(CommandType.NULL);
-                newStructureData.commands.Add(CommandType.NULL);
-
-                newStructureData.displayIcon = testStructureSprite;
-
-                StructureManager.instance.beginPlacement(newStructureData);
+                EventManager.instance.buildNestCommandEvent.Invoke();
             }
         }
 
