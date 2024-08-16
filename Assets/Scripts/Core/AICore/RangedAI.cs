@@ -39,7 +39,7 @@ namespace MiniJam159.AICore
             switch (currentAIJob)
             {
                 case AIJob.MOVE_TO_POSITION:
-                    MoveTowardsPosition(moveSpeed);
+                    handleMoveJob(moveSpeed);
                     break;
                 default:
                     // Search for target

@@ -4,16 +4,41 @@ using UnityEngine;
 
 namespace MiniJam159.Resources
 {
-    public interface IResource
+    public class Resource: MonoBehaviour
     {
-        Vector3 position { get; set; }
-        Vector3 size { get; set; }
+        #region Inspector members
 
-        float resourceAmount { get; set; }
-        float resourceReplenishRate { get; set; }
-        float harvestAmount { get; set; }
+        public float maxResourceAmount;
+        public float resourceReplenishRate;
 
-        float harvestResource(); // Harvests the resource and returns the amount harvested
-        void replenishResource(); // Replenishes the resource over time
+        #endregion
+
+        public float resourceAmount;
+
+        protected virtual void Start()
+        {
+            // Set to max amount at start
+            resourceAmount = maxResourceAmount;
+        }
+
+        protected virtual void FixedUpdate()
+        {
+            replenishResource();
+        }
+
+        // Harvests the resource and returns the amount harvested
+        public virtual float harvestResource(float harvestRate)
+        {
+            float harvested = Mathf.Min(harvestRate, resourceAmount);
+            resourceAmount -= harvested;
+            return harvested;
+        }
+
+        // Replenishes the resource over time
+        public virtual void replenishResource()
+        {
+            resourceAmount += resourceReplenishRate * Time.fixedDeltaTime;
+            resourceAmount = Mathf.Min(resourceAmount, maxResourceAmount);
+        }
     }
 }

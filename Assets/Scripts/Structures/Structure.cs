@@ -32,6 +32,7 @@ namespace MiniJam159.Structures
         #endregion
 
         public float health;
+        public float constructionProgress;
 
         protected virtual void Awake()
         {

@@ -24,9 +24,12 @@ namespace MiniJam159
         public GameObject wombStructurePrefab;
         public GameObject testStructurePrefab;
 
+        public List<StructureType> depositPointStructureTypes;
+
         #endregion
 
         public List<GameObject> structures;
+        public List<GameObject> depositPointStructures;
 
         private StructureType placementStructureType;
         private Vector3 placementStructureSize;
@@ -166,7 +169,11 @@ namespace MiniJam159
                 Renderer renderer = newBlockedTilesObject.GetComponent<MeshRenderer>();
                 renderer.material = new Material(renderer.material);
 
+                // Add to structures
                 structures.Add(newStructureObject);
+
+                // Add to deposit points if new structure is a deposit point
+                if (depositPointStructureTypes.Contains(placementStructureType)) depositPointStructures.Add(newStructureObject);
 
                 return newStructureObject;
             }

@@ -14,7 +14,6 @@ namespace MiniJam159.AICore
 
         // Worker jobs
         HARVEST_RESOURCE,
-        RETURN_TO_BASE,
         BUILD
     }
 
@@ -53,17 +52,15 @@ namespace MiniJam159.AICore
 
         protected virtual void FixedUpdate()
         {
-            // Set y position
+            // Set y position and remove velocity
             transform.position = new Vector3(transform.position.x, 0, transform.position.z);
-
-            // Remove velocity
             GetComponent<Rigidbody>().velocity = Vector3.zero;
 
             // Set mesh position
             transform.Find("Mesh").position = new Vector3(transform.position.x, 0.4f, transform.position.z);
         }
 
-        protected virtual void MoveTowardsPosition(float moveSpeed)
+        protected virtual void handleMoveJob(float moveSpeed)
         {
             if (!moveIgnoreEnemies)// || moveIgnoreTargetTimer <= 0)
             {

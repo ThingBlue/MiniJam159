@@ -294,7 +294,6 @@ namespace MiniJam159.Player
                 PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
                 return;
             }
-            IResource resource = target.GetComponent<IResource>();
 
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
@@ -307,9 +306,9 @@ namespace MiniJam159.Player
                 if (method != null)
                 {
                     // Invoke command method in ai using transform of target
-                    method.Invoke(ai, new object[] { resource });
+                    method.Invoke(ai, new object[] { target });
 
-                    Debug.Log("Harvesting " + resource);
+                    Debug.Log("Harvesting " + target);
                 }
             }
 

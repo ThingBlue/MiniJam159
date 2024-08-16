@@ -38,17 +38,18 @@ namespace MiniJam159.AICore
         {
             base.FixedUpdate();
 
-            offensiveMovementUpdate();
+            jobUpdate();
         }
 
-        protected virtual void offensiveMovementUpdate()
+        protected virtual void jobUpdate()
         {
             switch (currentAIJob)
             {
                 case AIJob.MOVE_TO_POSITION:
-                    MoveTowardsPosition(moveSpeed);
+                    handleMoveJob(moveSpeed);
                     break;
                 default:
+                    // Check if any enemy targets are nearby
                     if (target == null) FindNearestTarget();
                     if (target == null) return; // No target found, do nothing
 
@@ -143,7 +144,6 @@ namespace MiniJam159.AICore
         {
             if (attackTimer <= 0)
             {
-                Debug.Log("Attacking the target for " + attackDamage + " damage.");
                 // Implement health reduction on the target here
 
                 attackTimer = attackCooldown;
