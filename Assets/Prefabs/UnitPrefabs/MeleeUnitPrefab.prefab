@@ -231,10 +231,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32df92ecdd306f2448754d9e6864fb2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthBar: {fileID: 6224580914414646629}
   displaySprite: {fileID: 21300000, guid: cd9f05cf0dc137243a07d149c8e22bd9, type: 3}
   sortPriority: 2
+  maxHealth: 200
   currentAIJob: 0
   commands: 
+  health: 0
   targetTag: Enemy
   detectionRadius: 15
   attackRange: 2
@@ -279,6 +282,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9018097853522243624}
     m_Modifications:
+    - target: {fileID: 528110933893733787, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3815671466613445445, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
       propertyPath: m_Name
       value: HealthBarCanvas
@@ -374,3 +381,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4938891945104992329, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
   m_PrefabInstance: {fileID: 929083514777512073}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6224580914414646629 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6523151610093264364, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+  m_PrefabInstance: {fileID: 929083514777512073}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 208adb05ff15762419ce57ad3d3f2545, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

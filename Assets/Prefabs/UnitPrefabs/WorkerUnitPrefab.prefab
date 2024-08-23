@@ -399,10 +399,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 540e89fd48aaa9f47b8c194e43748053, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthBar: {fileID: 6922051565218666619}
   displaySprite: {fileID: 21300000, guid: 059119e69eb40b74489a005110b6b7a7, type: 3}
   sortPriority: 1
+  maxHealth: 100
   currentAIJob: 0
   commands: 010000000200000000000000030000000000000000000000000000000000000004000000000000000000000005000000
+  health: 0
   targetTag: Enemy
   detectionRadius: 15
   attackRange: 2
@@ -416,7 +419,7 @@ MonoBehaviour:
   buildRange: 3
   harvestRate: 20
   depositRate: 20
-  buildRate: 20
+  buildRate: 100
   harvestInterval: 1
   depositInterval: 0.5
   buildInterval: 0.5
@@ -624,6 +627,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+--- !u!114 &6922051565218666619 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6523151610093264364, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+  m_PrefabInstance: {fileID: 4221828801810384279}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 208adb05ff15762419ce57ad3d3f2545, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &9087290859286605278 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4938891945104992329, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}

@@ -10,9 +10,6 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
-using MiniJam159.AI;
-using Mono.Cecil;
 
 namespace MiniJam159.Player
 {
@@ -105,7 +102,7 @@ namespace MiniJam159.Player
                         GameObject newStructureObject = StructureManager.instance.finishPlacement();
 
                         // Send selected workers to build structure
-                        if (newStructureObject) executeBuildStructure(newStructureObject);
+                        if (newStructureObject) executeBuildTarget(newStructureObject);
 
                         ignoreNextMouse0Up = true;
                     }
@@ -113,15 +110,35 @@ namespace MiniJam159.Player
                     break;
 
                 case PlayerMode.ATTACK_TARGET:
-                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeAttackTarget();
+                    // Wait for player input
+                    if (!mouse0Down) break;
+
+                    GameObject attackTarget = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer);
+                    if (attackTarget == null || attackTarget.tag != enemyTag)
+                    {
+                        // No target, execute attack move instead
+                        executeAttackMove();
+                        return;
+                    }
+                    if (!EventSystem.current.IsPointerOverGameObject()) executeAttackTarget(attackTarget);
                     break;
 
                 case PlayerMode.HARVEST_TARGET:
-                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeHarvestTarget();
+                    // Wait for player input
+                    if (!mouse0Down) break;
+
+                    GameObject resourceTarget = InputManager.instance.mouseRaycastObject(resourceLayer);
+                    if (resourceTarget == null)
+                    {
+                        // No target, cancel attack command
+                        PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                        return;
+                    }
+                    if (!EventSystem.current.IsPointerOverGameObject()) executeHarvestTarget(resourceTarget);
                     break;
 
                 case PlayerMode.MOVE_TARGET:
-                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMoveTarget();
+                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMove();
                     break;
 
                 case PlayerMode.MASS_SELECT:
@@ -181,14 +198,23 @@ namespace MiniJam159.Player
                     // Movement commands
                     if (mouse1Down && !EventSystem.current.IsPointerOverGameObject())
                     {
-                        // Attack if hovering over enemy
-                        LayerMask layerMask = unitLayer | structureLayer;
-                        GameObject target = InputManager.instance.mouseRaycastObject(layerMask);
-                        if (target != null && target.tag == enemyTag) executeAttackTarget();
-                        // Interact if hovering over interactable
-                        else if (InputManager.instance.mouseRaycastObject(resourceLayer)) executeHarvestTarget();
+                        // Raycast at mouse position to check what the player is hovering over
+                        GameObject target = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer | resourceLayer);
+                        GameAI targetUnit = null;
+                        Structure targetStructure = null;
+                        Resource targetResource = null;
+                        if (target) targetUnit = target.GetComponent<GameAI>();
+                        if (target) targetStructure = target.GetComponent<Structure>();
+                        if (target) targetResource = target.GetComponent<Resource>();
+
+                        // Attack if hovering over enemy unit or structure
+                        if ((targetUnit != null || targetStructure != null) && target.tag == enemyTag) executeAttackTarget(target);
+                        // Harvest is hovering over resource
+                        else if (targetResource != null) executeHarvestTarget(target);
+                        // Harvest is hovering over unfinished building
+                        else if (targetStructure != null && targetStructure.buildProgress < targetStructure.maxBuildProgress) executeBuildTarget(target);
                         // Move if none of the above
-                        else executeMoveTarget();
+                        else executeMove();
                     }
                     break;
             }
@@ -207,7 +233,7 @@ namespace MiniJam159.Player
             mouse1Up = false;
         }
 
-        public void executeMoveTarget()
+        public void executeMove()
         {
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
@@ -229,7 +255,7 @@ namespace MiniJam159.Player
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeAttackMoveTarget()
+        public void executeAttackMove()
         {
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
@@ -253,17 +279,8 @@ namespace MiniJam159.Player
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeAttackTarget()
+        public void executeAttackTarget(GameObject target)
         {
-            LayerMask layerMask = unitLayer | structureLayer;
-            GameObject target = InputManager.instance.mouseRaycastObject(layerMask);
-            if (target == null || target.tag != enemyTag)
-            {
-                // No target, execute attack move instead
-                executeAttackMoveTarget();
-                return;
-            }
-
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
@@ -285,16 +302,8 @@ namespace MiniJam159.Player
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeHarvestTarget()
+        public void executeHarvestTarget(GameObject target)
         {
-            GameObject target = InputManager.instance.mouseRaycastObject(resourceLayer);
-            if (target == null)
-            {
-                // No target, cancel attack command
-                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-                return;
-            }
-
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
@@ -316,7 +325,7 @@ namespace MiniJam159.Player
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeBuildStructure(GameObject structureObject)
+        public void executeBuildTarget(GameObject target)
         {
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
@@ -329,9 +338,9 @@ namespace MiniJam159.Player
                 if (method != null)
                 {
                     // Invoke command method in ai using transform of target
-                    method.Invoke(ai, new object[] { structureObject });
+                    method.Invoke(ai, new object[] { target });
 
-                    Debug.Log("Building " + structureObject);
+                    Debug.Log("Building " + target);
                 }
             }
 

@@ -20,13 +20,8 @@ namespace MiniJam159.GameCore
 
         public float health;
 
-        private void Start()
-        {
-            // Default to start at max health
-            // Units will start at max, structure will start at 1
-            setMaxHealth(maxHealth);
-            setHealth(maxHealth);
-        }
+        // IMPORTANT: Owner entity is expected to initialize health bar with
+        //            setMaxHealth() and set Health()
 
         public void setMaxHealth(float maxHealth)
         {

@@ -192,7 +192,7 @@ namespace MiniJam159.AI
                 Structure targetStructure = targetStructureObject.GetComponent<Structure>();
 
                 // Check if build is complete
-                if (targetStructure.buildProgress >= targetStructure.buildTime)
+                if (targetStructure.buildProgress >= targetStructure.maxBuildProgress)
                 {
                     // Reset and return to idle
                     currentAIJob = AIJob.IDLE;

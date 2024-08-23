@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using MiniJam159.CommandCore;
 using System.Runtime.InteropServices.WindowsRuntime;
+using MiniJam159.GameCore;
 
 namespace MiniJam159.AICore
 {
@@ -21,8 +22,11 @@ namespace MiniJam159.AICore
     {
         #region Inspector members
 
+        public HealthBar healthBar;
         public Sprite displaySprite;
         public int sortPriority = 0;
+
+        public float maxHealth;
 
         #endregion
 
@@ -30,6 +34,8 @@ namespace MiniJam159.AICore
 
         public AIJob currentAIJob = AIJob.IDLE;
         public List<CommandType> commands;
+
+        public float health;
 
         protected Vector3 moveToPosition;
         protected bool moveIgnoreEnemies;
@@ -43,6 +49,13 @@ namespace MiniJam159.AICore
             allAIs.Add(this);
             currentAIJob = AIJob.IDLE;
             moveIgnoreEnemies = false;
+
+            // Start at max health
+            health = maxHealth;
+
+            // Set health bar values
+            healthBar.setMaxHealth(maxHealth);
+            healthBar.setHealth(health);
         }
 
         protected virtual void OnDestroy()

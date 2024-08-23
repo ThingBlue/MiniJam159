@@ -161,7 +161,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &6177613098874641224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,8 +194,8 @@ MonoBehaviour:
   healthBarCanvasTransform: {fileID: 4938891945104992329}
   healthBarTransform: {fileID: 5080010457798605838}
   maxHealth: 100
-  minSize: 1
-  sizeScaling: 0.01
+  minSize: 0.5
+  sizeScaling: 0.005
   health: 0
 --- !u!1 &4667917174902803672
 GameObject:

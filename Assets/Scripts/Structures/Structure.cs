@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using MiniJam159.CommandCore;
+using MiniJam159.GameCore;
 
 namespace MiniJam159.Structures
 {
@@ -16,18 +17,17 @@ namespace MiniJam159.Structures
     public class Structure : MonoBehaviour
     {
         #region Inspector members
-    
+
         public StructureType structureType;
 
-        public Vector3 position;
         public Vector3 size;
 
-        public float maxHealth;
-        public float buildTime;
-
+        public HealthBar healthBar;
+        public Sprite displayIcon;
         public List<CommandType> commands;
 
-        public Sprite displayIcon;
+        public float maxHealth;
+        public float maxBuildProgress;
 
         #endregion
 
@@ -40,6 +40,13 @@ namespace MiniJam159.Structures
             commands = new List<CommandType>();
         }
 
+        protected void Start()
+        {
+            // Set health bar values
+            healthBar.setMaxHealth(maxHealth);
+            healthBar.setHealth(health);
+        }
+
         public virtual void populateCommands()
         {
             CommandManagerBase.instance.populateCommands(commands);
@@ -49,12 +56,18 @@ namespace MiniJam159.Structures
         {
             buildProgress += amount;
 
+            // Clamp build progress
+            buildProgress = Mathf.Min(buildProgress, maxBuildProgress);
+
             // Increase health based on amount added
-            float percentageProgress = amount / buildTime;
+            float percentageProgress = amount / maxBuildProgress;
             health += percentageProgress * maxHealth;
 
             // Clamp health value
             health = Mathf.Min(health, maxHealth);
+
+            // Update health bar
+            healthBar.setHealth(health);
         }
     }
 
