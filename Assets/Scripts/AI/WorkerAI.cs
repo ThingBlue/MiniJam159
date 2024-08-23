@@ -22,8 +22,10 @@ namespace MiniJam159.AI
 
         public float harvestRate = 20f;
         public float depositRate = 20f;
+        public float buildRate = 20f;
         public float harvestInterval = 1f;
         public float depositInterval = 0.5f;
+        public float buildInterval = 0.5f;
 
         public float resourceCarryCapacity = 100f;
 
@@ -45,6 +47,7 @@ namespace MiniJam159.AI
 
         private float harvestTimer = 0;
         private float depositTimer = 0;
+        private float buildTimer = 0;
 
         protected override void Start()
         {
@@ -186,7 +189,27 @@ namespace MiniJam159.AI
             // Build structure
             if (Vector3.Distance(transform.position, targetStructureObject.transform.position) < buildRange)
             {
+                Structure targetStructure = targetStructureObject.GetComponent<Structure>();
 
+                // Check if build is complete
+                if (targetStructure.buildProgress >= targetStructure.buildTime)
+                {
+                    // Reset and return to idle
+                    currentAIJob = AIJob.IDLE;
+                    buildTimer = 0;
+                }
+
+                if (buildTimer > buildInterval)
+                {
+                    // Contribute build progress and reset build timer
+                    targetStructure.addBuildProgress(buildRate);
+                    buildTimer = 0;
+                }
+                else
+                {
+                    // Increment timer
+                    buildTimer += Time.fixedDeltaTime;
+                }
             }
             // Move towards structure
             else
@@ -251,6 +274,11 @@ namespace MiniJam159.AI
             // Reset worker target states
             targetResourceObject = null;
             targetStructureObject = null;
+
+            // Reset timers
+            harvestTimer = 0;
+            depositTimer = 0;
+            buildTimer = 0;
         }
 
     }

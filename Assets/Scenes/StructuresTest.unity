@@ -194,6 +194,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MeleeUnitPrefab (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
 --- !u!1 &5680821
@@ -1010,6 +1014,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MeleeUnitPrefab (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
 --- !u!1 &945526912
@@ -1589,6 +1597,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WorkerUnitPrefab (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296188, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: structureDataList
       value: 
@@ -1665,6 +1677,10 @@ PrefabInstance:
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
@@ -2129,6 +2145,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MeleeUnitPrefab (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
 --- !u!1 &1606605245
@@ -2305,6 +2325,10 @@ PrefabInstance:
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
@@ -2734,13 +2758,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4707790473072055222, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_RootOrder
       value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 24.639694
+      value: 27.92
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2748,7 +2776,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 27.303026
+      value: 22.28
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2798,13 +2826,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: MeleeUnitPrefab (5)
       objectReference: {fileID: 0}
-    - target: {fileID: 9115229287837767188, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 17.13
-      objectReference: {fileID: 0}
-    - target: {fileID: 9115229287837767188, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -11.7
+    - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
@@ -2862,6 +2886,10 @@ PrefabInstance:
     - target: {fileID: 3731014612963296188, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: m_Name
       value: WorkerUnitPrefab (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296188, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: structureDataList
