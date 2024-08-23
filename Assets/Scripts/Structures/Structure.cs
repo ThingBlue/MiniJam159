@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using MiniJam159.Commands;
+using MiniJam159.CommandCore;
+using MiniJam159.GameCore;
 
 namespace MiniJam159.Structures
 {
@@ -13,58 +14,60 @@ namespace MiniJam159.Structures
         WOMB
     }
 
-    [Serializable]
-    public class StructureData
-    {
-        public StructureType structureType;
-
-        public Vector3 position;
-        public Vector3 size;
-
-        public float maxHealth;
-        public float contructionTime;
-
-        public List<CommandType> commands;
-
-        public Sprite displayIcon;
-
-        public StructureData()
-        {
-            commands = new List<CommandType>();
-        }
-
-        public StructureData(StructureData other)
-        {
-            structureType = other.structureType;
-            position = other.position;
-            size = other.size;
-            maxHealth = other.maxHealth;
-            contructionTime = other.contructionTime;
-            commands = new List<CommandType>(other.commands);
-            displayIcon = other.displayIcon;
-        }
-    }
-
     public class Structure : MonoBehaviour
     {
         #region Inspector members
 
-        public StructureData structureData;
+        public StructureType structureType;
+
+        public Vector3 size;
+
+        public HealthBar healthBar;
+        public Sprite displayIcon;
+        public List<CommandType> commands;
+
+        public float maxHealth;
+        public float maxBuildProgress;
 
         #endregion
 
-        public float health;
+        public float health = 1;
+        public float buildProgress = 0;
 
         protected virtual void Awake()
         {
-            structureData = new StructureData();
+            // Initialization
+            commands = new List<CommandType>();
+        }
 
-            // Resize blocked tiles
+        protected void Start()
+        {
+            // Set health bar values
+            healthBar.setMaxHealth(maxHealth);
+            healthBar.setHealth(health);
         }
 
         public virtual void populateCommands()
         {
-            CommandManager.instance.populateCommands(structureData.commands);
+            CommandManagerBase.instance.populateCommands(commands);
+        }
+
+        public virtual void addBuildProgress(float amount)
+        {
+            buildProgress += amount;
+
+            // Clamp build progress
+            buildProgress = Mathf.Min(buildProgress, maxBuildProgress);
+
+            // Increase health based on amount added
+            float percentageProgress = amount / maxBuildProgress;
+            health += percentageProgress * maxHealth;
+
+            // Clamp health value
+            health = Mathf.Min(health, maxHealth);
+
+            // Update health bar
+            healthBar.setHealth(health);
         }
     }
 

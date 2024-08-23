@@ -1,39 +1,53 @@
 using UnityEngine;
 using System.Collections.Generic;
-using MiniJam159.Resources;
-using MiniJam159.AICore;
-using MiniJam159.Commands;
-using MiniJam159.Structures;
-using MiniJam159.GameCore;
 using System.Linq;
+
+using MiniJam159.AICore;
+using MiniJam159.CommandCore;
+using MiniJam159.GameCore;
+using MiniJam159.Resources;
+using MiniJam159.Structures;
+
+using TMPro;
 
 namespace MiniJam159.AI
 {
-    public enum WorkerJob
-    {
-        IDLE = 0,
-        MOVE_TO_POSITION,
-        RETURN_TO_BASE,
-        HARVEST_RESOURCE,
-        ATTACK,
-        BUILD
-    }
-
     public class WorkerAI : GroundMeleeAI
     {
         #region Inspector members
 
         public float harvestRange = 2f;
         public float depositRange = 2f;
+        public float buildRange = 2f;
 
-        public StructureDataList structureDataList;
+        public float harvestRate = 20f;
+        public float depositRate = 20f;
+        public float buildRate = 20f;
+        public float harvestInterval = 1f;
+        public float depositInterval = 0.5f;
+        public float buildInterval = 0.5f;
+
+        public float resourceCarryCapacity = 100f;
+
+        public List<CommandType> buildMenuCommands;
+
+        public TMP_Text debugText;
 
         #endregion
 
-        public Vector3 basePosition; // Base location to return resources
-        private IResource currentResource; // Current resource being harvested
-        private bool isReturningToBase = false; // Flag to check if returning to base
+        public bool lockDepositPoint = false;
+        public GameObject depositPointObject; // Deposit location to return resources
+
+        private GameObject targetResourceObject;
+        private GameObject targetStructureObject;
+        
         private float carriedResources = 0; // Amount of resources currently carried
+
+        private bool depositing = false;
+
+        private float harvestTimer = 0;
+        private float depositTimer = 0;
+        private float buildTimer = 0;
 
         protected override void Start()
         {
@@ -44,162 +58,228 @@ namespace MiniJam159.AI
         {
             base.FixedUpdate();
 
-            offensiveMovementUpdate();
+            jobUpdate();
+
+            debugText.text = carriedResources.ToString();
         }
 
-        protected override void offensiveMovementUpdate()
+        protected override void jobUpdate()
         {
-            if (isMovingToPosition)
+            switch (currentAIJob)
             {
-                MoveTowardsPosition(moveSpeed);
+                case AIJob.HARVEST_RESOURCE:
+                    handleHarvestResourceJob();
+                    break;
+                case AIJob.BUILD:
+                    handleBuildJob();
+                    break;
+                default:
+                    // Current job is a default job, let the base class handle it
+                    base.jobUpdate();
+                    break;
             }
-            else if (isReturningToBase)
+        }
+
+        private void handleHarvestResourceJob()
+        {
+            // HELP WHAT DO WE DO HERE 
+            // AFK AS TEMP SOLUTION
+            if (targetResourceObject == null) currentAIJob = AIJob.IDLE;
+            //if (targetResourceObject == null) ReturnToBase(basePosition);
+
+            Resource targetResource = targetResourceObject.GetComponent<Resource>();
+            // AFK AS TEMP SOLUTION
+            if (targetResource == null || targetResource.resourceAmount <= 0) currentAIJob = AIJob.IDLE;
+            //if (targetResource == null || targetResource.resourceAmount <= 0) ReturnToBase(basePosition);
+
+            // Pouch not full, harvest resource
+            if (carriedResources < resourceCarryCapacity && !depositing)
             {
-                MoveTowardsBase();
+                // Reset deposit timer
+                depositTimer = 0;
+
+                // Reset deposit point if not locked
+                if (!lockDepositPoint) depositPointObject = null;
+
+                // Harvest resource
+                if (Vector3.Distance(transform.position, targetResourceObject.transform.position) <= harvestRange)
+                {
+                    if (harvestTimer > harvestInterval)
+                    {
+                        // Perform harvest and reset timer
+                        carriedResources += targetResource.harvestResource(harvestRate);
+                        harvestTimer = 0;
+                    }
+                    else
+                    {
+                        // Increment timer
+                        harvestTimer += Time.fixedDeltaTime;
+                    }
+                }
+                // Move towards resource
+                else
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, targetResourceObject.transform.position, moveSpeed * Time.deltaTime);
+                }
             }
-            else if (currentResource != null)
-            {
-                MoveTowardsResource();
-            }
+            // Pouch full, return to base
             else
             {
-                base.offensiveMovementUpdate();
-            }
+                // Reset harvest timer
+                harvestTimer = 0;
 
-            if (attackTimer > 0)
-            {
-                attackTimer -= Time.deltaTime;
-            }
-
-            if (moveIgnoreTargetTimer > 0)
-            {
-                moveIgnoreTargetTimer -= Time.deltaTime;
-            }
-        }
-
-        public void HarvestResource(IResource resource)
-        {
-            currentResource = resource;
-            isReturningToBase = false;
-        }
-
-        public void ReturnToBase(Vector3 basePosition)
-        {
-            this.basePosition = basePosition;
-            isReturningToBase = true;
-        }
-
-        private void MoveTowardsResource()
-        {
-            if (currentResource == null || currentResource.resourceAmount <= 0)
-            {
-                ReturnToBase(basePosition);
-            }
-
-            transform.position = Vector3.MoveTowards(transform.position, currentResource.position, moveSpeed * Time.deltaTime);
-
-            if (Vector3.Distance(transform.position, currentResource.position) <= harvestRange)
-            {
-                if (currentResource == null || currentResource.resourceAmount <= 0)
+                // Find closest deposit point if null
+                if (!depositPointObject)
                 {
-                    ReturnToBase(basePosition);
+                    GameObject closestPoint = null;
+                    float closestDistance = -1f;
+                    foreach (var point in StructureManager.instance.depositPointStructures)
+                    {
+                        float distance = Vector3.Distance(transform.position, point.transform.position);
+                        if (distance < closestDistance || closestDistance == -1)
+                        {
+                            closestPoint = point;
+                            closestDistance = distance;
+                        }
+                    }
+                    depositPointObject = closestPoint;
+                }
+
+                // No deposit point, all points destroyed
+                if (depositPointObject == null)
+                {
+                    // Return to IDLE
+                    currentAIJob = AIJob.IDLE;
                     return;
                 }
 
-                // Harvest the resource
-                float harvestedAmount = currentResource.harvestResource();
-                carriedResources += harvestedAmount;
-                ReturnToBase(basePosition);
-            }
-        }
+                Vector3 depositPointPosition = depositPointObject.transform.position;
 
-        private void MoveTowardsBase()
-        {
-            transform.position = Vector3.MoveTowards(transform.position, basePosition, moveSpeed * Time.deltaTime);
-
-            if (Vector3.Distance(transform.position, basePosition) < depositRange)
-            {
                 // Deposit resources
-                DepositResources();
-                isReturningToBase = false;
+                if (Vector3.Distance(transform.position, depositPointPosition) < depositRange)
+                {
+                    if (depositTimer > depositInterval)
+                    {
+                        // Deposit resources and reset timer
+                        carriedResources -= Mathf.Min(depositRate, carriedResources);
+                        // ADD RESOURCES TO STORAGE
+                        depositTimer = 0;
+                    }
+                    else
+                    {
+                        // Increment timer
+                        depositTimer += Time.fixedDeltaTime;
+                    }
+
+                    // Set depositing status
+                    // Prevents early exit from deposit
+                    depositing = carriedResources > 0;
+                }
+                // Move towards base
+                else
+                {
+                    transform.position = Vector3.MoveTowards(transform.position, depositPointPosition, moveSpeed * Time.deltaTime);
+                }
+            }
+
+        }
+
+        private void handleBuildJob()
+        {
+            // Build structure
+            if (Vector3.Distance(transform.position, targetStructureObject.transform.position) < buildRange)
+            {
+                Structure targetStructure = targetStructureObject.GetComponent<Structure>();
+
+                // Check if build is complete
+                if (targetStructure.buildProgress >= targetStructure.maxBuildProgress)
+                {
+                    // Reset and return to idle
+                    currentAIJob = AIJob.IDLE;
+                    buildTimer = 0;
+                }
+
+                if (buildTimer > buildInterval)
+                {
+                    // Contribute build progress and reset build timer
+                    targetStructure.addBuildProgress(buildRate);
+                    buildTimer = 0;
+                }
+                else
+                {
+                    // Increment timer
+                    buildTimer += Time.fixedDeltaTime;
+                }
+            }
+            // Move towards structure
+            else
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetStructureObject.transform.position, moveSpeed * Time.deltaTime);
             }
         }
 
-        private void DepositResources()
+        public void setDepositPoint(GameObject depositPointObject, bool lockDepositPoint)
         {
-            // Logic to add resources to the base
-            Debug.Log("Deposited " + carriedResources + " resources at the base.");
-            carriedResources = 0;
+            this.depositPointObject = depositPointObject;
+            this.lockDepositPoint = lockDepositPoint;
         }
 
         public override void moveAICommand(Vector3 position)
         {
-            // Reset any harvesting state
-            currentResource = null;
-            isReturningToBase = false;
-            carriedResources = 0;
+            // Reset worker states
+            onCommandReceived();
 
             base.moveAICommand(position);
         }
 
         public override void holdAICommand()
         {
-            // Reset any harvesting state
-            currentResource = null;
-            isReturningToBase = false;
-            carriedResources = 0;
+            // Reset worker states
+            onCommandReceived();
 
             base.holdAICommand();
         }
 
         public override void attackAICommand(Transform newTarget)
         {
-            // Reset any harvesting state
-            currentResource = null;
-            isReturningToBase = false;
-            carriedResources = 0;
+            // Reset worker states
+            onCommandReceived();
 
             base.attackAICommand(newTarget);
         }
 
-        public void harvestAICommand(IResource newResource)
+        public void harvestAICommand(GameObject resourceObject)
         {
-            isMovingToPosition = false;
-            HarvestResource(newResource);
+            currentAIJob = AIJob.HARVEST_RESOURCE;
+            targetResourceObject = resourceObject;
         }
 
-        public void setBasePosition(Vector3 newBasePosition)
+        public void buildStructureCommand(GameObject structureObject)
         {
-            basePosition = newBasePosition;
+            // Reset worker states
+            onCommandReceived();
+
+            // Begin build job
+            currentAIJob = AIJob.BUILD;
+            targetStructureObject = structureObject;
         }
 
         public void openBuildMenuAICommand()
         {
-            // THERE MUST BE EXACTLY 11 STRUCTURE BUILD COMMANDS
-            // Convert structure datas into commands
-            List<CommandType> structureCommands = new List<CommandType>();
-            foreach (StructureData structureData in structureDataList.structureDatas)
-            {
-                switch (structureData.structureType)
-                {
-                    case StructureType.NEST:
-                        structureCommands.Add(CommandType.BUILD_NEST);
-                        break;
-                    case StructureType.WOMB:
-                        structureCommands.Add(CommandType.BUILD_WOMB);
-                        break;
-                    case StructureType.NULL:
-                        structureCommands.Add(CommandType.NULL);
-                        break;
-                }
-            }
-
-            if (structureCommands.Count == 11) structureCommands.Add(CommandType.CANCEL_BUILD_MENU);
-            else if (structureCommands.Count == 12) structureCommands[11] = CommandType.CANCEL_BUILD_MENU;
-            else Debug.LogError("Build menu command count is not 12");
-
-            // Populate command menu with buildable objects
-            CommandManager.instance.populateCommands(structureCommands);
+            CommandManagerBase.instance.populateCommands(buildMenuCommands);
         }
+
+        private void onCommandReceived()
+        {
+            // Reset worker target states
+            targetResourceObject = null;
+            targetStructureObject = null;
+
+            // Reset timers
+            harvestTimer = 0;
+            depositTimer = 0;
+            buildTimer = 0;
+        }
+
     }
 }

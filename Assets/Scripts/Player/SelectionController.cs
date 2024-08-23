@@ -1,11 +1,13 @@
-using MiniJam159.AICore;
-using MiniJam159.GameCore;
-using MiniJam159.Structures;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
+
+using MiniJam159.AICore;
+using MiniJam159.GameCore;
+using MiniJam159.PlayerCore;
+using MiniJam159.Structures;
 
 namespace MiniJam159.Player
 {
@@ -93,9 +95,10 @@ namespace MiniJam159.Player
             }
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
-            populateCommands();
-
             EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands();
         }
 
         public void executeMassSelect()
@@ -271,9 +274,10 @@ namespace MiniJam159.Player
             }
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
-            populateCommands();
-
             EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands();
 
             // Reset mass select
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
@@ -300,9 +304,10 @@ namespace MiniJam159.Player
             SelectionManager.instance.selectedObjects.Add(selectedObject);
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
-            populateCommands();
-
             EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands();
         }
 
         public void populateCommands()

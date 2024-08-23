@@ -1,10 +1,8 @@
 {
-    "name": "MiniJam159.Structures",
+    "name": "MiniJam159.CommandCore",
     "rootNamespace": "",
     "references": [
-        "GUID:0f3c0a8212f3aa04ab219718b9a57984",
-        "GUID:bbef0f67528fa3d449a56cbaab41cf97",
-        "GUID:2560b48c9dd956144acf2206045de4b9"
+        "GUID:0f3c0a8212f3aa04ab219718b9a57984"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

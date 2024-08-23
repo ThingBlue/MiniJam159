@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using MiniJam159.Commands;
+using MiniJam159.CommandCore;
 
 namespace MiniJam159.UI
 {

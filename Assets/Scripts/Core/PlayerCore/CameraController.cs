@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-namespace MiniJam159.GameCore
+namespace MiniJam159.PlayerCore
 {
     public class CameraController : MonoBehaviour
     {

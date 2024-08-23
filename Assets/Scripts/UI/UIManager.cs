@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using MiniJam159.GameCore;
+
 using MiniJam159.AICore;
-using MiniJam159.Commands;
-using MiniJam159.Structures;
+using MiniJam159.CommandCore;
+using MiniJam159.GameCore;
 using MiniJam159.Player;
+using MiniJam159.PlayerCore;
+using MiniJam159.Structures;
 
 namespace MiniJam159.UI
 {
@@ -56,7 +58,7 @@ namespace MiniJam159.UI
         {
             // Subscribe to events
             EventManager.instance.selectionStartEvent.AddListener(onSelectionStartCallback);
-            EventManager.instance.selectionCompleteEvent.AddListener(onSelectionCompleteCallback);
+            EventManager.instance.selectionSortedEvent.AddListener(onSelectionSortedCallback);
             EventManager.instance.populateCommandsStartEvent.AddListener(onPopulateCommandsStartCallback);
             EventManager.instance.populateCommandsCompleteEvent.AddListener(onPopulateCommandsCompleteCallback);
         }
@@ -83,9 +85,9 @@ namespace MiniJam159.UI
         public void populateCommandButtons()
         {
             // Create new ui and populate command buttons
-            for (int i = 0; i < CommandManager.instance.activeCommands.Count; i++)
+            for (int i = 0; i < CommandManagerBase.instance.activeCommands.Count; i++)
             {
-                Command activeCommand = CommandManager.instance.activeCommands[i];
+                Command activeCommand = CommandManagerBase.instance.activeCommands[i];
 
                 // Skip null commands
                 if (activeCommand == null) continue;
@@ -97,7 +99,7 @@ namespace MiniJam159.UI
                 // Assign command to button
                 newCommandButton.command = activeCommand;
                 newCommandButton.commandIndex = i;
-                newButtonObject.GetComponent<Button>().onClick.AddListener(() => CommandManager.instance.executeCommand(newCommandButton.commandIndex));
+                newButtonObject.GetComponent<Button>().onClick.AddListener(() => CommandManagerBase.instance.executeCommand(newCommandButton.commandIndex));
 
                 // Set button position
                 float xOffset = (i % 4) * 64.0f;
@@ -164,7 +166,7 @@ namespace MiniJam159.UI
             {
                 GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
                 newDisplayBox.GetComponent<RectTransform>().localPosition = new Vector3(0f, displayCenterHeight, 0f);
-                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().structureData.displayIcon;
+                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().displayIcon;
 
                 // Set up button
                 SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
@@ -220,7 +222,7 @@ namespace MiniJam159.UI
         public void onDisplayBoxClicked(int index)
         {
             // Clear commands
-            CommandManager.instance.clearCommands();
+            CommandManagerBase.instance.clearCommands();
 
             // Select new object
             SelectionController.instance.singleSelectObjectInList(index);
@@ -232,7 +234,7 @@ namespace MiniJam159.UI
             clearCommandButtons();
         }
 
-        private void onSelectionCompleteCallback()
+        private void onSelectionSortedCallback()
         {
             showSelectedObjects();
         }
