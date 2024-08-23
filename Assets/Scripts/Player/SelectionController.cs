@@ -95,9 +95,10 @@ namespace MiniJam159.Player
             }
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
-            populateCommands();
-
             EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands();
         }
 
         public void executeMassSelect()
@@ -273,9 +274,10 @@ namespace MiniJam159.Player
             }
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
-            populateCommands();
-
             EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands();
 
             // Reset mass select
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
@@ -302,9 +304,10 @@ namespace MiniJam159.Player
             SelectionManager.instance.selectedObjects.Add(selectedObject);
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
-            populateCommands();
-
             EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands();
         }
 
         public void populateCommands()
