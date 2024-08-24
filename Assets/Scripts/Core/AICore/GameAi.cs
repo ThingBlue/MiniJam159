@@ -23,7 +23,6 @@ namespace MiniJam159.AICore
         #region Inspector members
 
         public HealthBar healthBar;
-        public Sprite displaySprite;
 
         #endregion
 

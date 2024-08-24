@@ -23,7 +23,6 @@ namespace MiniJam159.Structures
         public Vector3 size;
 
         public HealthBar healthBar;
-        public Sprite displayIcon;
         public List<CommandType> commands;
 
         public float maxBuildProgress;

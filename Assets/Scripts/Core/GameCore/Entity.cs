@@ -9,6 +9,7 @@ namespace MiniJam159.GameCore
         #region Inspector members
 
         public int sortPriority = 0;
+        public Sprite displayIcon;
         public float maxHealth;
 
         #endregion

@@ -41,6 +41,10 @@ MonoBehaviour:
     keys: 63000000
   - name: VCommand
     keys: 76000000
+  - name: TypeSelect
+    keys: 30010000
+  - name: Deselect
+    keys: 34010000
   - name: PlacementTest
     keys: 62000000
   - name: PlacementTest2

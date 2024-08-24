@@ -200,15 +200,17 @@ namespace MiniJam159.Player
                     {
                         // Raycast at mouse position to check what the player is hovering over
                         GameObject target = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer | resourceLayer);
+                        Entity targetEntity = null;
                         GameAI targetUnit = null;
                         Structure targetStructure = null;
                         Resource targetResource = null;
+                        if (target) targetEntity = target.GetComponent<Entity>();
                         if (target) targetUnit = target.GetComponent<GameAI>();
                         if (target) targetStructure = target.GetComponent<Structure>();
                         if (target) targetResource = target.GetComponent<Resource>();
 
                         // Attack if hovering over enemy unit or structure
-                        if ((targetUnit != null || targetStructure != null) && target.tag == enemyTag) executeAttackTarget(target);
+                        if (targetEntity != null && target.tag == enemyTag) executeAttackTarget(target);
                         // Harvest is hovering over resource
                         else if (targetResource != null) executeHarvestTarget(target);
                         // Harvest is hovering over unfinished building
