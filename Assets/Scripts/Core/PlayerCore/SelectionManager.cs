@@ -90,7 +90,7 @@ namespace MiniJam159.PlayerCore
         private void onSelectionCompleteCallback()
         {
             // Sort selection
-            selectedObjects.Sort(new GameAIGameObjectComparer());
+            selectedObjects.Sort(new EntityGameObjectComparer());
             EventManager.instance.selectionSortedEvent.Invoke();
         }
 

@@ -290,20 +290,115 @@ namespace MiniJam159.Player
             return normalized * d;
         }
 
-        public void singleSelectObjectInList(int index)
+        public void reselectSingle(int index)
         {
             // Store the one object we want to keep
-            GameObject selectedObject = SelectionManager.instance.selectedObjects[index];
+            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
 
+            // Refresh UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Clear list
             SelectionManager.instance.clearSelectedObjects();
 
             // Add object back in
-            SelectionManager.instance.selectedObjects.Add(selectedObject);
+            SelectionManager.instance.selectedObjects.Add(targetObject);
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
+            // Sort
+            EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands();
+        }
+
+        public void reselectType(int index)
+        {
+            // Store the objects we want to keep
+            List<GameObject> reselectedObjects = new List<GameObject>();
+
+            // Get sorting priority of target
+            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
+            Entity targetEntity = targetObject.GetComponent<Entity>();
+
+            // Get all objects with the same sorting priority
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                Entity selectedEntity = selectedObject.GetComponent<Entity>();
+                if (selectedEntity.sortPriority == targetEntity.sortPriority)
+                {
+                    reselectedObjects.Add(selectedObject);
+                }
+            }
+
+            // Refresh UI
+            EventManager.instance.selectionStartEvent.Invoke();
+
+            // Clear list
+            SelectionManager.instance.clearSelectedObjects();
+
+            // Add objects back in
+            SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
+            SelectionManager.instance.addOutlinesToSelectedObjects();
+
+            // Sort
+            EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands();
+        }
+
+        public void deselectSingle(int index)
+        {
+            // Store the objects we want to keep
+            List<GameObject> reselectedObjects = new List<GameObject>(SelectionManager.instance.selectedObjects);
+
+            // Remove target object
+            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
+            reselectedObjects.Remove(targetObject);
+
+            // Refresh UI
+            EventManager.instance.selectionStartEvent.Invoke();
+
+            // Clear list
+            SelectionManager.instance.clearSelectedObjects();
+
+            // Add object back in
+            SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
+            SelectionManager.instance.addOutlinesToSelectedObjects();
+
+            // Sort
+            EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands();
+        }
+
+        public void deselectType(int index)
+        {
+            // Store the objects we want to keep
+            List<GameObject> reselectedObjects = new List<GameObject>(SelectionManager.instance.selectedObjects);
+
+            // Get sorting priority of target
+            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
+            Entity targetEntity = targetObject.GetComponent<Entity>();
+
+            // Remove all objects with the same sorting priority
+            reselectedObjects.RemoveAll(selectedObject =>
+                selectedObject.GetComponent<Entity>().sortPriority == targetEntity.sortPriority
+            );
+
+            // Refresh UI
+            EventManager.instance.selectionStartEvent.Invoke();
+
+            // Clear list
+            SelectionManager.instance.clearSelectedObjects();
+
+            // Add objects back in
+            SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
+            SelectionManager.instance.addOutlinesToSelectedObjects();
+
+            // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
 
             // Populate commands after sorting

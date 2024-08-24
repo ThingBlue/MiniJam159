@@ -172,7 +172,7 @@ namespace MiniJam159.UI
                 SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
                 newDisplayButton.selectedObjectName = selectedObjects[0].name;
                 newDisplayButton.selectedIndex = 0;
-                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => SelectionController.instance.singleSelectObjectInList(newDisplayButton.selectedIndex));
+                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => onDisplayBoxClicked(newDisplayButton.selectedIndex));
 
                 displayBoxes.Add(newDisplayBox);
                 return;
@@ -225,7 +225,34 @@ namespace MiniJam159.UI
             CommandManagerBase.instance.clearCommands();
 
             // Select new object
-            SelectionController.instance.singleSelectObjectInList(index);
+            if (InputManager.instance.getKey("Deselect"))
+            {
+                // Deselect
+                if (InputManager.instance.getKey("TypeSelect"))
+                {
+                    // Type
+                    SelectionController.instance.deselectType(index);
+                }
+                else
+                {
+                    // Single
+                    SelectionController.instance.deselectSingle(index);
+                }
+            }
+            else
+            {
+                // Reselect
+                if (InputManager.instance.getKey("TypeSelect"))
+                {
+                    // Type
+                    SelectionController.instance.reselectType(index);
+                }
+                else
+                {
+                    // Single
+                    SelectionController.instance.reselectSingle(index);
+                }
+            }
         }
 
         private void onSelectionStartCallback()
