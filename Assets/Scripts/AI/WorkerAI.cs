@@ -266,6 +266,7 @@ namespace MiniJam159.AI
 
         public void openBuildMenuAICommand()
         {
+            Debug.Log("Opening build menu");
             CommandManagerBase.instance.populateCommands(buildMenuCommands);
         }
 

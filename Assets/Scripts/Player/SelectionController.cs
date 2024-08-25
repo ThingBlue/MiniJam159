@@ -440,7 +440,7 @@ namespace MiniJam159.Player
             // First selected unit must be a worker
             if (SelectionManager.instance.selectedObjects.Count == 0) return;
 
-            GameObject selectedObject = SelectionManager.instance.selectedObjects[0];
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[SelectionManager.instance.getFocusIndex()];
             if (selectedObject == null) return;
 
             GameAI selectedUnit = selectedObject.GetComponent<GameAI>();
@@ -457,7 +457,7 @@ namespace MiniJam159.Player
 
         private void onCancelBuildMenuCommandCallback()
         {
-            populateCommands();
+            populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
         private void OnDrawGizmos()
