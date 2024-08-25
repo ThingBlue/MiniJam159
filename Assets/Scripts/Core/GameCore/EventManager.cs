@@ -33,6 +33,7 @@ namespace MiniJam159.GameCore
         public UnityEvent selectionSortedEvent;
         public UnityEvent populateCommandsStartEvent;
         public UnityEvent populateCommandsCompleteEvent;
+        public UnityEvent setFocusCompleteEvent;
 
         // Command events
         public UnityEvent holdCommandEvent;
@@ -62,6 +63,7 @@ namespace MiniJam159.GameCore
             if (selectionSortedEvent == null) selectionSortedEvent = new UnityEvent();
             if (populateCommandsStartEvent == null) populateCommandsStartEvent = new UnityEvent();
             if (populateCommandsCompleteEvent == null) populateCommandsCompleteEvent = new UnityEvent();
+            if (setFocusCompleteEvent == null) setFocusCompleteEvent = new UnityEvent();
 
             // Command events
             if (holdCommandEvent == null) holdCommandEvent = new UnityEvent();

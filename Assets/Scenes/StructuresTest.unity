@@ -371,6 +371,9 @@ MonoBehaviour:
   populateCommandsCompleteEvent:
     m_PersistentCalls:
       m_Calls: []
+  cycleFocusCompleteEvent:
+    m_PersistentCalls:
+      m_Calls: []
   holdCommandEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -1950,6 +1953,7 @@ MonoBehaviour:
   defaultMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   selectedOutlineMaterial: {fileID: 2100000, guid: 2cd68e4b28dbb8c429577e2a5e049d53, type: 2}
   selectedObjects: []
+  focusIndex: 0
 --- !u!4 &1297323454
 Transform:
   m_ObjectHideFlags: 0

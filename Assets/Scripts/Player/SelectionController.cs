@@ -8,6 +8,7 @@ using MiniJam159.AICore;
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
+using System;
 
 namespace MiniJam159.Player
 {
@@ -69,18 +70,23 @@ namespace MiniJam159.Player
             // Clear current selection regardless of if we hit amything
             SelectionManager.instance.clearSelectedObjects();
 
+            // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Raycast from mouse and grab first hit
             LayerMask raycastMask = unitLayer | structureLayer;
             GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
 
-            if (hitObject == null) return;
+            if (hitObject == null)
+            {
+                EventManager.instance.selectionCompleteEvent.Invoke();
+                return;
+            }
 
             // We have a hit
             if (hitObject.GetComponent<GameAI>())
             {
-                // Hit the paernt ai
+                // Hit the parent ai
                 SelectionManager.instance.selectedObjects.Add(hitObject);
             }
             else if (hitObject.GetComponent<Structure>())
@@ -106,6 +112,10 @@ namespace MiniJam159.Player
             // Clear current selection
             SelectionManager.instance.clearSelectedObjects();
 
+            // Reset focus
+            SelectionManager.instance.focusSortPriority = -1;
+
+            // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Find boundaries of selection box in screen space
@@ -295,7 +305,7 @@ namespace MiniJam159.Player
             // Store the one object we want to keep
             GameObject targetObject = SelectionManager.instance.selectedObjects[index];
 
-            // Refresh UI
+            // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Clear list
@@ -309,7 +319,7 @@ namespace MiniJam159.Player
             EventManager.instance.selectionCompleteEvent.Invoke();
 
             // Populate commands after sorting
-            populateCommands();
+            populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
         public void reselectType(int index)
@@ -331,7 +341,7 @@ namespace MiniJam159.Player
                 }
             }
 
-            // Refresh UI
+            // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Clear list
@@ -345,7 +355,7 @@ namespace MiniJam159.Player
             EventManager.instance.selectionCompleteEvent.Invoke();
 
             // Populate commands after sorting
-            populateCommands();
+            populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
         public void deselectSingle(int index)
@@ -357,7 +367,7 @@ namespace MiniJam159.Player
             GameObject targetObject = SelectionManager.instance.selectedObjects[index];
             reselectedObjects.Remove(targetObject);
 
-            // Refresh UI
+            // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Clear list
@@ -371,7 +381,7 @@ namespace MiniJam159.Player
             EventManager.instance.selectionCompleteEvent.Invoke();
 
             // Populate commands after sorting
-            populateCommands();
+            populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
         public void deselectType(int index)
@@ -388,7 +398,7 @@ namespace MiniJam159.Player
                 selectedObject.GetComponent<Entity>().sortPriority == targetEntity.sortPriority
             );
 
-            // Refresh UI
+            // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Clear list
@@ -402,15 +412,15 @@ namespace MiniJam159.Player
             EventManager.instance.selectionCompleteEvent.Invoke();
 
             // Populate commands after sorting
-            populateCommands();
+            populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
-        public void populateCommands()
+        public void populateCommands(int focusIndex = 0)
         {
-            if (SelectionManager.instance.selectedObjects.Count == 0) return;
+            if (SelectionManager.instance.selectedObjects.Count < focusIndex + 1) return;
 
             // Populate command menu using the first object in list
-            GameObject selectedObject = SelectionManager.instance.selectedObjects[0];
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[focusIndex];
             if (selectedObject == null) return;
 
             if (selectedObject.layer == LayerMask.NameToLayer("Unit"))

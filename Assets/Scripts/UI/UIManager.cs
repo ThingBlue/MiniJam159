@@ -69,6 +69,7 @@ namespace MiniJam159.UI
             EventManager.instance.selectionSortedEvent.AddListener(onSelectionSortedCallback);
             EventManager.instance.populateCommandsStartEvent.AddListener(onPopulateCommandsStartCallback);
             EventManager.instance.populateCommandsCompleteEvent.AddListener(onPopulateCommandsCompleteCallback);
+            EventManager.instance.setFocusCompleteEvent.AddListener(onSetFocusCompleteCallback);
         }
 
         private void Update()
@@ -223,11 +224,12 @@ namespace MiniJam159.UI
             }
 
             // Set starting positions for each box
-            updateDisplayBoxes(true);
+            updateDisplayBoxes(true, true);
         }
 
+        // doPositionUpdate false means we skip setting position and target position of display boxes, and only update frame colour
         // setPosition flag is only true for initialization to immediately set target position of boxes
-        public void updateDisplayBoxes(bool setPosition = false)
+        public void updateDisplayBoxes(bool doPositionUpdate = true, bool setPosition = false)
         {
             // Get key statuses
             bool deselectKey = InputManager.instance.getKey("Deselect");
@@ -288,27 +290,37 @@ namespace MiniJam159.UI
                 {
                     SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
 
-                    // Calculate box position
-                    Vector3 boxLocalPosition = new Vector3(currentPosition, 0f, 0f);
-                    boxLocalPosition.x += (displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize) / 2f;
-                    boxLocalPosition.y = rowYPositions[r];
+                    // Do position update
+                    if (doPositionUpdate)
+                    {
+                        // Calculate box position
+                        Vector3 boxLocalPosition = new Vector3(currentPosition, 0f, 0f);
+                        boxLocalPosition.x += (displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize) / 2f;
+                        boxLocalPosition.y = rowYPositions[r];
 
-                    // Update current position
-                    currentPosition += displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize;
+                        // Update current position
+                        currentPosition += displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize;
 
-                    // Set target position
-                    RectTransform boxTransform = displayBoxes[r][c].GetComponent<RectTransform>();
-                    displayButton.targetLocalPosition = boxLocalPosition;
+                        // Set target position
+                        RectTransform boxTransform = displayBoxes[r][c].GetComponent<RectTransform>();
+                        displayButton.targetLocalPosition = boxLocalPosition;
 
-                    // Immediately set position if flag is true
-                    if (setPosition) boxTransform.localPosition = boxLocalPosition;
+                        // Immediately set position if flag is true
+                        if (setPosition) boxTransform.localPosition = boxLocalPosition;
+                    }
+
+                    // Set frame colour based on focus status
+                    Entity displayButtonEntity = SelectionManager.instance.selectedObjects[displayButton.selectedIndex].GetComponent<Entity>();
+                    if (displayButtonEntity.sortPriority == SelectionManager.instance.focusSortPriority)
+                    {
+                        displayButton.setSelectStatus(SelectStatus.FOCUSED);
+                    }
+                    else displayButton.setSelectStatus(SelectStatus.DEFAULT);
 
                     // Set selection status of all boxes of the same sorting priority
-                    displayButton.setSelectStatus(SelectStatus.DEFAULT);
                     if (hoveredDisplayButton != null)
                     {
                         Entity hoveredEntity = SelectionManager.instance.selectedObjects[hoveredDisplayButton.selectedIndex].GetComponent<Entity>();
-                        Entity displayButtonEntity = SelectionManager.instance.selectedObjects[displayButton.selectedIndex].GetComponent<Entity>();
 
                         // Single reselect
                         if (!deselectKey && !typeSelectKey && displayButton.hovered)
@@ -352,7 +364,16 @@ namespace MiniJam159.UI
             else if (deselectKey) SelectionController.instance.deselectSingle(index);
             // Reselect type
             else if (typeSelectKey) SelectionController.instance.reselectType(index);
-            // Reselect single
+            // Set focus
+            else if (SelectionManager.instance.getSortPriorityWithIndex(index) != SelectionManager.instance.focusSortPriority)
+            {
+                SelectionManager.instance.focusSortPriority = SelectionManager.instance.getSortPriorityWithIndex(index);
+                SelectionController.instance.populateCommands(index);
+
+                // Update display boxes
+                EventManager.instance.setFocusCompleteEvent.Invoke();
+            }
+            // Reselect single if already focused
             else SelectionController.instance.reselectSingle(index);
         }
 
@@ -375,6 +396,11 @@ namespace MiniJam159.UI
         private void onPopulateCommandsCompleteCallback()
         {
             populateCommandButtons();
+        }
+
+        private void onSetFocusCompleteCallback()
+        {
+            updateDisplayBoxes(false);
         }
 
     }

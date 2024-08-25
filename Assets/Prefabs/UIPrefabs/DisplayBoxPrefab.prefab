@@ -213,14 +213,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frameImage: {fileID: 2968524179578170381}
   smoothTime: 0.05
-  defaultWidth: 32
-  hoveredWidth: 48
-  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  defaultColor: {r: 0, g: 0, b: 0, a: 1}
+  focusedColor: {r: 1, g: 1, b: 1, a: 1}
   reselectColor: {r: 0, g: 1, b: 0.116666794, a: 1}
   deselectColor: {r: 1, g: 0, b: 0, a: 1}
   selectedObjectName: 
   selectedIndex: 0
-  row: []
+  defaultSize: 0
+  hoveredSize: 0
   targetLocalPosition: {x: 0, y: 0, z: 0}
   targetSize: {x: 0, y: 0}
   hovered: 0

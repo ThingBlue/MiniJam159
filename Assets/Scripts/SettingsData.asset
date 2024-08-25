@@ -41,6 +41,10 @@ MonoBehaviour:
     keys: 63000000
   - name: VCommand
     keys: 76000000
+  - name: CancelCommand
+    keys: 1b000000
+  - name: CycleFocus
+    keys: 09000000
   - name: TypeSelect
     keys: 30010000
   - name: Deselect

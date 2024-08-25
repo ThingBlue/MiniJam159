@@ -20,6 +20,7 @@ namespace MiniJam159.PlayerCore
         #endregion
 
         public List<GameObject> selectedObjects;
+        public int focusSortPriority = -1;
 
         // Singleton
         public static SelectionManager instance;
@@ -87,10 +88,47 @@ namespace MiniJam159.PlayerCore
             }
         }
 
+        public int getFocusIndex()
+        {
+            // No focus
+            if (focusSortPriority == -1) return -1;
+
+            for (int i = 0; i < selectedObjects.Count; i++)
+            {
+                if (selectedObjects[i].GetComponent<Entity>().sortPriority == focusSortPriority) return i;
+            }
+
+            // No focus found
+            return -1;
+        }
+
+        public int getFocusIndexWithSortPriority(int sortPriority)
+        {
+            for (int i = 0; i < selectedObjects.Count; i++)
+            {
+                if (selectedObjects[i].GetComponent<Entity>().sortPriority == sortPriority) return i;
+            }
+
+            // No focus found
+            return -1;
+        }
+
+        public int getSortPriorityWithIndex(int index)
+        {
+            return selectedObjects[index].GetComponent<Entity>().sortPriority;
+        }
+
         private void onSelectionCompleteCallback()
         {
             // Sort selection
             selectedObjects.Sort(new EntityGameObjectComparer());
+
+            // Clear focus if nothing is selected
+            if (selectedObjects.Count == 0) focusSortPriority = 0;
+
+            // Set focus to first entity is there is none
+            if (selectedObjects.Count > 0 && getFocusIndex() == -1) focusSortPriority = selectedObjects[0].GetComponent<Entity>().sortPriority;
+
             EventManager.instance.selectionSortedEvent.Invoke();
         }
 

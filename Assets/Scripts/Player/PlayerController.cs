@@ -32,6 +32,8 @@ namespace MiniJam159.Player
         private bool mouse1Down;
         private bool mouse0Up;
         private bool mouse1Up;
+        private bool cancelCommandKeyDown;
+        private bool cycleFocusKeyDown;
 
         private bool canSelect;
         private bool ignoreNextMouse0Up;
@@ -74,6 +76,9 @@ namespace MiniJam159.Player
                 if (InputManager.instance.getKeyDown("VCommand")) CommandManagerBase.instance.executeCommand(11);
             }
 
+            if (InputManager.instance.getKeyDown("CancelCommand")) cancelCommandKeyDown = true;
+            if (InputManager.instance.getKeyDown("CycleFocus")) cycleFocusKeyDown = true;
+
             // DEBUG DEBUG DEBUG TEST TEST TEST
             if (InputManager.instance.getKeyDown("PlacementTest"))
             {
@@ -93,6 +98,7 @@ namespace MiniJam159.Player
             if (Input.mousePosition.y >= Screen.height) CameraController.instance.panCamera(Vector3.forward);
             if (Input.mousePosition.y <= 0) CameraController.instance.panCamera(Vector3.back);
 
+            // Handle input based on state
             switch (PlayerModeManager.instance.playerMode)
             {
                 case PlayerMode.STRUCTURE_PLACEMENT:
@@ -106,10 +112,13 @@ namespace MiniJam159.Player
 
                         ignoreNextMouse0Up = true;
                     }
-                    if (mouse1Down) StructureManager.instance.cancelPlacement();
+                    if (cancelCommandKeyDown || mouse1Down) StructureManager.instance.cancelPlacement();
                     break;
 
                 case PlayerMode.ATTACK_TARGET:
+                    // Check for cancel
+                    if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+
                     // Wait for player input
                     if (!mouse0Down) break;
 
@@ -118,12 +127,15 @@ namespace MiniJam159.Player
                     {
                         // No target, execute attack move instead
                         executeAttackMove();
-                        return;
+                        break;
                     }
                     if (!EventSystem.current.IsPointerOverGameObject()) executeAttackTarget(attackTarget);
                     break;
 
                 case PlayerMode.HARVEST_TARGET:
+                    // Check for cancel
+                    if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+
                     // Wait for player input
                     if (!mouse0Down) break;
 
@@ -138,6 +150,9 @@ namespace MiniJam159.Player
                     break;
 
                 case PlayerMode.MOVE_TARGET:
+                    // Check for cancel
+                    if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMove();
                     break;
 
@@ -193,6 +208,9 @@ namespace MiniJam159.Player
                         SelectionController.instance.executeSingleSelect();
                     }
 
+                    // Cycle focus
+                    if (cycleFocusKeyDown) cycleFocus();
+
                     // Movement commands
                     if (mouse1Down && !EventSystem.current.IsPointerOverGameObject())
                     {
@@ -231,6 +249,42 @@ namespace MiniJam159.Player
             mouse1Down = false;
             mouse0Up = false;
             mouse1Up = false;
+            cancelCommandKeyDown = false;
+            cycleFocusKeyDown = false;
+        }
+
+        public void cycleFocus()
+        {
+            // Find entity with old focused sorting priority
+            // -1 if none found
+            int oldFocusIndex = SelectionManager.instance.getFocusIndex();
+
+            // If oldFocusIndex == -1, then focused sorting priority is no longer in selected objects, and we default to 0
+            int newFocusIndex = 0;
+
+            if (oldFocusIndex != -1)
+            {
+                // Find entity with new focus
+                for (int i = newFocusIndex; i < SelectionManager.instance.selectedObjects.Count; i++)
+                {
+                    if (SelectionManager.instance.selectedObjects[i].GetComponent<Entity>().sortPriority != SelectionManager.instance.focusSortPriority)
+                    {
+                        newFocusIndex = i;
+                        break;
+                    }
+                }
+                // If no new focus is found, defaults to 0
+                // Also works in the case the current focus is the final selected type
+
+                // Set new focus sorting priority
+                SelectionManager.instance.focusSortPriority = SelectionManager.instance.selectedObjects[newFocusIndex].GetComponent<Entity>().sortPriority;
+            }
+
+            // Update commands
+            SelectionController.instance.populateCommands(newFocusIndex);
+
+            // Update UI
+            EventManager.instance.setFocusCompleteEvent.Invoke();
         }
 
         public void executeMove()

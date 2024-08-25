@@ -9,6 +9,7 @@ namespace MiniJam159.UI
     public enum SelectStatus
     {
         DEFAULT = 0,
+        FOCUSED,
         RESELECT,
         DESELECT
     }
@@ -22,6 +23,7 @@ namespace MiniJam159.UI
         public float smoothTime;
 
         public Color defaultColor;
+        public Color focusedColor;
         public Color reselectColor;
         public Color deselectColor;
 
@@ -57,6 +59,9 @@ namespace MiniJam159.UI
             {
                 case SelectStatus.DEFAULT:
                     frameImage.color = defaultColor;
+                    break;
+                case SelectStatus.FOCUSED:
+                    frameImage.color = focusedColor;
                     break;
                 case SelectStatus.RESELECT:
                     frameImage.color = reselectColor;
