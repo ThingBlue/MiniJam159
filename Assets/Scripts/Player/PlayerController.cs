@@ -78,16 +78,6 @@ namespace MiniJam159.Player
 
             if (InputManager.instance.getKeyDown("CancelCommand")) cancelCommandKeyDown = true;
             if (InputManager.instance.getKeyDown("CycleFocus")) cycleFocusKeyDown = true;
-
-            // DEBUG DEBUG DEBUG TEST TEST TEST
-            if (InputManager.instance.getKeyDown("PlacementTest"))
-            {
-                EventManager.instance.buildWombCommandEvent.Invoke();
-            }
-            if (InputManager.instance.getKeyDown("PlacementTest2"))
-            {
-                EventManager.instance.buildNestCommandEvent.Invoke();
-            }
         }
 
         private void FixedUpdate()
