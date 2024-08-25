@@ -42,6 +42,8 @@ namespace MiniJam159.UI
         public List<GameObject> commandButtons;
         public List<List<GameObject>> displayBoxes;
 
+        private bool displayBoxUpdateNeeded = false;
+
         // Singleton
         public static UIManager instance;
 
@@ -76,6 +78,22 @@ namespace MiniJam159.UI
             float newPosition = 256f + ((Screen.width - 320f) - 256f) / 2f - (Screen.width / 2f);
             displayPanelTransform.localPosition = new Vector3(newPosition, -32f, 0f);
             displayPanelTransform.sizeDelta = new Vector2(newWidth, displayPanelTransform.sizeDelta.y);
+
+            // Check if an update is required for display boxes
+            if (InputManager.instance.getKeyDown("TypeSelect") || InputManager.instance.getKeyDown("Deselect") ||
+                InputManager.instance.getKeyUp("TypeSelect") || InputManager.instance.getKeyUp("Deselect"))
+            {
+                displayBoxUpdateNeeded = true;
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            if (displayBoxUpdateNeeded)
+            {
+                updateDisplayBoxes();
+                displayBoxUpdateNeeded = false;
+            }
         }
 
         public void clearCommandButtons()
@@ -202,30 +220,95 @@ namespace MiniJam159.UI
             }
 
             // Set starting positions for each box
+            updateDisplayBoxes(true);
+        }
+
+        // setPosition flag is only true for initialization to immediately set target position of boxes
+        public void updateDisplayBoxes(bool setPosition = false)
+        {
+            // Reset selection statuses and find hovered entity
             // Loop through rows
+            SelectionDisplayButton hoveredDisplayButton = null;
             for (int r = 0; r < displayBoxes.Count; r++)
             {
                 // Loop through columns
                 for (int c = 0; c < displayBoxes[r].Count; c++)
                 {
-                    // Calculate position
-                    float leftBoxXPosition = 0f - (displayBoxes[r].Count - 1) * 32f / 2f;
-                    Vector3 boxLocalPosition = new Vector3(0f, 0f, 0f);
-                    boxLocalPosition.x = leftBoxXPosition + (c * 32f);
+                    SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
 
-                    Debug.Log(boxLocalPosition.x);
+                    // Reset selection status
+                    displayButton.setSelectStatus(SelectStatus.DEFAULT);
 
-                    // Set position
-                    RectTransform boxTransform = displayBoxes[r][c].GetComponent<RectTransform>();
-                    boxTransform.localPosition = boxLocalPosition;
-
-                    // Set target position and size
-                    SelectionDisplayButton newDisplayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
-                    newDisplayButton.targetLocalPosition = boxLocalPosition;
-                    newDisplayButton.targetSize = new Vector2(32f, 32f);
+                    // Check for hovered status
+                    if (hoveredDisplayButton == null && displayButton.hovered) hoveredDisplayButton = displayButton;
                 }
             }
 
+            // Get key statuses
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool typeSelectKey = InputManager.instance.getKey("TypeSelect");
+
+            // Set selection status of hovered entity
+            if (hoveredDisplayButton != null)
+            {
+                // Deselect
+                if (deselectKey) hoveredDisplayButton.setSelectStatus(SelectStatus.DESELECT);
+                // Reselect
+                else hoveredDisplayButton.setSelectStatus(SelectStatus.RESELECT);
+            }
+
+            // Loop through rows
+            for (int r = 0; r < displayBoxes.Count; r++)
+            {
+                // Calculate total width of row
+                float rowWidth = 0;
+                for (int c = 0; c < displayBoxes[r].Count; c++)
+                {
+                    SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
+                    rowWidth += displayButton.hovered ? displayButton.hoveredWidth : displayButton.defaultWidth;
+                }
+
+                // Loop through columns
+                float currentPosition = 0f - (rowWidth / 2f);
+                for (int c = 0; c < displayBoxes[r].Count; c++)
+                {
+                    SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
+
+                    // Calculate box position
+                    Vector3 boxLocalPosition = new Vector3(currentPosition, 0f, 0f);
+                    boxLocalPosition.x += (displayButton.hovered ? displayButton.hoveredWidth : displayButton.defaultWidth) / 2f;
+                    boxLocalPosition.y = displayCenterHeight - (r * 32f);
+
+                    // Update current position
+                    currentPosition += displayButton.hovered ? displayButton.hoveredWidth : displayButton.defaultWidth;
+
+                    // Set target position
+                    RectTransform boxTransform = displayBoxes[r][c].GetComponent<RectTransform>();
+                    displayButton.targetLocalPosition = boxLocalPosition;
+
+                    // Immediately set position if flag is true
+                    if (setPosition) boxTransform.localPosition = boxLocalPosition;
+
+                    // Set selection status of all boxes of the same sorting priority
+                    if (hoveredDisplayButton != null)
+                    {
+                        Entity hoveredEntity = SelectionManager.instance.selectedObjects[hoveredDisplayButton.selectedIndex].GetComponent<Entity>();
+                        Entity displayButtonEntity = SelectionManager.instance.selectedObjects[displayButton.selectedIndex].GetComponent<Entity>();
+
+                        // Deselect
+                        if (deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
+                        {
+                            displayButton.setSelectStatus(SelectStatus.DESELECT);
+                        }
+                        // Reselect
+                        if (!deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
+                        {
+                            displayButton.setSelectStatus(SelectStatus.RESELECT);
+                        }
+                    }
+
+                }
+            }
         }
 
         public void onDisplayBoxClicked(int index)
@@ -234,34 +317,17 @@ namespace MiniJam159.UI
             CommandManagerBase.instance.clearCommands();
 
             // Select new object
-            if (InputManager.instance.getKey("Deselect"))
-            {
-                // Deselect
-                if (InputManager.instance.getKey("TypeSelect"))
-                {
-                    // Type
-                    SelectionController.instance.deselectType(index);
-                }
-                else
-                {
-                    // Single
-                    SelectionController.instance.deselectSingle(index);
-                }
-            }
-            else
-            {
-                // Reselect
-                if (InputManager.instance.getKey("TypeSelect"))
-                {
-                    // Type
-                    SelectionController.instance.reselectType(index);
-                }
-                else
-                {
-                    // Single
-                    SelectionController.instance.reselectSingle(index);
-                }
-            }
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool typeSelectKey = InputManager.instance.getKey("TypeSelect");
+
+            // Deselect type
+            if (deselectKey && typeSelectKey) SelectionController.instance.deselectType(index);
+            // Deselect single
+            else if (deselectKey) SelectionController.instance.deselectSingle(index);
+            // Reselect type
+            else if (typeSelectKey) SelectionController.instance.reselectType(index);
+            // Reselect single
+            else SelectionController.instance.reselectSingle(index);
         }
 
         private void onSelectionStartCallback()

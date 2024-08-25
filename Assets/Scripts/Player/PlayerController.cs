@@ -174,8 +174,6 @@ namespace MiniJam159.Player
                         {
                             // Start mass select
                             PlayerModeManager.instance.playerMode = PlayerMode.MASS_SELECT;
-
-                            Debug.Log("Timer: " + massSelectStartTimer + ", Distance: " + Vector3.Distance(SelectionController.instance.massSelectStartPosition, Input.mousePosition));
                         }
                     }
                     else
