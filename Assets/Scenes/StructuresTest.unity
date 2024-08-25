@@ -1180,8 +1180,9 @@ MonoBehaviour:
   displayPanel: {fileID: 764688800}
   displayBoxPrefab: {fileID: 819183560958668974, guid: d2c93924818aa414e9e0b5c36104e6e1, type: 3}
   displayCenterHeight: 0
+  displayBoxDefaultSize: 32
+  displayBoxHoveredSize: 48
   commandButtons: []
-  displayBoxes: []
 --- !u!1 &990459295
 GameObject:
   m_ObjectHideFlags: 0

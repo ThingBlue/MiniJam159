@@ -34,8 +34,9 @@ namespace MiniJam159.UI
 
         public GameObject displayPanel;
         public GameObject displayBoxPrefab;
-
         public float displayCenterHeight;
+        public float displayBoxDefaultSize;
+        public float displayBoxHoveredSize;
 
         #endregion
 
@@ -189,7 +190,8 @@ namespace MiniJam159.UI
             displayPanel.SetActive(true);
 
             // Calculate rows and columns
-            int columns = Mathf.FloorToInt(displayPanel.GetComponent<RectTransform>().sizeDelta.x / 32.0f);
+            float displayPanelWidth = displayPanel.GetComponent<RectTransform>().sizeDelta.x - displayBoxDefaultSize;
+            int columns = Mathf.FloorToInt(displayPanelWidth / displayBoxDefaultSize);
             int rows = Mathf.CeilToInt((float)selectedObjects.Count / (float)columns);
 
             // Create all buttons
@@ -211,7 +213,8 @@ namespace MiniJam159.UI
                     SelectionDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectionDisplayButton>();
                     newDisplayButton.selectedObjectName = selectedObjects[selectedIndex].name;
                     newDisplayButton.selectedIndex = selectedIndex;
-                    newDisplayButton.row = row;
+                    newDisplayButton.defaultSize = displayBoxDefaultSize;
+                    newDisplayButton.hoveredSize = displayBoxHoveredSize;
                     newDisplayBox.GetComponent<Button>().onClick.AddListener(() => onDisplayBoxClicked(newDisplayButton.selectedIndex));
 
                     row.Add(newDisplayBox);
@@ -226,61 +229,72 @@ namespace MiniJam159.UI
         // setPosition flag is only true for initialization to immediately set target position of boxes
         public void updateDisplayBoxes(bool setPosition = false)
         {
-            // Reset selection statuses and find hovered entity
-            // Loop through rows
-            SelectionDisplayButton hoveredDisplayButton = null;
-            for (int r = 0; r < displayBoxes.Count; r++)
-            {
-                // Loop through columns
-                for (int c = 0; c < displayBoxes[r].Count; c++)
-                {
-                    SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
-
-                    // Reset selection status
-                    displayButton.setSelectStatus(SelectStatus.DEFAULT);
-
-                    // Check for hovered status
-                    if (hoveredDisplayButton == null && displayButton.hovered) hoveredDisplayButton = displayButton;
-                }
-            }
-
             // Get key statuses
             bool deselectKey = InputManager.instance.getKey("Deselect");
             bool typeSelectKey = InputManager.instance.getKey("TypeSelect");
 
-            // Set selection status of hovered entity
-            if (hoveredDisplayButton != null)
-            {
-                // Deselect
-                if (deselectKey) hoveredDisplayButton.setSelectStatus(SelectStatus.DESELECT);
-                // Reselect
-                else hoveredDisplayButton.setSelectStatus(SelectStatus.RESELECT);
-            }
+            // First pass to gather information
+            List<float> rowWidths = new List<float>();
+            List<float> rowYPositions = new List<float>();
+            SelectionDisplayButton hoveredDisplayButton = null;
+            int hoveredRow = -1;
 
             // Loop through rows
             for (int r = 0; r < displayBoxes.Count; r++)
             {
-                // Calculate total width of row
                 float rowWidth = 0;
+
+                // Loop through columns
                 for (int c = 0; c < displayBoxes[r].Count; c++)
                 {
                     SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
-                    rowWidth += displayButton.hovered ? displayButton.hoveredWidth : displayButton.defaultWidth;
+
+                    // Check for hovered status (There should only be 1 hovered box)
+                    if (hoveredDisplayButton == null && displayButton.hovered)
+                    {
+                        hoveredDisplayButton = displayButton;
+                        hoveredRow = r;
+                    }
+
+                    // Do calculations for row width
+                    rowWidth += displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize;
                 }
 
+                rowWidths.Add(rowWidth);
+
+                // Initialize default row y positions
+                float rowYPosition = r > 0 ? rowYPositions[rowYPositions.Count - 1] - displayBoxDefaultSize : 0;
+                rowYPositions.Add(rowYPosition);
+            }
+
+            // Modify y position based on relative position of hovered row
+            if (hoveredRow != -1)
+            {
+                for (int r = 0; r < rowYPositions.Count; r++)
+                {
+                    float sizeDifference = displayBoxes[r][0].GetComponent<SelectionDisplayButton>().hoveredSize - displayBoxDefaultSize;
+                    if (r < hoveredRow) rowYPositions[r] += sizeDifference / 2f;
+                    if (r > hoveredRow) rowYPositions[r] -= sizeDifference / 2f;
+                }
+            }
+
+            // Second pass to set positions/sizes/frame colours
+            // Loop through rows
+            for (int r = 0; r < displayBoxes.Count; r++)
+            {
                 // Loop through columns
-                float currentPosition = 0f - (rowWidth / 2f);
+                float currentPosition = 0f - (rowWidths[r] / 2f);
                 for (int c = 0; c < displayBoxes[r].Count; c++)
                 {
                     SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
 
                     // Calculate box position
                     Vector3 boxLocalPosition = new Vector3(currentPosition, 0f, 0f);
-                    boxLocalPosition.x += (displayButton.hovered ? displayButton.hoveredWidth : displayButton.defaultWidth) / 2f;
-                    boxLocalPosition.y = displayCenterHeight - (r * 32f);
+                    boxLocalPosition.x += (displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize) / 2f;
+                    boxLocalPosition.y = rowYPositions[r];
 
                     // Update current position
-                    currentPosition += displayButton.hovered ? displayButton.hoveredWidth : displayButton.defaultWidth;
+                    currentPosition += displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize;
 
                     // Set target position
                     RectTransform boxTransform = displayBoxes[r][c].GetComponent<RectTransform>();
@@ -290,25 +304,37 @@ namespace MiniJam159.UI
                     if (setPosition) boxTransform.localPosition = boxLocalPosition;
 
                     // Set selection status of all boxes of the same sorting priority
+                    displayButton.setSelectStatus(SelectStatus.DEFAULT);
                     if (hoveredDisplayButton != null)
                     {
                         Entity hoveredEntity = SelectionManager.instance.selectedObjects[hoveredDisplayButton.selectedIndex].GetComponent<Entity>();
                         Entity displayButtonEntity = SelectionManager.instance.selectedObjects[displayButton.selectedIndex].GetComponent<Entity>();
 
-                        // Deselect
-                        if (deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
+                        // Single reselect
+                        if (!deselectKey && !typeSelectKey && displayButton.hovered)
+                        {
+                            displayButton.setSelectStatus(SelectStatus.RESELECT);
+                        }
+                        // Single deselect
+                        else if (deselectKey && !typeSelectKey && displayButton.hovered)
                         {
                             displayButton.setSelectStatus(SelectStatus.DESELECT);
                         }
-                        // Reselect
-                        if (!deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
+                        // Type reselect
+                        else if (!deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
                         {
                             displayButton.setSelectStatus(SelectStatus.RESELECT);
+                        }
+                        // Type deselect
+                        else if (deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
+                        {
+                            displayButton.setSelectStatus(SelectStatus.DESELECT);
                         }
                     }
 
                 }
             }
+
         }
 
         public void onDisplayBoxClicked(int index)

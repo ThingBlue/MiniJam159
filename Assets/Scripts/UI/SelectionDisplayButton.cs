@@ -21,9 +21,6 @@ namespace MiniJam159.UI
 
         public float smoothTime;
 
-        public float defaultWidth;
-        public float hoveredWidth;
-
         public Color defaultColor;
         public Color reselectColor;
         public Color deselectColor;
@@ -32,7 +29,10 @@ namespace MiniJam159.UI
 
         public string selectedObjectName;
         public int selectedIndex;
-        public List<GameObject> row;
+
+        public float defaultSize;
+        public float hoveredSize;
+
         public Vector3 targetLocalPosition;
         public Vector2 targetSize = new Vector2(32f, 32f);
         public bool hovered = false;
@@ -42,8 +42,8 @@ namespace MiniJam159.UI
 
         private void FixedUpdate()
         {
-            if (hovered) targetSize = new Vector2(hoveredWidth, hoveredWidth);
-            else targetSize = new Vector2(defaultWidth, defaultWidth);
+            if (hovered) targetSize = new Vector2(hoveredSize, hoveredSize);
+            else targetSize = new Vector2(defaultSize, defaultSize);
 
             // Move towards target position and size
             RectTransform rectTransform = GetComponent<RectTransform>();
