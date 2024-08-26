@@ -62,6 +62,7 @@ namespace MiniJam159.Commands
                 activeCommands.Add(newCommand);
             }
 
+            // Update UI
             EventManager.instance.populateCommandsCompleteEvent.Invoke();
         }
 

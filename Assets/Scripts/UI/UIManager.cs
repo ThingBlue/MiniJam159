@@ -10,6 +10,7 @@ using MiniJam159.GameCore;
 using MiniJam159.Player;
 using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
+using PlasticPipe.PlasticProtocol.Messages;
 
 namespace MiniJam159.UI
 {
@@ -33,13 +34,16 @@ namespace MiniJam159.UI
 
         public GameObject displayPanel;
         public GameObject displayBoxPrefab;
-
         public float displayCenterHeight;
+        public float displayBoxDefaultSize;
+        public float displayBoxHoveredSize;
 
         #endregion
 
         public List<GameObject> commandButtons;
-        public List<GameObject> displayBoxes;
+        public List<List<GameObject>> displayBoxes;
+
+        private bool displayBoxUpdateNeeded = false;
 
         // Singleton
         public static UIManager instance;
@@ -49,6 +53,10 @@ namespace MiniJam159.UI
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
+
+            // Intialize lists
+            commandButtons = new List<GameObject>();
+            displayBoxes = new List<List<GameObject>>();
 
             // Hide display panel at the start
             displayPanel.SetActive(false);
@@ -61,6 +69,7 @@ namespace MiniJam159.UI
             EventManager.instance.selectionSortedEvent.AddListener(onSelectionSortedCallback);
             EventManager.instance.populateCommandsStartEvent.AddListener(onPopulateCommandsStartCallback);
             EventManager.instance.populateCommandsCompleteEvent.AddListener(onPopulateCommandsCompleteCallback);
+            EventManager.instance.setFocusCompleteEvent.AddListener(onSetFocusCompleteCallback);
         }
 
         private void Update()
@@ -71,6 +80,22 @@ namespace MiniJam159.UI
             float newPosition = 256f + ((Screen.width - 320f) - 256f) / 2f - (Screen.width / 2f);
             displayPanelTransform.localPosition = new Vector3(newPosition, -32f, 0f);
             displayPanelTransform.sizeDelta = new Vector2(newWidth, displayPanelTransform.sizeDelta.y);
+
+            // Check if an update is required for display boxes
+            if (InputManager.instance.getKeyDown("TypeSelect") || InputManager.instance.getKeyDown("Deselect") ||
+                InputManager.instance.getKeyUp("TypeSelect") || InputManager.instance.getKeyUp("Deselect"))
+            {
+                displayBoxUpdateNeeded = true;
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            if (displayBoxUpdateNeeded)
+            {
+                updateDisplayBoxes();
+                displayBoxUpdateNeeded = false;
+            }
         }
 
         public void clearCommandButtons()
@@ -141,9 +166,13 @@ namespace MiniJam159.UI
 
         public void clearSelectedObjects()
         {
-            foreach (GameObject displayBox in displayBoxes)
+            foreach (List<GameObject> row in displayBoxes)
             {
-                Destroy(displayBox);
+                foreach (GameObject displayBox in row)
+                {
+                    Destroy(displayBox);
+                }
+                row.Clear();
             }
             displayBoxes.Clear();
         }
@@ -161,62 +190,163 @@ namespace MiniJam159.UI
             // Show display panel
             displayPanel.SetActive(true);
 
-            // Single selected structure
-            if (selectedObjects.Count == 1 && selectedObjects[0].GetComponent<Structure>())
-            {
-                GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
-                newDisplayBox.GetComponent<RectTransform>().localPosition = new Vector3(0f, displayCenterHeight, 0f);
-                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[0].GetComponent<Structure>().displayIcon;
-
-                // Set up button
-                SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
-                newDisplayButton.selectedObjectName = selectedObjects[0].name;
-                newDisplayButton.selectedIndex = 0;
-                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => SelectionController.instance.singleSelectObjectInList(newDisplayButton.selectedIndex));
-
-                displayBoxes.Add(newDisplayBox);
-                return;
-            }
-
-            // Units
-            int columns = Mathf.FloorToInt(displayPanel.GetComponent<RectTransform>().sizeDelta.x / 32.0f);
+            // Calculate rows and columns
+            float displayPanelWidth = displayPanel.GetComponent<RectTransform>().sizeDelta.x - displayBoxDefaultSize;
+            int columns = Mathf.FloorToInt(displayPanelWidth / displayBoxDefaultSize);
             int rows = Mathf.CeilToInt((float)selectedObjects.Count / (float)columns);
-            int lastRowColumns = selectedObjects.Count % columns;
-            if (lastRowColumns == 0) lastRowColumns = columns;
-            float leftBoxXPosition = 0f - (columns - 1) * 32f / 2f;
-            float lastRowLeftBoxXPosition = 0f - (lastRowColumns - 1) * 32f / 2f;
 
-            for (int i = 0; i < selectedObjects.Count; i++)
+            // Create all buttons
+            for (int r = 0; r < rows; r++)
             {
-                GameObject selectedUnit = selectedObjects[i];
-
-                Vector3 boxLocalPosition = new Vector3(0f, 0f, 0f);
-                if (i < selectedObjects.Count - lastRowColumns)
+                List<GameObject> row = new List<GameObject>();
+                for (int c = 0; c < columns; c++)
                 {
-                    // Not last row
-                    boxLocalPosition.x = leftBoxXPosition + (i % columns) * 32f;
+                    int selectedIndex = (r * columns) + c;
+
+                    // Check if we're done
+                    if (selectedIndex >= selectedObjects.Count) break;
+
+                    // Create box
+                    GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
+                    newDisplayBox.GetComponent<Image>().sprite = selectedObjects[selectedIndex].GetComponent<Entity>().displayIcon;
+
+                    // Set up button
+                    SelectionDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectionDisplayButton>();
+                    newDisplayButton.selectedObjectName = selectedObjects[selectedIndex].name;
+                    newDisplayButton.selectedIndex = selectedIndex;
+                    newDisplayButton.defaultSize = displayBoxDefaultSize;
+                    newDisplayButton.hoveredSize = displayBoxHoveredSize;
+                    newDisplayBox.GetComponent<Button>().onClick.AddListener(() => onDisplayBoxClicked(newDisplayButton.selectedIndex));
+
+                    row.Add(newDisplayBox);
                 }
-                else
-                {
-                    // Last row
-                    boxLocalPosition.x = lastRowLeftBoxXPosition + (i % columns) * 32f;
-                }
-                //boxLocalPosition.y = displayCenterHeight - Mathf.Floor(i + 1 / (float)columns) * 32f;
-                int currentRow = Mathf.FloorToInt(i / columns);
-                boxLocalPosition.y = displayCenterHeight - currentRow * 32f;
-
-                GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
-                newDisplayBox.GetComponent<RectTransform>().localPosition = boxLocalPosition;
-                newDisplayBox.GetComponent<Image>().sprite = selectedObjects[i].GetComponent<GameAI>().displaySprite;
-
-                // Set up button
-                SelectedDisplayButton newDisplayButton = newDisplayBox.GetComponent<SelectedDisplayButton>();
-                newDisplayButton.selectedObjectName = selectedObjects[i].name;
-                newDisplayButton.selectedIndex = i;
-                newDisplayBox.GetComponent<Button>().onClick.AddListener(() => onDisplayBoxClicked(newDisplayButton.selectedIndex));
-
-                displayBoxes.Add(newDisplayBox);
+                displayBoxes.Add(row);
             }
+
+            // Set starting positions for each box
+            updateDisplayBoxes(true, true);
+        }
+
+        // doPositionUpdate false means we skip setting position and target position of display boxes, and only update frame colour
+        // setPosition flag is only true for initialization to immediately set target position of boxes
+        public void updateDisplayBoxes(bool doPositionUpdate = true, bool setPosition = false)
+        {
+            // Get key statuses
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool typeSelectKey = InputManager.instance.getKey("TypeSelect");
+
+            // First pass to gather information
+            List<float> rowWidths = new List<float>();
+            List<float> rowYPositions = new List<float>();
+            SelectionDisplayButton hoveredDisplayButton = null;
+            int hoveredRow = -1;
+
+            // Loop through rows
+            for (int r = 0; r < displayBoxes.Count; r++)
+            {
+                float rowWidth = 0;
+
+                // Loop through columns
+                for (int c = 0; c < displayBoxes[r].Count; c++)
+                {
+                    SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
+
+                    // Check for hovered status (There should only be 1 hovered box)
+                    if (hoveredDisplayButton == null && displayButton.hovered)
+                    {
+                        hoveredDisplayButton = displayButton;
+                        hoveredRow = r;
+                    }
+
+                    // Do calculations for row width
+                    rowWidth += displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize;
+                }
+
+                rowWidths.Add(rowWidth);
+
+                // Initialize default row y positions
+                float rowYPosition = r > 0 ? rowYPositions[rowYPositions.Count - 1] - displayBoxDefaultSize : 0;
+                rowYPositions.Add(rowYPosition);
+            }
+
+            // Modify y position based on relative position of hovered row
+            if (hoveredRow != -1)
+            {
+                for (int r = 0; r < rowYPositions.Count; r++)
+                {
+                    float sizeDifference = displayBoxes[r][0].GetComponent<SelectionDisplayButton>().hoveredSize - displayBoxDefaultSize;
+                    if (r < hoveredRow) rowYPositions[r] += sizeDifference / 2f;
+                    if (r > hoveredRow) rowYPositions[r] -= sizeDifference / 2f;
+                }
+            }
+
+            // Second pass to set positions/sizes/frame colours
+            // Loop through rows
+            for (int r = 0; r < displayBoxes.Count; r++)
+            {
+                // Loop through columns
+                float currentPosition = 0f - (rowWidths[r] / 2f);
+                for (int c = 0; c < displayBoxes[r].Count; c++)
+                {
+                    SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
+
+                    // Do position update
+                    if (doPositionUpdate)
+                    {
+                        // Calculate box position
+                        Vector3 boxLocalPosition = new Vector3(currentPosition, 0f, 0f);
+                        boxLocalPosition.x += (displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize) / 2f;
+                        boxLocalPosition.y = rowYPositions[r];
+
+                        // Update current position
+                        currentPosition += displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize;
+
+                        // Set target position
+                        RectTransform boxTransform = displayBoxes[r][c].GetComponent<RectTransform>();
+                        displayButton.targetLocalPosition = boxLocalPosition;
+
+                        // Immediately set position if flag is true
+                        if (setPosition) boxTransform.localPosition = boxLocalPosition;
+                    }
+
+                    // Set frame colour based on focus status
+                    Entity displayButtonEntity = SelectionManager.instance.selectedObjects[displayButton.selectedIndex].GetComponent<Entity>();
+                    if (displayButtonEntity.sortPriority == SelectionManager.instance.focusSortPriority)
+                    {
+                        displayButton.setSelectStatus(SelectStatus.FOCUSED);
+                    }
+                    else displayButton.setSelectStatus(SelectStatus.DEFAULT);
+
+                    // Set selection status of all boxes of the same sorting priority
+                    if (hoveredDisplayButton != null)
+                    {
+                        Entity hoveredEntity = SelectionManager.instance.selectedObjects[hoveredDisplayButton.selectedIndex].GetComponent<Entity>();
+
+                        // Single reselect
+                        if (!deselectKey && !typeSelectKey && displayButton.hovered)
+                        {
+                            displayButton.setSelectStatus(SelectStatus.RESELECT);
+                        }
+                        // Single deselect
+                        else if (deselectKey && !typeSelectKey && displayButton.hovered)
+                        {
+                            displayButton.setSelectStatus(SelectStatus.DESELECT);
+                        }
+                        // Type reselect
+                        else if (!deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
+                        {
+                            displayButton.setSelectStatus(SelectStatus.RESELECT);
+                        }
+                        // Type deselect
+                        else if (deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
+                        {
+                            displayButton.setSelectStatus(SelectStatus.DESELECT);
+                        }
+                    }
+
+                }
+            }
+
         }
 
         public void onDisplayBoxClicked(int index)
@@ -225,7 +355,26 @@ namespace MiniJam159.UI
             CommandManagerBase.instance.clearCommands();
 
             // Select new object
-            SelectionController.instance.singleSelectObjectInList(index);
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool typeSelectKey = InputManager.instance.getKey("TypeSelect");
+
+            // Deselect type
+            if (deselectKey && typeSelectKey) SelectionController.instance.deselectType(index);
+            // Deselect single
+            else if (deselectKey) SelectionController.instance.deselectSingle(index);
+            // Reselect type
+            else if (typeSelectKey) SelectionController.instance.reselectType(index);
+            // Set focus
+            else if (SelectionManager.instance.getSortPriorityWithIndex(index) != SelectionManager.instance.focusSortPriority)
+            {
+                SelectionManager.instance.focusSortPriority = SelectionManager.instance.getSortPriorityWithIndex(index);
+                SelectionController.instance.populateCommands(index);
+
+                // Update display boxes
+                EventManager.instance.setFocusCompleteEvent.Invoke();
+            }
+            // Reselect single if already focused
+            else SelectionController.instance.reselectSingle(index);
         }
 
         private void onSelectionStartCallback()
@@ -247,6 +396,11 @@ namespace MiniJam159.UI
         private void onPopulateCommandsCompleteCallback()
         {
             populateCommandButtons();
+        }
+
+        private void onSetFocusCompleteCallback()
+        {
+            updateDisplayBoxes(false);
         }
 
     }

@@ -8,6 +8,7 @@ using MiniJam159.AICore;
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
+using System;
 
 namespace MiniJam159.Player
 {
@@ -66,33 +67,53 @@ namespace MiniJam159.Player
 
         public void executeSingleSelect()
         {
+            // Keep track of previous selection
+            List<GameObject> previousSelection = new List<GameObject>(SelectionManager.instance.selectedObjects);
+
             // Clear current selection regardless of if we hit amything
             SelectionManager.instance.clearSelectedObjects();
 
+            // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Raycast from mouse and grab first hit
             LayerMask raycastMask = unitLayer | structureLayer;
             GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
 
-            if (hitObject == null) return;
+            // No hits
+            if (hitObject == null)
+            {
+                // Clear selection and return
+                SelectionManager.instance.clearSelectedObjects();
+                EventManager.instance.selectionCompleteEvent.Invoke();
+                return;
+            }
 
-            // We have a hit
-            if (hitObject.GetComponent<GameAI>())
+            // If we hit a child, we want to grab the parent
+            //if (hitObject.GetComponent<Entity>() == null) hitObject = hitObject.transform.parent.gameObject;
+
+            // Get key states
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
+
+            // We will be working with previous selection if either key is true
+            if (deselectKey || addToSelectionKey) SelectionManager.instance.selectedObjects = previousSelection;
+
+            // Behaviour based on whether the object we clicked is already selected
+            if (deselectKey && addToSelectionKey)
             {
-                // Hit the paernt ai
-                SelectionManager.instance.selectedObjects.Add(hitObject);
+                // Remove object from selection
+                if (SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Remove(hitObject);
+                // Add object to selection
+                else SelectionManager.instance.selectedObjects.Add(hitObject);
             }
-            else if (hitObject.GetComponent<Structure>())
-            {
-                // Hit the parent structure
-                SelectionManager.instance.selectedObjects.Add(hitObject);
-            }
-            else
-            {
-                // Hit the child
-                SelectionManager.instance.selectedObjects.Add(hitObject.transform.parent.gameObject);
-            }
+            // Deselect from previous selection
+            else if (deselectKey) SelectionManager.instance.selectedObjects.Remove(hitObject);
+            // Add to previous selection
+            else if (addToSelectionKey) SelectionManager.instance.selectedObjects.Add(hitObject);
+            // Default: Replace selection
+            else SelectionManager.instance.selectedObjects.Add(hitObject);
+
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -103,9 +124,13 @@ namespace MiniJam159.Player
 
         public void executeMassSelect()
         {
+            // Keep track of previous selection
+            List<GameObject> previousSelection = new List<GameObject>(SelectionManager.instance.selectedObjects);
+
             // Clear current selection
             SelectionManager.instance.clearSelectedObjects();
 
+            // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Find boundaries of selection box in screen space
@@ -146,6 +171,9 @@ namespace MiniJam159.Player
             {
                 normals.Add(Vector2.Perpendicular(castPoints[i + 1] - castPoints[i]).normalized);
             }
+
+            // Create new selection
+            List<GameObject> newSelection = new List<GameObject>();
 
             // NOT ALLOWING MASS SELECT ON STRUCTURES FOR NOW
             /*
@@ -204,7 +232,7 @@ namespace MiniJam159.Player
                 if (!separated)
                 {
                     // Inside selection if not separated
-                    selectedObjects.Add(structureObject);
+                    newSelection.Add(structureObject);
                 }
             }
             */
@@ -269,9 +297,44 @@ namespace MiniJam159.Player
                 if (!separated)
                 {
                     // Inside selection if not separated
-                    SelectionManager.instance.selectedObjects.Add(unitObject);
+                    newSelection.Add(unitObject);
                 }
             }
+
+            // Get key states
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
+
+            // We will be working with previous selection if either key is true
+            if (deselectKey || addToSelectionKey) SelectionManager.instance.selectedObjects = previousSelection;
+            // Reset focus if neither key is true
+            else SelectionManager.instance.focusSortPriority = -1;
+
+            // Loop through all new hit objects
+            foreach (GameObject hitObject in newSelection)
+            {
+                // Behaviour based on whether the object we clicked is already selected
+                if (deselectKey && addToSelectionKey)
+                {
+                    // We're going to be working with the previous selection in either case
+                    SelectionManager.instance.selectedObjects = previousSelection;
+
+                    // Remove object from selection
+                    if (SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Remove(hitObject);
+                    // Add object to selection
+                    else SelectionManager.instance.selectedObjects.Add(hitObject);
+                }
+                // Deselect from previous selection
+                else if (deselectKey) SelectionManager.instance.selectedObjects.Remove(hitObject);
+                // Add to previous selection
+                else if (addToSelectionKey)
+                {
+                    if (!SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Add(hitObject);
+                }
+                // Default: Replace selection
+                else SelectionManager.instance.selectedObjects.Add(hitObject);
+            }
+
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -290,32 +353,128 @@ namespace MiniJam159.Player
             return normalized * d;
         }
 
-        public void singleSelectObjectInList(int index)
+        public void reselectSingle(int index)
         {
             // Store the one object we want to keep
-            GameObject selectedObject = SelectionManager.instance.selectedObjects[index];
+            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
 
+            // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
             // Clear list
             SelectionManager.instance.clearSelectedObjects();
 
             // Add object back in
-            SelectionManager.instance.selectedObjects.Add(selectedObject);
+            SelectionManager.instance.selectedObjects.Add(targetObject);
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
+            // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
 
             // Populate commands after sorting
-            populateCommands();
+            populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
-        public void populateCommands()
+        public void reselectType(int index)
         {
-            if (SelectionManager.instance.selectedObjects.Count == 0) return;
+            // Store the objects we want to keep
+            List<GameObject> reselectedObjects = new List<GameObject>();
+
+            // Get sorting priority of target
+            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
+            Entity targetEntity = targetObject.GetComponent<Entity>();
+
+            // Get all objects with the same sorting priority
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                Entity selectedEntity = selectedObject.GetComponent<Entity>();
+                if (selectedEntity.sortPriority == targetEntity.sortPriority)
+                {
+                    reselectedObjects.Add(selectedObject);
+                }
+            }
+
+            // Clear UI
+            EventManager.instance.selectionStartEvent.Invoke();
+
+            // Clear list
+            SelectionManager.instance.clearSelectedObjects();
+
+            // Add objects back in
+            SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
+            SelectionManager.instance.addOutlinesToSelectedObjects();
+
+            // Sort
+            EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands(SelectionManager.instance.getFocusIndex());
+        }
+
+        public void deselectSingle(int index)
+        {
+            // Store the objects we want to keep
+            List<GameObject> reselectedObjects = new List<GameObject>(SelectionManager.instance.selectedObjects);
+
+            // Remove target object
+            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
+            reselectedObjects.Remove(targetObject);
+
+            // Clear UI
+            EventManager.instance.selectionStartEvent.Invoke();
+
+            // Clear list
+            SelectionManager.instance.clearSelectedObjects();
+
+            // Add object back in
+            SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
+            SelectionManager.instance.addOutlinesToSelectedObjects();
+
+            // Sort
+            EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands(SelectionManager.instance.getFocusIndex());
+        }
+
+        public void deselectType(int index)
+        {
+            // Store the objects we want to keep
+            List<GameObject> reselectedObjects = new List<GameObject>(SelectionManager.instance.selectedObjects);
+
+            // Get sorting priority of target
+            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
+            Entity targetEntity = targetObject.GetComponent<Entity>();
+
+            // Remove all objects with the same sorting priority
+            reselectedObjects.RemoveAll(selectedObject =>
+                selectedObject.GetComponent<Entity>().sortPriority == targetEntity.sortPriority
+            );
+
+            // Clear UI
+            EventManager.instance.selectionStartEvent.Invoke();
+
+            // Clear list
+            SelectionManager.instance.clearSelectedObjects();
+
+            // Add objects back in
+            SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
+            SelectionManager.instance.addOutlinesToSelectedObjects();
+
+            // Sort
+            EventManager.instance.selectionCompleteEvent.Invoke();
+
+            // Populate commands after sorting
+            populateCommands(SelectionManager.instance.getFocusIndex());
+        }
+
+        public void populateCommands(int focusIndex = 0)
+        {
+            if (SelectionManager.instance.selectedObjects.Count < focusIndex + 1) return;
+            if (focusIndex == -1) return;
 
             // Populate command menu using the first object in list
-            GameObject selectedObject = SelectionManager.instance.selectedObjects[0];
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[focusIndex];
             if (selectedObject == null) return;
 
             if (selectedObject.layer == LayerMask.NameToLayer("Unit"))
@@ -335,7 +494,7 @@ namespace MiniJam159.Player
             // First selected unit must be a worker
             if (SelectionManager.instance.selectedObjects.Count == 0) return;
 
-            GameObject selectedObject = SelectionManager.instance.selectedObjects[0];
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[SelectionManager.instance.getFocusIndex()];
             if (selectedObject == null) return;
 
             GameAI selectedUnit = selectedObject.GetComponent<GameAI>();
@@ -352,7 +511,7 @@ namespace MiniJam159.Player
 
         private void onCancelBuildMenuCommandCallback()
         {
-            populateCommands();
+            populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
         private void OnDrawGizmos()

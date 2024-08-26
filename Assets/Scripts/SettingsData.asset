@@ -41,9 +41,13 @@ MonoBehaviour:
     keys: 63000000
   - name: VCommand
     keys: 76000000
-  - name: PlacementTest
-    keys: 62000000
-  - name: PlacementTest2
-    keys: 6e000000
-  - name: CommandUpdateTest
+  - name: CancelCommand
+    keys: 1b000000
+  - name: CycleFocus
+    keys: 09000000
+  - name: TypeSelect
+    keys: 30010000
+  - name: Deselect
+    keys: 34010000
+  - name: FormSquad
     keys: 67000000

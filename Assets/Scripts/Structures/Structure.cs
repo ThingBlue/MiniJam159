@@ -14,7 +14,7 @@ namespace MiniJam159.Structures
         WOMB
     }
 
-    public class Structure : MonoBehaviour
+    public class Structure : Entity
     {
         #region Inspector members
 
@@ -23,10 +23,8 @@ namespace MiniJam159.Structures
         public Vector3 size;
 
         public HealthBar healthBar;
-        public Sprite displayIcon;
         public List<CommandType> commands;
 
-        public float maxHealth;
         public float maxBuildProgress;
 
         #endregion
