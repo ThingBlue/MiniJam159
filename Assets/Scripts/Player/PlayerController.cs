@@ -147,6 +147,13 @@ namespace MiniJam159.Player
                     break;
 
                 case PlayerMode.MASS_SELECT:
+                    // Check for cancel
+                    if (cancelCommandKeyDown || mouse1Down)
+                    {
+                        PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                        canSelect = false;
+                    }
+
                     SelectionController.instance.updateMassSelectBox();
 
                     if (mouse0Up)

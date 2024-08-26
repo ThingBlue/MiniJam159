@@ -20,6 +20,7 @@ namespace MiniJam159.PlayerCore
         #endregion
 
         public List<GameObject> selectedObjects;
+        public List<List<GameObject>> Squads;
         public int focusSortPriority = -1;
 
         // Singleton
