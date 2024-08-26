@@ -67,6 +67,9 @@ namespace MiniJam159.Player
 
         public void executeSingleSelect()
         {
+            // Keep track of previous selection
+            List<GameObject> previousSelection = new List<GameObject>(SelectionManager.instance.selectedObjects);
+
             // Clear current selection regardless of if we hit amything
             SelectionManager.instance.clearSelectedObjects();
 
@@ -77,28 +80,40 @@ namespace MiniJam159.Player
             LayerMask raycastMask = unitLayer | structureLayer;
             GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
 
+            // No hits
             if (hitObject == null)
             {
+                // Clear selection and return
+                SelectionManager.instance.clearSelectedObjects();
                 EventManager.instance.selectionCompleteEvent.Invoke();
                 return;
             }
 
-            // We have a hit
-            if (hitObject.GetComponent<GameAI>())
+            // If we hit a child, we want to grab the parent
+            //if (hitObject.GetComponent<Entity>() == null) hitObject = hitObject.transform.parent.gameObject;
+
+            // Get key states
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
+
+            // We will be working with previous selection if either key is true
+            if (deselectKey || addToSelectionKey) SelectionManager.instance.selectedObjects = previousSelection;
+
+            // Behaviour based on whether the object we clicked is already selected
+            if (deselectKey && addToSelectionKey)
             {
-                // Hit the parent ai
-                SelectionManager.instance.selectedObjects.Add(hitObject);
+                // Remove object from selection
+                if (SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Remove(hitObject);
+                // Add object to selection
+                else SelectionManager.instance.selectedObjects.Add(hitObject);
             }
-            else if (hitObject.GetComponent<Structure>())
-            {
-                // Hit the parent structure
-                SelectionManager.instance.selectedObjects.Add(hitObject);
-            }
-            else
-            {
-                // Hit the child
-                SelectionManager.instance.selectedObjects.Add(hitObject.transform.parent.gameObject);
-            }
+            // Deselect from previous selection
+            else if (deselectKey) SelectionManager.instance.selectedObjects.Remove(hitObject);
+            // Add to previous selection
+            else if (addToSelectionKey) SelectionManager.instance.selectedObjects.Add(hitObject);
+            // Default: Replace selection
+            else SelectionManager.instance.selectedObjects.Add(hitObject);
+
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -109,6 +124,9 @@ namespace MiniJam159.Player
 
         public void executeMassSelect()
         {
+            // Keep track of previous selection
+            List<GameObject> previousSelection = new List<GameObject>(SelectionManager.instance.selectedObjects);
+
             // Clear current selection
             SelectionManager.instance.clearSelectedObjects();
 
@@ -156,6 +174,9 @@ namespace MiniJam159.Player
             {
                 normals.Add(Vector2.Perpendicular(castPoints[i + 1] - castPoints[i]).normalized);
             }
+
+            // Create new selection
+            List<GameObject> newSelection = new List<GameObject>();
 
             // NOT ALLOWING MASS SELECT ON STRUCTURES FOR NOW
             /*
@@ -214,7 +235,7 @@ namespace MiniJam159.Player
                 if (!separated)
                 {
                     // Inside selection if not separated
-                    selectedObjects.Add(structureObject);
+                    newSelection.Add(structureObject);
                 }
             }
             */
@@ -279,9 +300,39 @@ namespace MiniJam159.Player
                 if (!separated)
                 {
                     // Inside selection if not separated
-                    SelectionManager.instance.selectedObjects.Add(unitObject);
+                    newSelection.Add(unitObject);
                 }
             }
+
+            // Get key states
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
+
+            // We will be working with previous selection if either key is true
+            if (deselectKey || addToSelectionKey) SelectionManager.instance.selectedObjects = previousSelection;
+
+            // Loop through all new hit objects
+            foreach (GameObject hitObject in newSelection)
+            {
+                // Behaviour based on whether the object we clicked is already selected
+                if (deselectKey && addToSelectionKey)
+                {
+                    // We're going to be working with the previous selection in either case
+                    SelectionManager.instance.selectedObjects = previousSelection;
+
+                    // Remove object from selection
+                    if (SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Remove(hitObject);
+                    // Add object to selection
+                    else SelectionManager.instance.selectedObjects.Add(hitObject);
+                }
+                // Deselect from previous selection
+                else if (deselectKey) SelectionManager.instance.selectedObjects.Remove(hitObject);
+                // Add to previous selection
+                else if (addToSelectionKey) SelectionManager.instance.selectedObjects.Add(hitObject);
+                // Default: Replace selection
+                else SelectionManager.instance.selectedObjects.Add(hitObject);
+            }
+
             SelectionManager.instance.addOutlinesToSelectedObjects();
 
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -418,6 +469,7 @@ namespace MiniJam159.Player
         public void populateCommands(int focusIndex = 0)
         {
             if (SelectionManager.instance.selectedObjects.Count < focusIndex + 1) return;
+            if (focusIndex == -1) return;
 
             // Populate command menu using the first object in list
             GameObject selectedObject = SelectionManager.instance.selectedObjects[focusIndex];
