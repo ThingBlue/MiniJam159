@@ -33,7 +33,6 @@ namespace MiniJam159.Player
         private bool mouse0Up;
         private bool mouse1Up;
         private bool cancelCommandKeyDown;
-        private bool cycleFocusKeyDown;
 
         private bool canSelect;
         private bool ignoreNextMouse0Up;
@@ -74,10 +73,11 @@ namespace MiniJam159.Player
                 if (InputManager.instance.getKeyDown("XCommand")) CommandManagerBase.instance.executeCommand(9);
                 if (InputManager.instance.getKeyDown("CCommand")) CommandManagerBase.instance.executeCommand(10);
                 if (InputManager.instance.getKeyDown("VCommand")) CommandManagerBase.instance.executeCommand(11);
+
+                if (InputManager.instance.getKeyDown("CycleFocus")) cycleFocus();
             }
 
             if (InputManager.instance.getKeyDown("CancelCommand")) cancelCommandKeyDown = true;
-            if (InputManager.instance.getKeyDown("CycleFocus")) cycleFocusKeyDown = true;
         }
 
         private void FixedUpdate()
@@ -204,9 +204,6 @@ namespace MiniJam159.Player
 
                         SelectionController.instance.executeSingleSelect();
                     }
-
-                    // Cycle focus
-                    if (cycleFocusKeyDown) cycleFocus();
 
                     // Movement commands
                     if (mouse1Down && !EventSystem.current.IsPointerOverGameObject())

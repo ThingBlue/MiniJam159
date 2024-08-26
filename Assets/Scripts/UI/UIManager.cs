@@ -43,8 +43,6 @@ namespace MiniJam159.UI
         public List<GameObject> commandButtons;
         public List<List<GameObject>> displayBoxes;
 
-        private bool displayBoxUpdateNeeded = false;
-
         // Singleton
         public static UIManager instance;
 
@@ -85,16 +83,7 @@ namespace MiniJam159.UI
             if (InputManager.instance.getKeyDown("TypeSelect") || InputManager.instance.getKeyDown("Deselect") ||
                 InputManager.instance.getKeyUp("TypeSelect") || InputManager.instance.getKeyUp("Deselect"))
             {
-                displayBoxUpdateNeeded = true;
-            }
-        }
-
-        private void FixedUpdate()
-        {
-            if (displayBoxUpdateNeeded)
-            {
                 updateDisplayBoxes();
-                displayBoxUpdateNeeded = false;
             }
         }
 
