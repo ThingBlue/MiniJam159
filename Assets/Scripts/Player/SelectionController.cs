@@ -130,9 +130,6 @@ namespace MiniJam159.Player
             // Clear current selection
             SelectionManager.instance.clearSelectedObjects();
 
-            // Reset focus
-            SelectionManager.instance.focusSortPriority = -1;
-
             // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
@@ -310,6 +307,8 @@ namespace MiniJam159.Player
 
             // We will be working with previous selection if either key is true
             if (deselectKey || addToSelectionKey) SelectionManager.instance.selectedObjects = previousSelection;
+            // Reset focus if neither key is true
+            else SelectionManager.instance.focusSortPriority = -1;
 
             // Loop through all new hit objects
             foreach (GameObject hitObject in newSelection)
@@ -328,7 +327,10 @@ namespace MiniJam159.Player
                 // Deselect from previous selection
                 else if (deselectKey) SelectionManager.instance.selectedObjects.Remove(hitObject);
                 // Add to previous selection
-                else if (addToSelectionKey) SelectionManager.instance.selectedObjects.Add(hitObject);
+                else if (addToSelectionKey)
+                {
+                    if (!SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Add(hitObject);
+                }
                 // Default: Replace selection
                 else SelectionManager.instance.selectedObjects.Add(hitObject);
             }
