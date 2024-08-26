@@ -110,7 +110,11 @@ namespace MiniJam159.Player
             // Deselect from previous selection
             else if (deselectKey) SelectionManager.instance.selectedObjects.Remove(hitObject);
             // Add to previous selection
-            else if (addToSelectionKey) SelectionManager.instance.selectedObjects.Add(hitObject);
+            else if (addToSelectionKey)
+            {
+                // Prevent adding a duplicate
+                if (!SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Add(hitObject);
+            }
             // Default: Replace selection
             else SelectionManager.instance.selectedObjects.Add(hitObject);
 

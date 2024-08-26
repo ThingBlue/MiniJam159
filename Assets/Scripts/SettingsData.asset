@@ -49,5 +49,7 @@ MonoBehaviour:
     keys: 30010000
   - name: Deselect
     keys: 34010000
+  - name: AddToSelection
+    keys: 30010000
   - name: FormSquad
     keys: 67000000
