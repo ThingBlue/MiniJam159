@@ -52,6 +52,17 @@ namespace MiniJam159.PlayerCore
             selectedObject.GetComponent<Entity>().setOutline(selectedOutlineMaterial, selectedOutlineColor);
         }
 
+        public void setSelectedObjects(List<GameObject> newSelectedObjects)
+        {
+            selectedObjects = new List<GameObject>(newSelectedObjects);
+
+            // Add outlines
+            foreach (GameObject selectedObject in selectedObjects)
+            {
+                selectedObject.GetComponent<Entity>().setOutline(selectedOutlineMaterial, selectedOutlineColor);
+            }
+        }
+
         public void removeSelectedObject(GameObject selectedObject)
         {
             // Remove outline

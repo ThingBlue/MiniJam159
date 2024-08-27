@@ -124,28 +124,26 @@ namespace MiniJam159.Player
             bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
 
             // We will be working with previous selection if either key is true
-            if (deselectKey || addToSelectionKey) SelectionManager.instance.selectedObjects = previousSelection;
+            if (deselectKey || addToSelectionKey) SelectionManager.instance.setSelectedObjects(previousSelection);
 
             // Behaviour based on whether the object we clicked is already selected
             if (deselectKey && addToSelectionKey)
             {
                 // Remove object from selection
-                if (SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Remove(hitObject);
+                if (SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.removeSelectedObject(hitObject);
                 // Add object to selection
-                else SelectionManager.instance.selectedObjects.Add(hitObject);
+                else SelectionManager.instance.addSelectedObject(hitObject);
             }
             // Deselect from previous selection
-            else if (deselectKey) SelectionManager.instance.selectedObjects.Remove(hitObject);
+            else if (deselectKey) SelectionManager.instance.removeSelectedObject(hitObject);
             // Add to previous selection
             else if (addToSelectionKey)
             {
                 // Prevent adding a duplicate
-                if (!SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Add(hitObject);
+                if (!SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.addSelectedObject(hitObject);
             }
             // Default: Replace selection
-            else SelectionManager.instance.selectedObjects.Add(hitObject);
-
-            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
+            else SelectionManager.instance.addSelectedObject(hitObject);
 
             EventManager.instance.selectionCompleteEvent.Invoke();
 
@@ -246,7 +244,7 @@ namespace MiniJam159.Player
             // We will be working with previous selection if either key is true
             if (deselectKey || addToSelectionKey)
             {
-                SelectionManager.instance.selectedObjects = previousSelection;
+                SelectionManager.instance.setSelectedObjects(previousSelection);
             }
             // Clear previous selection if neither key is true
             else
@@ -262,30 +260,26 @@ namespace MiniJam159.Player
                 if (deselectKey && addToSelectionKey)
                 {
                     // We're going to be working with the previous selection in either case
-                    SelectionManager.instance.selectedObjects = previousSelection;
+                    SelectionManager.instance.setSelectedObjects(previousSelection);
 
                     // Remove object from selection
                     if (SelectionManager.instance.selectedObjects.Contains(hitObject))
                     {
-                        SelectionManager.instance.selectedObjects.Remove(hitObject);
-
-                        // Clear outline
+                        SelectionManager.instance.removeSelectedObject(hitObject);
                     }
                     // Add object to selection
-                    else SelectionManager.instance.selectedObjects.Add(hitObject);
+                    else SelectionManager.instance.addSelectedObject(hitObject);
                 }
                 // Deselect from previous selection
-                else if (deselectKey) SelectionManager.instance.selectedObjects.Remove(hitObject);
+                else if (deselectKey) SelectionManager.instance.removeSelectedObject(hitObject);
                 // Add to previous selection
                 else if (addToSelectionKey)
                 {
-                    if (!SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Add(hitObject);
+                    if (!SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.addSelectedObject(hitObject);
                 }
                 // Default: Replace selection
-                else SelectionManager.instance.selectedObjects.Add(hitObject);
+                else SelectionManager.instance.addSelectedObject(hitObject);
             }
-
-            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
 
             EventManager.instance.selectionCompleteEvent.Invoke();
 
@@ -360,8 +354,7 @@ namespace MiniJam159.Player
             SelectionManager.instance.clearSelectedObjects();
 
             // Add object back in
-            SelectionManager.instance.selectedObjects.Add(targetObject);
-            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
+            SelectionManager.instance.addSelectedObject(targetObject);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -396,8 +389,7 @@ namespace MiniJam159.Player
             SelectionManager.instance.clearSelectedObjects();
 
             // Add objects back in
-            SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
-            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
+            SelectionManager.instance.setSelectedObjects(reselectedObjects);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -422,8 +414,7 @@ namespace MiniJam159.Player
             SelectionManager.instance.clearSelectedObjects();
 
             // Add object back in
-            SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
-            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
+            SelectionManager.instance.setSelectedObjects(reselectedObjects);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -453,8 +444,7 @@ namespace MiniJam159.Player
             SelectionManager.instance.clearSelectedObjects();
 
             // Add objects back in
-            SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
-            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
+            SelectionManager.instance.setSelectedObjects(reselectedObjects);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
