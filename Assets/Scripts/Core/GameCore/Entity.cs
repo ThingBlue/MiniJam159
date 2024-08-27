@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 namespace MiniJam159.GameCore
 {
@@ -15,28 +14,11 @@ namespace MiniJam159.GameCore
 
         #endregion
 
+        // Sets colour of outline to provided colour
         public void setOutline(Material outlineMaterial, Color color)
         {
             MeshRenderer renderer = transform.Find("Mesh").GetComponent<MeshRenderer>();
-            Material[] newMaterials = renderer.materials;
-            int outlineMaterialIndex = -1;
-            for (int i = 0; i < newMaterials.Length; i++)
-            {
-                if (newMaterials[i].name == outlineMaterial.name + " (Instance)")
-                {
-                    // Renderer already has outline material
-                    outlineMaterialIndex = i;
-                    break;
-                }
-            }
-
-            // Renderer does not have outline material, add it
-            if (outlineMaterialIndex == -1)
-            {
-                newMaterials[0] = new Material(outlineMaterial);
-                renderer.materials = newMaterials;
-                outlineMaterialIndex = 0;
-            }
+            int outlineMaterialIndex = getMaterialIndex(outlineMaterial);
 
             // Set colour
             MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
@@ -45,20 +27,34 @@ namespace MiniJam159.GameCore
             renderer.SetPropertyBlock(propertyBlock, outlineMaterialIndex);
         }
 
+        // Resets colour of outline to transparent
         public void clearOutline(Material outlineMaterial)
         {
             MeshRenderer renderer = transform.Find("Mesh").GetComponent<MeshRenderer>();
-            Material[] newMaterials = new Material[2];
-            renderer.materials.CopyTo(newMaterials, 0);
-            for (int i = 0; i < renderer.materials.Length; i++)
+            int outlineMaterialIndex = getMaterialIndex(outlineMaterial);
+
+            // Set colour with 0 alpha
+            MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(propertyBlock, outlineMaterialIndex);
+            propertyBlock.SetColor("_OutlineColor", new Color(0, 0, 0, 0));
+            renderer.SetPropertyBlock(propertyBlock, outlineMaterialIndex);
+        }
+
+        // Gets the index of the given material in the Mesh's renderer
+        private int getMaterialIndex(Material material)
+        {
+            MeshRenderer renderer = transform.Find("Mesh").GetComponent<MeshRenderer>();
+            Material[] rendererMaterials = renderer.materials;
+            int materialIndex = -1;
+            for (int i = 0; i < rendererMaterials.Length; i++)
             {
-                if (renderer.materials[i].name == outlineMaterial.name + " (Instance)")
+                if (rendererMaterials[i].name == material.name + " (Instance)")
                 {
-                    //renderer.materials[i] = defaultMaterial;
-                    newMaterials[i] = null;
+                    materialIndex = i;
+                    break;
                 }
             }
-            renderer.materials = newMaterials;
+            return materialIndex;
         }
 
         public bool insideCast(List<Vector2> castPoints, List<Vector2> castNormals)

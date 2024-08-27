@@ -19,6 +19,7 @@ namespace MiniJam159.PlayerCore
 
         public Color hoveredOutlineColor;
         public Color selectedOutlineColor;
+        public Color deselectOutlineColor;
 
         #endregion
 

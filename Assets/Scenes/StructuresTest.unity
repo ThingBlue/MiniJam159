@@ -1955,6 +1955,7 @@ MonoBehaviour:
   selectedOutlineMaterial: {fileID: 2100000, guid: 2cd68e4b28dbb8c429577e2a5e049d53, type: 2}
   hoveredOutlineColor: {r: 0, g: 1, b: 0, a: 0.7490196}
   selectedOutlineColor: {r: 1, g: 1, b: 1, a: 0.7490196}
+  deselectOutlineColor: {r: 1, g: 0, b: 0, a: 0.7490196}
   selectedObjects: []
   focusSortPriority: -1
 --- !u!4 &1297323454
