@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 473903977527802775}
   m_Layer: 11
   m_Name: TestStructurePrefab
-  m_TagString: Untagged
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47,12 +47,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12409d9a2d4bc2c4f948f7c9aacde089, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sortPriority: 0
+  displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
+  maxHealth: 1000
   structureType: 2
   size: {x: 2, y: 1, z: 3}
   healthBar: {fileID: 1741809159139363169}
-  displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
   commands: 
-  maxHealth: 1000
   maxBuildProgress: 1000
   health: 0
   buildProgress: 0
@@ -70,7 +71,7 @@ GameObject:
   - component: {fileID: 5179024281511054752}
   m_Layer: 11
   m_Name: BlockedTiles
-  m_TagString: Untagged
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -168,7 +169,7 @@ GameObject:
   - component: {fileID: 4469517200079939873}
   m_Layer: 11
   m_Name: Mesh
-  m_TagString: Untagged
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

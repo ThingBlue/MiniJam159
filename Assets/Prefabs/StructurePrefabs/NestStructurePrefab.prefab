@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 378836103198072951}
   m_Layer: 11
   m_Name: BlockedTiles
-  m_TagString: Untagged
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 4903812382357214785}
   m_Layer: 11
   m_Name: NestStructurePrefab
-  m_TagString: Untagged
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -146,12 +146,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12409d9a2d4bc2c4f948f7c9aacde089, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sortPriority: 0
+  displayIcon: {fileID: 21300000, guid: f489cf0343145d84e985744045e57628, type: 3}
+  maxHealth: 2000
   structureType: 0
   size: {x: 4, y: 1, z: 4}
   healthBar: {fileID: 4862731472706367738}
-  displayIcon: {fileID: 21300000, guid: f489cf0343145d84e985744045e57628, type: 3}
   commands: 
-  maxHealth: 2000
   maxBuildProgress: 2000
   health: 1
   buildProgress: 0
@@ -181,7 +182,7 @@ GameObject:
   - component: {fileID: 7575017326265340983}
   m_Layer: 11
   m_Name: Mesh
-  m_TagString: Untagged
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

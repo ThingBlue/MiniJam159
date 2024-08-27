@@ -17,6 +17,9 @@ namespace MiniJam159.PlayerCore
         public Material defaultMaterial;
         public Material selectedOutlineMaterial;
 
+        public Color hoveredOutlineColor;
+        public Color selectedOutlineColor;
+
         #endregion
 
         public List<GameObject> selectedObjects;
@@ -41,51 +44,50 @@ namespace MiniJam159.PlayerCore
             EventManager.instance.selectionCompleteEvent.AddListener(onSelectionCompleteCallback);
         }
 
+        public void addSelectedObject(GameObject selectedObject)
+        {
+            selectedObjects.Add(selectedObject);
+
+            // Add outline
+            selectedObject.GetComponent<Entity>().setOutline(selectedOutlineMaterial, selectedOutlineColor);
+        }
+
+        public void removeSelectedObject(GameObject selectedObject)
+        {
+            // Remove outline
+            selectedObject.GetComponent<Entity>().clearOutline(selectedOutlineMaterial);
+
+            selectedObjects.Remove(selectedObject);
+        }
+
+        public void removeSelectedObjectAtIndex(int index)
+        {
+            // Remove outline
+            selectedObjects[index].GetComponent<Entity>().clearOutline(selectedOutlineMaterial);
+
+            selectedObjects.RemoveAt(index);
+        }
+
         public void clearSelectedObjects()
         {
             // Clear outlines
             foreach (GameObject selectedObject in selectedObjects)
             {
-                MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
-                Material[] newMaterials = new Material[2];
-                renderer.materials.CopyTo(newMaterials, 0);
-                for (int i = 0; i < renderer.materials.Length; i++)
-                {
-                    if (renderer.materials[i].name == selectedOutlineMaterial.name + " (Instance)")
-                    {
-                        //renderer.materials[i] = defaultMaterial;
-                        newMaterials[i] = null;
-                    }
-                }
-                renderer.materials = newMaterials;
+                selectedObject.GetComponent<Entity>().clearOutline(selectedOutlineMaterial);
             }
 
             selectedObjects.Clear();
+            focusSortPriority = -1;
         }
 
-        public void addOutlinesToSelectedObjects()
+        public void addOutlinesToSelectedObjects(Color outlineColor)
         {
             if (selectedObjects.Count == 0) return;
 
             // Add outlines
             foreach (GameObject selectedObject in selectedObjects)
             {
-                MeshRenderer renderer = selectedObject.transform.Find("Mesh").GetComponent<MeshRenderer>();
-                Material[] newMaterials = renderer.materials;
-                bool hasOutlineMaterial = false;
-                for (int i = 0; i < newMaterials.Length; i++)
-                {
-                    if (newMaterials[i].name == selectedOutlineMaterial.name + " (Instance)")
-                    {
-                        hasOutlineMaterial = true;
-                        break;
-                    }
-                }
-                if (!hasOutlineMaterial)
-                {
-                    newMaterials[0] = new Material(selectedOutlineMaterial);
-                    renderer.materials = newMaterials;
-                }
+                selectedObject.GetComponent<Entity>().setOutline(selectedOutlineMaterial, outlineColor);
             }
         }
 

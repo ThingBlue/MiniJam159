@@ -167,6 +167,8 @@ namespace MiniJam159.Player
                     break;
 
                 case PlayerMode.NORMAL:
+
+
                     // Set start position for mass select
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
                     {
@@ -244,7 +246,6 @@ namespace MiniJam159.Player
             mouse0Up = false;
             mouse1Up = false;
             cancelCommandKeyDown = false;
-            cycleFocusKeyDown = false;
         }
 
         public void cycleFocus()

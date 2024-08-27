@@ -371,7 +371,7 @@ MonoBehaviour:
   populateCommandsCompleteEvent:
     m_PersistentCalls:
       m_Calls: []
-  cycleFocusCompleteEvent:
+  setFocusCompleteEvent:
     m_PersistentCalls:
       m_Calls: []
   holdCommandEvent:
@@ -1952,8 +1952,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   selectedOutlineMaterial: {fileID: 2100000, guid: 2cd68e4b28dbb8c429577e2a5e049d53, type: 2}
+  hoveredOutlineColor: {r: 0, g: 1, b: 0, a: 0.7490196}
+  selectedOutlineColor: {r: 1, g: 1, b: 1, a: 0.7490196}
   selectedObjects: []
-  focusIndex: 0
+  focusSortPriority: -1
 --- !u!4 &1297323454
 Transform:
   m_ObjectHideFlags: 0

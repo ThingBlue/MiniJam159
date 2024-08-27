@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7200500690659732760}
   m_Layer: 10
   m_Name: Mesh
-  m_TagString: Unit
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 3145083043424204857}
   m_Layer: 5
   m_Name: Canvas
-  m_TagString: Untagged
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -198,7 +198,7 @@ GameObject:
   - component: {fileID: 4246136043180166723}
   m_Layer: 5
   m_Name: DebugText
-  m_TagString: Untagged
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -334,7 +334,7 @@ GameObject:
   - component: {fileID: 3731014612963296189}
   m_Layer: 10
   m_Name: WorkerUnitPrefab
-  m_TagString: Unit
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -442,7 +442,7 @@ GameObject:
   - component: {fileID: 6967978515439341931}
   m_Layer: 10
   m_Name: RaycastMesh
-  m_TagString: Unit
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -1,3 +1,7 @@
+using MiniJam159.AICore;
+using MiniJam159.GameCore;
+using MiniJam159.Player;
+using MiniJam159.PlayerCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -79,6 +83,13 @@ namespace MiniJam159.UI
             // Trigger UI update
             UIManager.instance.updateDisplayBoxes();
 
+            // Add hovered outline to corresponding entity
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[selectedIndex];
+            if (selectedObject != null)
+            {
+                selectedObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+            }
+
             // Show tooltip
             //TooltipManager.instance.toggleTooltip(selectedObjectName, true);
         }
@@ -89,6 +100,13 @@ namespace MiniJam159.UI
 
             // Trigger UI update
             UIManager.instance.updateDisplayBoxes();
+
+            // Remove hovered outline from corresponding entity
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[selectedIndex];
+            if (selectedObject != null)
+            {
+                selectedObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
+            }
 
             // Hide tooltip
             //TooltipManager.instance.toggleTooltip("", false);

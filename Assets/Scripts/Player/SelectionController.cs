@@ -63,6 +63,33 @@ namespace MiniJam159.Player
 
             massSelectBoxTransform.position = bottomLeft;
             massSelectBoxTransform.sizeDelta = topRight - bottomLeft;
+
+            // Add outlines to entities inside the box and remove outlines for entities outside the box
+            List<Vector2> castPoints = getMassSelectionBoxPoints();
+            List<Vector2> castNormals = getMassSelectionBoxNormals(castPoints);
+            foreach (GameAI unit in GameAI.allAIs)
+            {
+                if (unit.insideCast(castPoints, castNormals))
+                {
+                    // Hovered
+                    unit.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+                }
+                else if (SelectionManager.instance.selectedObjects.Contains(unit.gameObject))
+                {
+                    // Selected already
+                    unit.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
+                }
+                else
+                {
+                    // None, clear outline
+                    unit.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                }
+            }
+        }
+
+        public void updateMouseHover()
+        {
+
         }
 
         public void executeSingleSelect()
@@ -118,7 +145,7 @@ namespace MiniJam159.Player
             // Default: Replace selection
             else SelectionManager.instance.selectedObjects.Add(hitObject);
 
-            SelectionManager.instance.addOutlinesToSelectedObjects();
+            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
 
             EventManager.instance.selectionCompleteEvent.Invoke();
 
@@ -132,49 +159,13 @@ namespace MiniJam159.Player
             List<GameObject> previousSelection = new List<GameObject>(SelectionManager.instance.selectedObjects);
 
             // Clear current selection
-            SelectionManager.instance.clearSelectedObjects();
+            //SelectionManager.instance.clearSelectedObjects();
 
             // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
-            // Find boundaries of selection box in screen space
-            Vector3 bottomLeft = massSelectBoxTransform.position;
-            Vector3 bottomRight = massSelectBoxTransform.position + new Vector3(massSelectBoxTransform.sizeDelta.x, 0, 0);
-            Vector3 topRight = massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta;
-            Vector3 topLeft = massSelectBoxTransform.position + new Vector3(0, massSelectBoxTransform.sizeDelta.y, 0);
-
-            Plane worldPlane = new Plane(Vector3.up, Vector3.zero);
-
-            // Transform position into world space
-            Ray bottomLeftRay = Camera.main.ScreenPointToRay(bottomLeft);
-            Ray bottomRightRay = Camera.main.ScreenPointToRay(bottomRight);
-            Ray topRightRay = Camera.main.ScreenPointToRay(topRight);
-            Ray topLeftRay = Camera.main.ScreenPointToRay(topLeft);
-            Vector3 bottomLeftWorldSpace = Vector3.zero;
-            Vector3 bottomRightWorldSpace = Vector3.zero;
-            Vector3 topRightWorldSpace = Vector3.zero;
-            Vector3 topLeftWorldSpace = Vector3.zero;
-            if (worldPlane.Raycast(bottomLeftRay, out float bottomLeftEnter)) bottomLeftWorldSpace = bottomLeftRay.GetPoint(bottomLeftEnter);
-            if (worldPlane.Raycast(bottomRightRay, out float bottomRightEnter)) bottomRightWorldSpace = bottomRightRay.GetPoint(bottomRightEnter);
-            if (worldPlane.Raycast(topRightRay, out float topRightEnter)) topRightWorldSpace = topRightRay.GetPoint(topRightEnter);
-            if (worldPlane.Raycast(topLeftRay, out float topLeftEnter)) topLeftWorldSpace = topLeftRay.GetPoint(topLeftEnter);
-
-            List<Vector2> castPoints = new List<Vector2>();
-            castPoints.Add(new Vector2(bottomLeftWorldSpace.x, bottomLeftWorldSpace.z));
-            castPoints.Add(new Vector2(bottomRightWorldSpace.x, bottomRightWorldSpace.z));
-            castPoints.Add(new Vector2(topRightWorldSpace.x, topRightWorldSpace.z));
-            castPoints.Add(new Vector2(topLeftWorldSpace.x, topLeftWorldSpace.z));
-
-            // We now have a polygon on the world plane
-            // We need to select every entity inside the polygon
-
-            // Find all normals in casted quadrilateral
-            List<Vector2> normals = new List<Vector2>();
-            normals.Add(Vector2.Perpendicular(castPoints[0] - castPoints[castPoints.Count - 1]).normalized);
-            for (int i = 0; i < castPoints.Count - 1; i++)
-            {
-                normals.Add(Vector2.Perpendicular(castPoints[i + 1] - castPoints[i]).normalized);
-            }
+            List<Vector2> castPoints = getMassSelectionBoxPoints();
+            List<Vector2> castNormals = getMassSelectionBoxNormals(castPoints);
 
             // Create new selection
             List<GameObject> newSelection = new List<GameObject>();
@@ -245,64 +236,7 @@ namespace MiniJam159.Player
             foreach (GameAI unitAI in GameAI.allAIs)
             {
                 GameObject unitObject = unitAI.gameObject;
-                if (unitObject == null || unitObject.tag != "Unit") continue;
-
-                // Find corners of unit
-                List<Vector2> unitPoints = new List<Vector2>();
-                Vector2 unitPosition = new Vector2(unitObject.transform.position.x, unitObject.transform.position.z);
-                Vector2 unitSize = new Vector2(unitObject.transform.localScale.x, unitObject.transform.localScale.z);
-                unitPoints.Add(unitPosition + (unitSize / 2f));
-                unitPoints.Add(unitPosition + new Vector2(unitSize.x / 2f, 0) - new Vector2(0, unitSize.y / 2f));
-                unitPoints.Add(unitPosition - (unitSize / 2f));
-                unitPoints.Add(unitPosition - new Vector2(unitSize.x / 2f, 0) + new Vector2(0, unitSize.y / 2f));
-
-                // Find all normals
-                List<Vector2> allNormals = new List<Vector2>(normals);
-                allNormals.Add(Vector2.Perpendicular(unitPoints[0] - unitPoints[unitPoints.Count - 1]).normalized);
-                for (int i = 0; i < unitPoints.Count - 1; i++)
-                {
-                    allNormals.Add(Vector2.Perpendicular(unitPoints[i + 1] - unitPoints[i]).normalized);
-                }
-
-                // Loop over all normals
-                bool separated = false;
-                foreach (Vector2 normal in allNormals)
-                {
-                    // Project shapes onto normal
-                    float castMin = float.MaxValue;
-                    float castMax = float.MinValue;
-                    foreach (Vector2 point in castPoints)
-                    {
-                        Vector2 projectedPoint = closestPointOnNormal(normal, point);
-                        float distance = Vector2.Distance(Vector2.zero, projectedPoint);
-                        if (Vector2.Dot(projectedPoint, normal) < 0) distance = -distance;
-                        if (distance < castMin) castMin = distance;
-                        if (distance > castMax) castMax = distance;
-                    }
-                    float unitMin = float.MaxValue;
-                    float unitMax = float.MinValue;
-                    foreach (Vector2 point in unitPoints)
-                    {
-                        Vector2 projectedPoint = closestPointOnNormal(normal, point);
-                        float distance = Vector2.Distance(Vector2.zero, projectedPoint);
-                        if (Vector2.Dot(projectedPoint, normal) < 0) distance = -distance;
-                        if (distance < unitMin) unitMin = distance;
-                        if (distance > unitMax) unitMax = distance;
-                    }
-
-                    // Check if projected shapes overlap
-                    if (castMax < unitMin || unitMax < castMin)
-                    {
-                        separated = true;
-                        break;
-                    }
-                }
-
-                if (!separated)
-                {
-                    // Inside selection if not separated
-                    newSelection.Add(unitObject);
-                }
+                if (unitAI.insideCast(castPoints, castNormals)) newSelection.Add(unitObject);
             }
 
             // Get key states
@@ -310,9 +244,16 @@ namespace MiniJam159.Player
             bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
 
             // We will be working with previous selection if either key is true
-            if (deselectKey || addToSelectionKey) SelectionManager.instance.selectedObjects = previousSelection;
-            // Reset focus if neither key is true
-            else SelectionManager.instance.focusSortPriority = -1;
+            if (deselectKey || addToSelectionKey)
+            {
+                SelectionManager.instance.selectedObjects = previousSelection;
+            }
+            // Clear previous selection if neither key is true
+            else
+            {
+                //SelectionManager.instance.focusSortPriority = -1;
+                SelectionManager.instance.clearSelectedObjects();
+            }
 
             // Loop through all new hit objects
             foreach (GameObject hitObject in newSelection)
@@ -324,7 +265,12 @@ namespace MiniJam159.Player
                     SelectionManager.instance.selectedObjects = previousSelection;
 
                     // Remove object from selection
-                    if (SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.selectedObjects.Remove(hitObject);
+                    if (SelectionManager.instance.selectedObjects.Contains(hitObject))
+                    {
+                        SelectionManager.instance.selectedObjects.Remove(hitObject);
+
+                        // Clear outline
+                    }
                     // Add object to selection
                     else SelectionManager.instance.selectedObjects.Add(hitObject);
                 }
@@ -339,7 +285,7 @@ namespace MiniJam159.Player
                 else SelectionManager.instance.selectedObjects.Add(hitObject);
             }
 
-            SelectionManager.instance.addOutlinesToSelectedObjects();
+            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
 
             EventManager.instance.selectionCompleteEvent.Invoke();
 
@@ -350,7 +296,52 @@ namespace MiniJam159.Player
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
-        Vector2 closestPointOnNormal(Vector2 normal, Vector2 point)
+        public List<Vector2> getMassSelectionBoxPoints()
+        {
+            // Find boundaries of selection box in screen space
+            Vector3 bottomLeft = massSelectBoxTransform.position;
+            Vector3 bottomRight = massSelectBoxTransform.position + new Vector3(massSelectBoxTransform.sizeDelta.x, 0, 0);
+            Vector3 topRight = massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta;
+            Vector3 topLeft = massSelectBoxTransform.position + new Vector3(0, massSelectBoxTransform.sizeDelta.y, 0);
+
+            Plane worldPlane = new Plane(Vector3.up, Vector3.zero);
+
+            // Transform position into world space
+            Ray bottomLeftRay = Camera.main.ScreenPointToRay(bottomLeft);
+            Ray bottomRightRay = Camera.main.ScreenPointToRay(bottomRight);
+            Ray topRightRay = Camera.main.ScreenPointToRay(topRight);
+            Ray topLeftRay = Camera.main.ScreenPointToRay(topLeft);
+            Vector3 bottomLeftWorldSpace = Vector3.zero;
+            Vector3 bottomRightWorldSpace = Vector3.zero;
+            Vector3 topRightWorldSpace = Vector3.zero;
+            Vector3 topLeftWorldSpace = Vector3.zero;
+            if (worldPlane.Raycast(bottomLeftRay, out float bottomLeftEnter)) bottomLeftWorldSpace = bottomLeftRay.GetPoint(bottomLeftEnter);
+            if (worldPlane.Raycast(bottomRightRay, out float bottomRightEnter)) bottomRightWorldSpace = bottomRightRay.GetPoint(bottomRightEnter);
+            if (worldPlane.Raycast(topRightRay, out float topRightEnter)) topRightWorldSpace = topRightRay.GetPoint(topRightEnter);
+            if (worldPlane.Raycast(topLeftRay, out float topLeftEnter)) topLeftWorldSpace = topLeftRay.GetPoint(topLeftEnter);
+
+            List<Vector2> castPoints = new List<Vector2>();
+            castPoints.Add(new Vector2(bottomLeftWorldSpace.x, bottomLeftWorldSpace.z));
+            castPoints.Add(new Vector2(bottomRightWorldSpace.x, bottomRightWorldSpace.z));
+            castPoints.Add(new Vector2(topRightWorldSpace.x, topRightWorldSpace.z));
+            castPoints.Add(new Vector2(topLeftWorldSpace.x, topLeftWorldSpace.z));
+
+            return castPoints;
+        }
+
+        public List<Vector2> getMassSelectionBoxNormals(List<Vector2> castPoints)
+        {
+            // Find all normals in casted quadrilateral
+            List<Vector2> castNormals = new List<Vector2>();
+            castNormals.Add(Vector2.Perpendicular(castPoints[0] - castPoints[castPoints.Count - 1]).normalized);
+            for (int i = 0; i < castPoints.Count - 1; i++)
+            {
+                castNormals.Add(Vector2.Perpendicular(castPoints[i + 1] - castPoints[i]).normalized);
+            }
+            return castNormals;
+        }
+
+        private Vector2 closestPointOnNormal(Vector2 normal, Vector2 point)
         {
             Vector2 normalized = normal.normalized;
             float d = Vector2.Dot(point, normalized);
@@ -370,7 +361,7 @@ namespace MiniJam159.Player
 
             // Add object back in
             SelectionManager.instance.selectedObjects.Add(targetObject);
-            SelectionManager.instance.addOutlinesToSelectedObjects();
+            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -406,7 +397,7 @@ namespace MiniJam159.Player
 
             // Add objects back in
             SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
-            SelectionManager.instance.addOutlinesToSelectedObjects();
+            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -432,7 +423,7 @@ namespace MiniJam159.Player
 
             // Add object back in
             SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
-            SelectionManager.instance.addOutlinesToSelectedObjects();
+            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -463,7 +454,7 @@ namespace MiniJam159.Player
 
             // Add objects back in
             SelectionManager.instance.selectedObjects = new List<GameObject>(reselectedObjects);
-            SelectionManager.instance.addOutlinesToSelectedObjects();
+            SelectionManager.instance.addOutlinesToSelectedObjects(SelectionManager.instance.selectedOutlineColor);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();

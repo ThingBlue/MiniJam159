@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3337934476491563768}
   m_Layer: 10
   m_Name: RaycastMesh
-  m_TagString: Unit
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 3246201464789769867}
   m_Layer: 10
   m_Name: Mesh
-  m_TagString: Unit
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 8850321739734179687}
   m_Layer: 10
   m_Name: MeleeUnitPrefab
-  m_TagString: Unit
+  m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
