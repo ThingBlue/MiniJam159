@@ -167,7 +167,8 @@ namespace MiniJam159.Player
                     break;
 
                 case PlayerMode.NORMAL:
-
+                    // Update mouse raycast for hovered object
+                    SelectionController.instance.updateMouseHover();
 
                     // Set start position for mass select
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())

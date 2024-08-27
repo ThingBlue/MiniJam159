@@ -854,6 +854,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   selectionRaycastDistance: 100
+  hoveredObject: {fileID: 0}
   massSelectStartPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &707801752
 Transform:
@@ -1198,7 +1199,7 @@ GameObject:
   - component: {fileID: 990459298}
   - component: {fileID: 990459297}
   - component: {fileID: 990459296}
-  m_Layer: 10
+  m_Layer: 20
   m_Name: EnemyTest
   m_TagString: Enemy
   m_Icon: {fileID: 0}

@@ -27,6 +27,7 @@ namespace MiniJam159.Player
 
         #endregion
 
+        public GameObject hoveredObject;
         public Vector3 massSelectStartPosition;
 
         // Singleton
@@ -89,7 +90,38 @@ namespace MiniJam159.Player
 
         public void updateMouseHover()
         {
+            // Raycast from mouse and grab first hit
+            LayerMask raycastMask = unitLayer | structureLayer;
+            GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
 
+            if (hoveredObject != null && hitObject != hoveredObject)
+            {
+                // Reset outline of previous object
+                if (SelectionManager.instance.selectedObjects.Contains(hoveredObject))
+                {
+                    // Set outline back to selected
+                    hoveredObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
+                }
+                else
+                {
+                    // Clear outline from previous hovered object
+                    hoveredObject.GetComponent<Entity>().clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                }
+            }
+
+            if (hitObject != null && hitObject != hoveredObject)
+            {
+                if (!hitObject.GetComponent<Entity>())
+                {
+                    Debug.Log(hitObject);
+                }
+
+                // Add outline to new hovered object
+                hitObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+            }
+
+            // Set hovered object
+            hoveredObject = hitObject;
         }
 
         public void executeSingleSelect()
