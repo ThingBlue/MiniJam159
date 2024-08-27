@@ -9,6 +9,7 @@ using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
 using System;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace MiniJam159.Player
 {
@@ -49,6 +50,58 @@ namespace MiniJam159.Player
             EventManager.instance.cancelBuildMenuCommandEvent.AddListener(onCancelBuildMenuCommandCallback);
         }
 
+        public void updateMouseHover()
+        {
+            // Raycast from mouse and grab first hit
+            LayerMask raycastMask = unitLayer | structureLayer;
+            GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
+
+            // Handle outline of previous hovered object
+            if (hoveredObject != null && hitObject != hoveredObject)
+            {
+                // Reset outline of previous object
+                if (SelectionManager.instance.selectedObjects.Contains(hoveredObject))
+                {
+                    // Set outline back to selected
+                    hoveredObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
+                }
+                else
+                {
+                    // Clear outline from previous hovered object
+                    hoveredObject.GetComponent<Entity>().clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                }
+            }
+
+            // Handle outline of new hovered object
+            if (hitObject != null)// && hitObject != hoveredObject)
+            {
+                // Add outline to new hovered object
+                if (InputManager.instance.getKey("Deselect"))
+                {
+                    // Only apply deselect outline if object is selected
+                    if (SelectionManager.instance.selectedObjects.Contains(hitObject))
+                    {
+                        // Deselect
+                        hitObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.deselectOutlineColor);
+                    }
+                    // Deselecting but current object is not selected
+                    else
+                    {
+                        // Clear outline
+                        hitObject.GetComponent<Entity>().clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                    }
+                }
+                else
+                {
+                    // Regular hover
+                    hitObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+                }
+            }
+
+            // Set hovered object
+            hoveredObject = hitObject;
+        }
+
         public void updateMassSelectBox()
         {
             bool massSelecting = (PlayerModeManager.instance.playerMode == PlayerMode.MASS_SELECT);
@@ -72,8 +125,26 @@ namespace MiniJam159.Player
             {
                 if (unit.insideCast(castPoints, castNormals))
                 {
-                    // Hovered
-                    unit.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+                    if (InputManager.instance.getKey("Deselect"))
+                    {
+                        // Only apply deselect outline if object is selected
+                        if (SelectionManager.instance.selectedObjects.Contains(unit.gameObject))
+                        {
+                            // Deselecting
+                            unit.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.deselectOutlineColor);
+                        }
+                        // Deselecting but current object is not selected
+                        else
+                        {
+                            // Clear outline
+                            unit.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                        }
+                    }
+                    else
+                    {
+                        // Regular hover
+                        unit.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+                    }
                 }
                 else if (SelectionManager.instance.selectedObjects.Contains(unit.gameObject))
                 {
@@ -86,42 +157,6 @@ namespace MiniJam159.Player
                     unit.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
                 }
             }
-        }
-
-        public void updateMouseHover()
-        {
-            // Raycast from mouse and grab first hit
-            LayerMask raycastMask = unitLayer | structureLayer;
-            GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
-
-            if (hoveredObject != null && hitObject != hoveredObject)
-            {
-                // Reset outline of previous object
-                if (SelectionManager.instance.selectedObjects.Contains(hoveredObject))
-                {
-                    // Set outline back to selected
-                    hoveredObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
-                }
-                else
-                {
-                    // Clear outline from previous hovered object
-                    hoveredObject.GetComponent<Entity>().clearOutline(SelectionManager.instance.selectedOutlineMaterial);
-                }
-            }
-
-            if (hitObject != null && hitObject != hoveredObject)
-            {
-                if (!hitObject.GetComponent<Entity>())
-                {
-                    Debug.Log(hitObject);
-                }
-
-                // Add outline to new hovered object
-                hitObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
-            }
-
-            // Set hovered object
-            hoveredObject = hitObject;
         }
 
         public void executeSingleSelect()
