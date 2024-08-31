@@ -83,12 +83,14 @@ namespace MiniJam159.UI
             // Trigger UI update
             UIManager.instance.updateDisplayBoxes();
 
+            /*
             // Add hovered outline to corresponding entity
             GameObject selectedObject = SelectionManager.instance.selectedObjects[selectedIndex];
             if (selectedObject != null)
             {
                 selectedObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
             }
+            */
 
             // Show tooltip
             //TooltipManager.instance.toggleTooltip(selectedObjectName, true);
@@ -101,12 +103,14 @@ namespace MiniJam159.UI
             // Trigger UI update
             UIManager.instance.updateDisplayBoxes();
 
+            /*
             // Remove hovered outline from corresponding entity
             GameObject selectedObject = SelectionManager.instance.selectedObjects[selectedIndex];
             if (selectedObject != null)
             {
                 selectedObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
             }
+            */
 
             // Hide tooltip
             //TooltipManager.instance.toggleTooltip("", false);
