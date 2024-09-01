@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5914292673917186737}
   - component: {fileID: 473903977527802775}
+  - component: {fileID: 6703472453650311164}
   m_Layer: 11
   m_Name: TestStructurePrefab
   m_TagString: PlayerControlled
@@ -57,6 +58,19 @@ MonoBehaviour:
   maxBuildProgress: 1000
   health: 0
   buildProgress: 0
+--- !u!65 &6703472453650311164
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5914292673917186741}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2, y: 1, z: 3}
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &5914292674001413808
 GameObject:
   m_ObjectHideFlags: 0
@@ -166,7 +180,6 @@ GameObject:
   - component: {fileID: 3999988729601360319}
   - component: {fileID: 2351592743322913596}
   - component: {fileID: 3134976303323265504}
-  - component: {fileID: 4469517200079939873}
   m_Layer: 11
   m_Name: Mesh
   m_TagString: PlayerControlled
@@ -182,8 +195,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7613787474467162148}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 2, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5914292673917186737}
@@ -240,19 +253,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &4469517200079939873
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7613787474467162148}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &4803869551200982157
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ using System;
 using static UnityEngine.UI.CanvasScaler;
 using System.Linq;
 using static UnityEngine.EventSystems.EventTrigger;
+using UnityEditor.SearchService;
 
 namespace MiniJam159.Player
 {
@@ -494,21 +495,11 @@ namespace MiniJam159.Player
 
         public void deselectSingle(int index)
         {
-            // Store the objects we want to keep
-            List<GameObject> reselectedObjects = new List<GameObject>(SelectionManager.instance.selectedObjects);
-
             // Remove target object
-            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
-            reselectedObjects.Remove(targetObject);
+            SelectionManager.instance.removeSelectedObject(SelectionManager.instance.selectedObjects[index]);
 
             // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
-
-            // Clear list
-            SelectionManager.instance.clearSelectedObjects();
-
-            // Add object back in
-            SelectionManager.instance.setSelectedObjects(reselectedObjects);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();
@@ -519,26 +510,20 @@ namespace MiniJam159.Player
 
         public void deselectType(int index)
         {
-            // Store the objects we want to keep
-            List<GameObject> reselectedObjects = new List<GameObject>(SelectionManager.instance.selectedObjects);
+            Entity targetEntity = SelectionManager.instance.selectedObjects[index].GetComponent<Entity>();
 
-            // Get sorting priority of target
-            GameObject targetObject = SelectionManager.instance.selectedObjects[index];
-            Entity targetEntity = targetObject.GetComponent<Entity>();
+            // Get all objects with the same sorting priority as target
+            List<GameObject> objectsToDeselect = new List<GameObject>();
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                if (selectedObject.GetComponent<Entity>().sortPriority == targetEntity.sortPriority) objectsToDeselect.Add(selectedObject);
+            }
 
-            // Remove all objects with the same sorting priority
-            reselectedObjects.RemoveAll(selectedObject =>
-                selectedObject.GetComponent<Entity>().sortPriority == targetEntity.sortPriority
-            );
+            // Remove all objects with same sorting priority as target
+            foreach (GameObject objectToDeselect in objectsToDeselect) SelectionManager.instance.removeSelectedObject(objectToDeselect);
 
             // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
-
-            // Clear list
-            SelectionManager.instance.clearSelectedObjects();
-
-            // Add objects back in
-            SelectionManager.instance.setSelectedObjects(reselectedObjects);
 
             // Sort
             EventManager.instance.selectionCompleteEvent.Invoke();

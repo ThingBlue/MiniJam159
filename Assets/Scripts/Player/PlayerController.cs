@@ -261,7 +261,7 @@ namespace MiniJam159.Player
             if (oldFocusIndex != -1)
             {
                 // Find entity with new focus
-                for (int i = newFocusIndex; i < SelectionManager.instance.selectedObjects.Count; i++)
+                for (int i = oldFocusIndex; i < SelectionManager.instance.selectedObjects.Count; i++)
                 {
                     if (SelectionManager.instance.selectedObjects[i].GetComponent<Entity>().sortPriority != SelectionManager.instance.focusSortPriority)
                     {
