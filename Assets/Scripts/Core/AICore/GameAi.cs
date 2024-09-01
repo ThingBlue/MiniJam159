@@ -29,7 +29,7 @@ namespace MiniJam159.AICore
         public static List<GameAI> allAIs = new List<GameAI>(); // List of all AI instances
 
         public AIJob currentAIJob = AIJob.IDLE;
-        public List<CommandType> commands;
+        public List<CommandType> commands = new List<CommandType>();
 
         public float health;
 
@@ -40,9 +40,18 @@ namespace MiniJam159.AICore
         protected const float moveIgnoreTargetDuration = 10f; // Duration to ignore targets while moving
         protected Transform target { get; set; } // Property to be implemented by subclasses
 
+        private void Awake()
+        {
+            // TEMP
+            allAIs.Add(this);
+        }
+
         protected virtual void Start()
         {
-            allAIs.Add(this);
+            // TEMP
+            EntityManager.instance.playerUnitObjects.Add(gameObject);
+            EntityManager.instance.playerEntityObjects.Add(gameObject);
+
             currentAIJob = AIJob.IDLE;
             moveIgnoreEnemies = false;
 

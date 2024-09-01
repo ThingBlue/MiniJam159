@@ -28,7 +28,6 @@ namespace MiniJam159
 
         #endregion
 
-        public List<GameObject> structures;
         public List<GameObject> depositPointStructures;
 
         private StructureType placementStructureType;
@@ -60,7 +59,7 @@ namespace MiniJam159
             {
                 gridTilesRenderer.enabled = inPlacementMode ? true : false;
                 placementGuideRenderer.enabled = inPlacementMode ? true : false;
-                foreach (GameObject structure in structures)
+                foreach (GameObject structure in EntityManager.instance.playerStructureObjects)
                 {
                     structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = inPlacementMode ? true : false;
                     //structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = true;
@@ -170,7 +169,8 @@ namespace MiniJam159
                 renderer.material = new Material(renderer.material);
 
                 // Add to structures
-                structures.Add(newStructureObject);
+                EntityManager.instance.playerStructureObjects.Add(newStructureObject);
+                EntityManager.instance.playerEntityObjects.Add(newStructureObject);
 
                 // Add to deposit points if new structure is a deposit point
                 if (depositPointStructureTypes.Contains(placementStructureType)) depositPointStructures.Add(newStructureObject);

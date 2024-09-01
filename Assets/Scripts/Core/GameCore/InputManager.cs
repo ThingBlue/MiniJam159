@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -110,6 +111,22 @@ namespace MiniJam159.GameCore
             RaycastHit hit;
             if (Physics.Raycast(mouseRay, out hit, mouseRaycastDistance, layerMask)) return hit.collider.gameObject;
             return null;
+        }
+
+        // Returns all objects hit by raycast
+        public List<GameObject> mouseRaycastAll(LayerMask layerMask)
+        {
+            // Raycast from mouse and grab first hit
+            Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit[] hits = Physics.RaycastAll(mouseRay, mouseRaycastDistance, layerMask);
+
+            // Sort by distance
+            hits = hits.OrderBy(hit => hit.distance).ToArray();
+
+            // Convert hits to a list of gameobjects
+            List<GameObject> hitObjects = new List<GameObject>();
+            foreach (RaycastHit hit in hits) hitObjects.Add(hit.collider.gameObject);
+            return hitObjects;
         }
 
         // Returns position of first raycast hit

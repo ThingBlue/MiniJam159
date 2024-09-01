@@ -231,7 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32df92ecdd306f2448754d9e6864fb2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sortPriority: 2
+  sortPriority: 1002
   displayIcon: {fileID: 21300000, guid: cd9f05cf0dc137243a07d149c8e22bd9, type: 3}
   maxHealth: 200
   healthBar: {fileID: 6224580914414646629}

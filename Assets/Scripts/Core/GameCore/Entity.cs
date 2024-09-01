@@ -64,7 +64,8 @@ namespace MiniJam159.GameCore
             // Find corners of unit
             List<Vector2> points = new List<Vector2>();
             Vector2 position = new Vector2(transform.position.x, transform.position.z);
-            Vector2 size = new Vector2(transform.localScale.x, transform.localScale.z);
+            //Vector2 size = new Vector2(transform.localScale.x, transform.localScale.z);
+            Vector2 size = new Vector2(GetComponent<BoxCollider>().size.x, GetComponent<BoxCollider>().size.z);
             points.Add(position + (size / 2f));
             points.Add(position + new Vector2(size.x / 2f, 0) - new Vector2(0, size.y / 2f));
             points.Add(position - (size / 2f));

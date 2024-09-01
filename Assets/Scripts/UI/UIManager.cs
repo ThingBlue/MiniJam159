@@ -153,7 +153,7 @@ namespace MiniJam159.UI
             }
         }
 
-        public void clearSelectedObjects()
+        public void clearDisplayBoxes()
         {
             foreach (List<GameObject> row in displayBoxes)
             {
@@ -166,7 +166,7 @@ namespace MiniJam159.UI
             displayBoxes.Clear();
         }
 
-        public void showSelectedObjects()
+        public void showDisplayBoxes()
         {
             List<GameObject> selectedObjects = SelectionManager.instance.selectedObjects;
             if (selectedObjects.Count == 0)
@@ -368,13 +368,13 @@ namespace MiniJam159.UI
 
         private void onSelectionStartCallback()
         {
-            clearSelectedObjects();
+            clearDisplayBoxes();
             clearCommandButtons();
         }
 
         private void onSelectionSortedCallback()
         {
-            showSelectedObjects();
+            showDisplayBoxes();
         }
 
         private void onPopulateCommandsStartCallback()

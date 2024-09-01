@@ -399,7 +399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 540e89fd48aaa9f47b8c194e43748053, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sortPriority: 1
+  sortPriority: 1001
   displayIcon: {fileID: 21300000, guid: 059119e69eb40b74489a005110b6b7a7, type: 3}
   maxHealth: 100
   healthBar: {fileID: 6922051565218666619}

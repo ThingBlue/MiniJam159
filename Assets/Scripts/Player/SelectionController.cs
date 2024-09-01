@@ -10,6 +10,8 @@ using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
 using System;
 using static UnityEngine.UI.CanvasScaler;
+using System.Linq;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace MiniJam159.Player
 {
@@ -75,6 +77,9 @@ namespace MiniJam159.Player
             // Handle outline of new hovered object
             if (hitObject != null)// && hitObject != hoveredObject)
             {
+                Entity hitEntity = hitObject.GetComponent<Entity>();
+                if (hitEntity == null) Debug.Log("hitEntity is null for object " + hitObject);
+
                 // Add outline to new hovered object
                 if (InputManager.instance.getKey("Deselect"))
                 {
@@ -82,19 +87,19 @@ namespace MiniJam159.Player
                     if (SelectionManager.instance.selectedObjects.Contains(hitObject))
                     {
                         // Deselect
-                        hitObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.deselectOutlineColor);
+                        hitEntity.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.deselectOutlineColor);
                     }
                     // Deselecting but current object is not selected
                     else
                     {
                         // Clear outline
-                        hitObject.GetComponent<Entity>().clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                        hitEntity.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
                     }
                 }
                 else
                 {
                     // Regular hover
-                    hitObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+                    hitEntity.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
                 }
             }
 
@@ -118,114 +123,156 @@ namespace MiniJam159.Player
             massSelectBoxTransform.position = bottomLeft;
             massSelectBoxTransform.sizeDelta = topRight - bottomLeft;
 
-            // Add outlines to entities inside the box and remove outlines for entities outside the box
             List<Vector2> castPoints = getMassSelectionBoxPoints();
             List<Vector2> castNormals = getMassSelectionBoxNormals(castPoints);
-            foreach (GameAI unit in GameAI.allAIs)
+
+            // Get key states
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
+
+            // Separate entities into 2 lists, one for entities in the box and one for entities outside
+            List<GameObject> entitiesInsideBox = new List<GameObject>();
+            List<GameObject> entitiesOutsideBox = new List<GameObject>();
+            bool unitInBox = false;
+            foreach (GameObject entityObject in EntityManager.instance.playerEntityObjects)
             {
-                if (unit.insideCast(castPoints, castNormals))
+                Entity entity = entityObject.GetComponent<Entity>();
+                if (entity.insideCast(castPoints, castNormals))
                 {
-                    if (InputManager.instance.getKey("Deselect"))
+                    entitiesInsideBox.Add(entityObject);
+                    if (entityObject.GetComponent<GameAI>() != null) unitInBox = true;
+                }
+                else
+                {
+                    entitiesOutsideBox.Add(entityObject);
+                }
+            }
+
+            // If there is a unit in the box that is not in our current selection, we will ignore structures in the box
+            bool includeStructuresInAddition = true;
+            if (addToSelectionKey)
+            {
+                foreach (GameObject entityObject in entitiesInsideBox)
+                {
+                    GameAI unit = entityObject.GetComponent<GameAI>();
+                    if (unit != null && !SelectionManager.instance.selectedObjects.Contains(entityObject))
                     {
-                        // Only apply deselect outline if object is selected
-                        if (SelectionManager.instance.selectedObjects.Contains(unit.gameObject))
-                        {
-                            // Deselecting
-                            unit.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.deselectOutlineColor);
-                        }
-                        // Deselecting but current object is not selected
-                        else
-                        {
-                            // Clear outline
-                            unit.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
-                        }
-                    }
-                    else
-                    {
-                        // Regular hover
-                        unit.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+                        // There is a unit in the box that is not in our current selection
+                        includeStructuresInAddition = false;
+                        break;
                     }
                 }
-                else if (SelectionManager.instance.selectedObjects.Contains(unit.gameObject))
+            }
+
+            // Conditions:
+            // When in standard mode, we remove structures if there are any units in the box
+            // When in addition mode, we remove structures if there are any units in the box that are not already in our current selection
+            // When deselecting, we always include structures
+            if (((unitInBox && !addToSelectionKey) || (addToSelectionKey && !includeStructuresInAddition)) && !deselectKey)
+            {
+                // Remove all structures if conditions met
+                for (int i = entitiesInsideBox.Count - 1; i >= 0; i--)
+                {
+                    GameObject entityObject = entitiesInsideBox[i];
+
+                    if (entityObject.GetComponent<Structure>() != null)
+                    {
+                        // Move entity to outside list
+                        entitiesOutsideBox.Add(entitiesInsideBox[i]);
+                        entitiesInsideBox.RemoveAt(i);
+                    }
+                }
+            }
+
+            // Add/clears outlines to objects inside box
+            foreach (GameObject entityObject in entitiesInsideBox)
+            {
+                Entity entity = entityObject.GetComponent<Entity>();
+                if (deselectKey)
+                {
+                    // Only apply deselect outline if object is selected
+                    if (SelectionManager.instance.selectedObjects.Contains(entityObject))
+                    {
+                        // Deselecting
+                        entity.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.deselectOutlineColor);
+                    }
+                    // Deselecting but current object is not selected
+                    else
+                    {
+                        // Clear outline
+                        entity.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                    }
+                }
+                else
+                {
+                    // Regular hover
+                    entity.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+                }
+            }
+
+            // Add/clear outlines to objects outside box
+            foreach (GameObject entityObject in entitiesOutsideBox)
+            {
+                Entity entity = entityObject.GetComponent<Entity>();
+                if (SelectionManager.instance.selectedObjects.Contains(entityObject))
                 {
                     // Selected already
-                    unit.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
+                    entity.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
                 }
                 else
                 {
                     // None, clear outline
-                    unit.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                    entity.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
                 }
             }
         }
 
         public void executeSingleSelect()
         {
-            // Keep track of previous selection
-            List<GameObject> previousSelection = new List<GameObject>(SelectionManager.instance.selectedObjects);
-
-            // Clear current selection regardless of if we hit amything
-            SelectionManager.instance.clearSelectedObjects();
-
-            // Clear UI
-            EventManager.instance.selectionStartEvent.Invoke();
-
             // Raycast from mouse and grab first hit
             LayerMask raycastMask = unitLayer | structureLayer;
-            GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
+            List<GameObject> hitObjects = InputManager.instance.mouseRaycastAll(raycastMask);
+            List<GameObject> newSelection = new List<GameObject>();
 
-            // No hits
-            if (hitObject == null)
+            // Get first hit structure and first hit unit
+            GameObject firstHitStructure = null;
+            GameObject firstHitUnit = null;
+            foreach (GameObject hitObject in hitObjects)
             {
-                // Clear selection and return
-                SelectionManager.instance.clearSelectedObjects();
-                EventManager.instance.selectionCompleteEvent.Invoke();
-                return;
+                if (hitObject.GetComponent<Structure>() != null && firstHitStructure == null) firstHitStructure = hitObject;
+                if (hitObject.GetComponent<GameAI>() != null && firstHitUnit == null) firstHitUnit = hitObject;
             }
-
-            // If we hit a child, we want to grab the parent
-            //if (hitObject.GetComponent<Entity>() == null) hitObject = hitObject.transform.parent.gameObject;
 
             // Get key states
             bool deselectKey = InputManager.instance.getKey("Deselect");
             bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
 
-            // We will be working with previous selection if either key is true
-            if (deselectKey || addToSelectionKey) SelectionManager.instance.setSelectedObjects(previousSelection);
-
-            // Behaviour based on whether the object we clicked is already selected
-            if (deselectKey && addToSelectionKey)
+            // Determine what our selected object should be between structure and unit
+            // No unit hit
+            if (firstHitUnit == null) newSelection.Add(firstHitStructure);
+            // No structure hit
+            else if (firstHitStructure == null) newSelection.Add(firstHitUnit);
+            // Hit both unit and structure
+            else if (deselectKey)
             {
-                // Remove object from selection
-                if (SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.removeSelectedObject(hitObject);
-                // Add object to selection
-                else SelectionManager.instance.addSelectedObject(hitObject);
+                // Structure selected, deselect structure
+                if (SelectionManager.instance.selectedObjects.Contains(firstHitStructure)) newSelection.Add(firstHitStructure);
+                else newSelection.Add(firstHitUnit);
             }
-            // Deselect from previous selection
-            else if (deselectKey) SelectionManager.instance.removeSelectedObject(hitObject);
-            // Add to previous selection
-            else if (addToSelectionKey)
+            else if (!deselectKey)
             {
-                // Prevent adding a duplicate
-                if (!SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.addSelectedObject(hitObject);
+                // Structure already selected, switch to unit
+                if (SelectionManager.instance.selectedObjects.Contains(firstHitStructure)) newSelection.Add(firstHitUnit);
+                // Prioritize sturcture
+                else newSelection.Add(firstHitStructure);
             }
-            // Default: Replace selection
-            else SelectionManager.instance.addSelectedObject(hitObject);
 
-            EventManager.instance.selectionCompleteEvent.Invoke();
-
-            // Populate commands after sorting
-            populateCommands();
+            // Handle selection
+            executeSelect(newSelection);
         }
 
         public void executeMassSelect()
         {
-            // Keep track of previous selection
-            List<GameObject> previousSelection = new List<GameObject>(SelectionManager.instance.selectedObjects);
-
-            // Clear current selection
-            //SelectionManager.instance.clearSelectedObjects();
-
             // Clear UI
             EventManager.instance.selectionStartEvent.Invoke();
 
@@ -235,90 +282,69 @@ namespace MiniJam159.Player
             // Create new selection
             List<GameObject> newSelection = new List<GameObject>();
 
-            // NOT ALLOWING MASS SELECT ON STRUCTURES FOR NOW
-            /*
-            foreach (GameObject structureObject in StructureManager.instance.structures)
+            // Loop through all player entities
+            bool unitInBox = false;
+            foreach (GameObject entityObject in EntityManager.instance.playerEntityObjects)
             {
-                // Find corners of structure
-                StructureData structureData = structureObject.GetComponent<Structure>().structureData;
-                List<Vector2> structurePoints = new List<Vector2>();
-                structurePoints.Add(structureData.position + (structureData.size / 2f));
-                structurePoints.Add(structureData.position + new Vector2(structureData.size.x / 2f, 0) - new Vector2(0, structureData.size.y / 2f));
-                structurePoints.Add(structureData.position - (structureData.size / 2f));
-                structurePoints.Add(structureData.position - new Vector2(structureData.size.x / 2f, 0) + new Vector2(0, structureData.size.y / 2f));
-
-                // Find all normals
-                List<Vector2> allNormals = new List<Vector2>(normals);
-                allNormals.Add(Vector2.Perpendicular(structurePoints[0] - structurePoints[structurePoints.Count - 1]).normalized);
-                for (int i = 0; i < structurePoints.Count - 1; i++)
+                Entity entity = entityObject.GetComponent<Entity>();
+                if (entity.insideCast(castPoints, castNormals))
                 {
-                    allNormals.Add(Vector2.Perpendicular(structurePoints[i + 1] - structurePoints[i]).normalized);
+                    newSelection.Add(entityObject);
+                    if (entityObject.GetComponent<GameAI>() != null) unitInBox = true;
                 }
-
-                // Loop over all normals
-                bool separated = false;
-                foreach (Vector2 normal in allNormals)
-                {
-                    // Project shapes onto normal
-                    float castMin = float.MaxValue;
-                    float castMax = float.MinValue;
-                    foreach (Vector2 point in castPoints)
-                    {
-                        Vector2 projectedPoint = closestPointOnNormal(normal, point);
-                        float distance = Vector2.Distance(Vector2.zero, projectedPoint);
-                        if (Vector2.Dot(projectedPoint, normal) < 0) distance = -distance;
-                        if (distance < castMin) castMin = distance;
-                        if (distance > castMax) castMax = distance;
-                    }
-                    float structureMin = float.MaxValue;
-                    float structureMax = float.MinValue;
-                    foreach (Vector2 point in structurePoints)
-                    {
-                        Vector2 projectedPoint = closestPointOnNormal(normal, point);
-                        float distance = Vector2.Distance(Vector2.zero, projectedPoint);
-                        if (Vector2.Dot(projectedPoint, normal) < 0) distance = -distance;
-                        if (distance < structureMin) structureMin = distance;
-                        if (distance > structureMax) structureMax = distance;
-                    }
-
-                    // Check if projected shapes overlap
-                    if (castMax < structureMin || structureMax < castMin)
-                    {
-                        separated = true;
-                        break;
-                    }
-                }
-
-                if (!separated)
-                {
-                    // Inside selection if not separated
-                    newSelection.Add(structureObject);
-                }
-            }
-            */
-
-            // Loop through all units
-            foreach (GameAI unitAI in GameAI.allAIs)
-            {
-                GameObject unitObject = unitAI.gameObject;
-                if (unitAI.insideCast(castPoints, castNormals)) newSelection.Add(unitObject);
             }
 
             // Get key states
             bool deselectKey = InputManager.instance.getKey("Deselect");
             bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
 
-            // We will be working with previous selection if either key is true
-            if (deselectKey || addToSelectionKey)
+            // If there is a unit in the box that is not in our current selection, we will ignore structures in the box
+            bool includeStructuresInAddition = true;
+            if (addToSelectionKey)
             {
-                SelectionManager.instance.setSelectedObjects(previousSelection);
+                foreach (GameObject entityObject in newSelection)
+                {
+                    GameAI unit = entityObject.GetComponent<GameAI>();
+                    if (unit != null && !SelectionManager.instance.selectedObjects.Contains(entityObject))
+                    {
+                        // There is a unit in the box that is not in our current selection
+                        includeStructuresInAddition = false;
+                        break;
+                    }
+                }
             }
-            // Clear previous selection if neither key is true
-            else
+
+            // Conditions:
+            // When in standard mode, we remove structures if there are any units in the box
+            // When in addition mode, we remove structures if there are any units in the box that are not already in our current selection
+            // When deselecting, we always include structures
+            if (((unitInBox && !addToSelectionKey) || (addToSelectionKey && !includeStructuresInAddition)) && !deselectKey)
+
+            // Clear structures if any units are in the selection box
+            //if (!deselectKey && (!addToSelectionKey && unitInBox))
             {
-                //SelectionManager.instance.focusSortPriority = -1;
-                SelectionManager.instance.clearSelectedObjects();
+                newSelection.RemoveAll(gameObject => gameObject.GetComponent<Structure>() != null);
             }
+
+            // Handle selection
+            executeSelect(newSelection);
+
+            // Reset mass select
+            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+        }
+
+        // Takes a list of new selected objects and adds them to selection manager
+        public void executeSelect(List<GameObject> newSelection)
+        {
+            // Clear UI
+            EventManager.instance.selectionStartEvent.Invoke();
+
+            // Get key states
+            bool deselectKey = InputManager.instance.getKey("Deselect");
+            bool addToSelectionKey = InputManager.instance.getKey("AddToSelection");
+
+            // Replace previous selection if no extra key is true
+            if (!deselectKey && !addToSelectionKey) SelectionManager.instance.clearSelectedObjects();
 
             // Loop through all new hit objects
             foreach (GameObject hitObject in newSelection)
@@ -326,35 +352,36 @@ namespace MiniJam159.Player
                 // Behaviour based on whether the object we clicked is already selected
                 if (deselectKey && addToSelectionKey)
                 {
-                    // We're going to be working with the previous selection in either case
-                    SelectionManager.instance.setSelectedObjects(previousSelection);
-
                     // Remove object from selection
-                    if (SelectionManager.instance.selectedObjects.Contains(hitObject))
-                    {
-                        SelectionManager.instance.removeSelectedObject(hitObject);
-                    }
+                    if (SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.removeSelectedObject(hitObject);
                     // Add object to selection
                     else SelectionManager.instance.addSelectedObject(hitObject);
                 }
                 // Deselect from previous selection
-                else if (deselectKey) SelectionManager.instance.removeSelectedObject(hitObject);
+                else if (deselectKey)
+                {
+                    SelectionManager.instance.removeSelectedObject(hitObject);
+                }
                 // Add to previous selection
                 else if (addToSelectionKey)
                 {
+                    // Object not in selection yet, add it and give it selected outline
                     if (!SelectionManager.instance.selectedObjects.Contains(hitObject)) SelectionManager.instance.addSelectedObject(hitObject);
+                    // Object is already in selection, set to selected outline
+                    else hitObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
                 }
                 // Default: Replace selection
-                else SelectionManager.instance.addSelectedObject(hitObject);
+                else
+                {
+                    SelectionManager.instance.addSelectedObject(hitObject);
+                }
             }
 
+            // Sort selection
             EventManager.instance.selectionCompleteEvent.Invoke();
 
             // Populate commands after sorting
             populateCommands();
-
-            // Reset mass select
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
         public List<Vector2> getMassSelectionBoxPoints()

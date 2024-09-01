@@ -47,6 +47,8 @@ namespace MiniJam159.PlayerCore
 
         public void addSelectedObject(GameObject selectedObject)
         {
+            if (selectedObject == null || selectedObject.GetComponent<Entity>() == null) return;
+
             selectedObjects.Add(selectedObject);
 
             // Add outline
@@ -66,6 +68,8 @@ namespace MiniJam159.PlayerCore
 
         public void removeSelectedObject(GameObject selectedObject)
         {
+            if (selectedObject == null || selectedObject.GetComponent<Entity>() == null) return;
+
             // Remove outline
             selectedObject.GetComponent<Entity>().clearOutline(selectedOutlineMaterial);
 
@@ -74,6 +78,8 @@ namespace MiniJam159.PlayerCore
 
         public void removeSelectedObjectAtIndex(int index)
         {
+            if (index > selectedObjects.Count - 1) return;
+
             // Remove outline
             selectedObjects[index].GetComponent<Entity>().clearOutline(selectedOutlineMaterial);
 
