@@ -356,24 +356,6 @@ MonoBehaviour:
   unpauseEvent:
     m_PersistentCalls:
       m_Calls: []
-  selectionStartEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  selectionCompleteEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  selectionSortedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  populateCommandsStartEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  populateCommandsCompleteEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  setFocusCompleteEvent:
-    m_PersistentCalls:
-      m_Calls: []
   holdCommandEvent:
     m_PersistentCalls:
       m_Calls: []

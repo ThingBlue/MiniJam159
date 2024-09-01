@@ -27,14 +27,6 @@ namespace MiniJam159.GameCore
         public UnityEvent pauseEvent;
         public UnityEvent unpauseEvent;
 
-        // Player events
-        public UnityEvent selectionStartEvent;
-        public UnityEvent selectionCompleteEvent;
-        public UnityEvent selectionSortedEvent;
-        public UnityEvent populateCommandsStartEvent;
-        public UnityEvent populateCommandsCompleteEvent;
-        public UnityEvent setFocusCompleteEvent;
-
         // Command events
         public UnityEvent holdCommandEvent;
         public UnityEvent openBuildMenuCommandEvent;
@@ -56,14 +48,6 @@ namespace MiniJam159.GameCore
             // Game events
             if (pauseEvent == null) pauseEvent = new UnityEvent();
             if (unpauseEvent == null) unpauseEvent = new UnityEvent();
-
-            // Player events
-            if (selectionStartEvent == null) selectionStartEvent = new UnityEvent();
-            if (selectionCompleteEvent == null) selectionCompleteEvent = new UnityEvent();
-            if (selectionSortedEvent == null) selectionSortedEvent = new UnityEvent();
-            if (populateCommandsStartEvent == null) populateCommandsStartEvent = new UnityEvent();
-            if (populateCommandsCompleteEvent == null) populateCommandsCompleteEvent = new UnityEvent();
-            if (setFocusCompleteEvent == null) setFocusCompleteEvent = new UnityEvent();
 
             // Command events
             if (holdCommandEvent == null) holdCommandEvent = new UnityEvent();

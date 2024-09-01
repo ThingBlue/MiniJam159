@@ -1,14 +1,10 @@
-using MiniJam159.AICore;
-using MiniJam159.GameCore;
-using MiniJam159.Player;
-using MiniJam159.PlayerCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace MiniJam159.UI
+namespace MiniJam159.UICore
 {
     public enum SelectStatus
     {
@@ -81,7 +77,7 @@ namespace MiniJam159.UI
             hovered = true;
 
             // Trigger UI update
-            UIManager.instance.updateDisplayBoxes();
+            UIManagerBase.instance.updateDisplayBoxes();
 
             /*
             // Add hovered outline to corresponding entity
@@ -101,7 +97,7 @@ namespace MiniJam159.UI
             hovered = false;
 
             // Trigger UI update
-            UIManager.instance.updateDisplayBoxes();
+            UIManagerBase.instance.updateDisplayBoxes();
 
             /*
             // Remove hovered outline from corresponding entity

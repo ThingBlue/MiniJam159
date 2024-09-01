@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MiniJam159.UI
+namespace MiniJam159.UICore
 {
     public class TooltipManager : MonoBehaviour
     {

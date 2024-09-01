@@ -10,6 +10,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using MiniJam159.UICore;
 
 namespace MiniJam159.Player
 {
@@ -280,7 +281,7 @@ namespace MiniJam159.Player
             SelectionController.instance.populateCommands(newFocusIndex);
 
             // Update UI
-            EventManager.instance.setFocusCompleteEvent.Invoke();
+            UIManagerBase.instance.updateDisplayBoxes(false);
         }
 
         public void executeMove()

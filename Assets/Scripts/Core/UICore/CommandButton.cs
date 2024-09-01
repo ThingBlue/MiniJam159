@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using MiniJam159.CommandCore;
 
-namespace MiniJam159.UI
+namespace MiniJam159.UICore
 {
     public class CommandButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {

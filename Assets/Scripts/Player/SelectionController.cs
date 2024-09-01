@@ -13,6 +13,7 @@ using static UnityEngine.UI.CanvasScaler;
 using System.Linq;
 using static UnityEngine.EventSystems.EventTrigger;
 using UnityEditor.SearchService;
+using MiniJam159.UICore;
 
 namespace MiniJam159.Player
 {
@@ -275,7 +276,8 @@ namespace MiniJam159.Player
         public void executeMassSelect()
         {
             // Clear UI
-            EventManager.instance.selectionStartEvent.Invoke();
+            UIManagerBase.instance.clearDisplayBoxes();
+            UIManagerBase.instance.clearCommandButtons();
 
             List<Vector2> castPoints = getMassSelectionBoxPoints();
             List<Vector2> castNormals = getMassSelectionBoxNormals(castPoints);
@@ -338,7 +340,8 @@ namespace MiniJam159.Player
         public void executeSelect(List<GameObject> newSelection)
         {
             // Clear UI
-            EventManager.instance.selectionStartEvent.Invoke();
+            UIManagerBase.instance.clearDisplayBoxes();
+            UIManagerBase.instance.clearCommandButtons();
 
             // Get key states
             bool deselectKey = InputManager.instance.getKey("Deselect");
@@ -379,7 +382,7 @@ namespace MiniJam159.Player
             }
 
             // Sort selection
-            EventManager.instance.selectionCompleteEvent.Invoke();
+            sortSelection();
 
             // Populate commands after sorting
             populateCommands();
@@ -443,7 +446,8 @@ namespace MiniJam159.Player
             GameObject targetObject = SelectionManager.instance.selectedObjects[index];
 
             // Clear UI
-            EventManager.instance.selectionStartEvent.Invoke();
+            UIManagerBase.instance.clearDisplayBoxes();
+            UIManagerBase.instance.clearCommandButtons();
 
             // Clear list
             SelectionManager.instance.clearSelectedObjects();
@@ -452,7 +456,7 @@ namespace MiniJam159.Player
             SelectionManager.instance.addSelectedObject(targetObject);
 
             // Sort
-            EventManager.instance.selectionCompleteEvent.Invoke();
+            sortSelection();
 
             // Populate commands after sorting
             populateCommands(SelectionManager.instance.getFocusIndex());
@@ -478,7 +482,8 @@ namespace MiniJam159.Player
             }
 
             // Clear UI
-            EventManager.instance.selectionStartEvent.Invoke();
+            UIManagerBase.instance.clearDisplayBoxes();
+            UIManagerBase.instance.clearCommandButtons();
 
             // Clear list
             SelectionManager.instance.clearSelectedObjects();
@@ -487,7 +492,7 @@ namespace MiniJam159.Player
             SelectionManager.instance.setSelectedObjects(reselectedObjects);
 
             // Sort
-            EventManager.instance.selectionCompleteEvent.Invoke();
+            sortSelection();
 
             // Populate commands after sorting
             populateCommands(SelectionManager.instance.getFocusIndex());
@@ -499,10 +504,11 @@ namespace MiniJam159.Player
             SelectionManager.instance.removeSelectedObject(SelectionManager.instance.selectedObjects[index]);
 
             // Clear UI
-            EventManager.instance.selectionStartEvent.Invoke();
+            UIManagerBase.instance.clearDisplayBoxes();
+            UIManagerBase.instance.clearCommandButtons();
 
             // Sort
-            EventManager.instance.selectionCompleteEvent.Invoke();
+            sortSelection();
 
             // Populate commands after sorting
             populateCommands(SelectionManager.instance.getFocusIndex());
@@ -523,13 +529,30 @@ namespace MiniJam159.Player
             foreach (GameObject objectToDeselect in objectsToDeselect) SelectionManager.instance.removeSelectedObject(objectToDeselect);
 
             // Clear UI
-            EventManager.instance.selectionStartEvent.Invoke();
+            UIManagerBase.instance.clearDisplayBoxes();
+            UIManagerBase.instance.clearCommandButtons();
 
             // Sort
-            EventManager.instance.selectionCompleteEvent.Invoke();
+            sortSelection();
 
             // Populate commands after sorting
             populateCommands(SelectionManager.instance.getFocusIndex());
+        }
+
+        public void sortSelection()
+        {
+            SelectionManager.instance.selectedObjects.Sort(new EntityGameObjectComparer());
+
+            // Clear focus if nothing is selected
+            if (SelectionManager.instance.selectedObjects.Count == 0) SelectionManager.instance.focusSortPriority = 0;
+            // Set focus to first entity is there is none
+            if (SelectionManager.instance.selectedObjects.Count > 0 && SelectionManager.instance.getFocusIndex() == -1)
+            {
+                SelectionManager.instance.focusSortPriority = SelectionManager.instance.selectedObjects[0].GetComponent<Entity>().sortPriority;
+            }
+
+            // Create display boxes
+            UIManagerBase.instance.showDisplayBoxes();
         }
 
         public void populateCommands(int focusIndex = 0)

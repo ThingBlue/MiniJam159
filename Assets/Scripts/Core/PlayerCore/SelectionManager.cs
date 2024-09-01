@@ -39,12 +39,6 @@ namespace MiniJam159.PlayerCore
             selectedObjects = new List<GameObject>();
         }
 
-        private void Start()
-        {
-            // Subscribe to events
-            EventManager.instance.selectionCompleteEvent.AddListener(onSelectionCompleteCallback);
-        }
-
         public void addSelectedObject(GameObject selectedObject)
         {
             if (selectedObject == null || selectedObject.GetComponent<Entity>() == null) return;
@@ -138,20 +132,5 @@ namespace MiniJam159.PlayerCore
         {
             return selectedObjects[index].GetComponent<Entity>().sortPriority;
         }
-
-        private void onSelectionCompleteCallback()
-        {
-            // Sort selection
-            selectedObjects.Sort(new EntityGameObjectComparer());
-
-            // Clear focus if nothing is selected
-            if (selectedObjects.Count == 0) focusSortPriority = 0;
-
-            // Set focus to first entity is there is none
-            if (selectedObjects.Count > 0 && getFocusIndex() == -1) focusSortPriority = selectedObjects[0].GetComponent<Entity>().sortPriority;
-
-            EventManager.instance.selectionSortedEvent.Invoke();
-        }
-
     }
 }

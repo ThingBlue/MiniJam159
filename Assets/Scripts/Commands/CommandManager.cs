@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
-using MiniJam159.Structures;
+using MiniJam159.UICore;
 
 namespace MiniJam159.Commands
 {
@@ -13,7 +13,8 @@ namespace MiniJam159.Commands
         {
             activeCommands.Clear();
 
-            EventManager.instance.populateCommandsStartEvent.Invoke();
+            // Clear UI
+            UIManagerBase.instance.clearCommandButtons();
 
             // Create new ui
             for (int i = 0; i < newCommandTypes.Count; i++)
@@ -63,7 +64,7 @@ namespace MiniJam159.Commands
             }
 
             // Update UI
-            EventManager.instance.populateCommandsCompleteEvent.Invoke();
+            UIManagerBase.instance.populateCommandButtons();
         }
 
     }

@@ -9,164 +9,13 @@ using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
 using MiniJam159.Player;
 using MiniJam159.PlayerCore;
-using MiniJam159.Structures;
-using PlasticPipe.PlasticProtocol.Messages;
+using MiniJam159.UICore;
 
 namespace MiniJam159.UI
 {
-    public class UIManager : MonoBehaviour
+    public class UIManager : UIManagerBase
     {
-        #region Inspector members
-
-        public GameObject commandPanel;
-
-        public GameObject commandButtonPrefab;
-
-        public Sprite moveCommandSprite;
-        public Sprite attackCommandSprite;
-        public Sprite holdCommandSprite;
-        public Sprite harvestCommandSprite;
-        public Sprite openBuildMenuCommandSprite;
-        public Sprite cancelBuildMenuCommandSprite;
-
-        public Sprite buildNestCommandSprite;
-        public Sprite buildWombCommandSprite;
-
-        public GameObject displayPanel;
-        public GameObject displayBoxPrefab;
-        public float displayCenterHeight;
-        public float displayBoxDefaultSize;
-        public float displayBoxHoveredSize;
-
-        #endregion
-
-        public List<GameObject> commandButtons;
-        public List<List<GameObject>> displayBoxes;
-
-        // Singleton
-        public static UIManager instance;
-
-        private void Awake()
-        {
-            // Singleton
-            if (instance == null) instance = this;
-            else Destroy(this);
-
-            // Intialize lists
-            commandButtons = new List<GameObject>();
-            displayBoxes = new List<List<GameObject>>();
-
-            // Hide display panel at the start
-            displayPanel.SetActive(false);
-        }
-
-        private void Start()
-        {
-            // Subscribe to events
-            EventManager.instance.selectionStartEvent.AddListener(onSelectionStartCallback);
-            EventManager.instance.selectionSortedEvent.AddListener(onSelectionSortedCallback);
-            EventManager.instance.populateCommandsStartEvent.AddListener(onPopulateCommandsStartCallback);
-            EventManager.instance.populateCommandsCompleteEvent.AddListener(onPopulateCommandsCompleteCallback);
-            EventManager.instance.setFocusCompleteEvent.AddListener(onSetFocusCompleteCallback);
-        }
-
-        private void Update()
-        {
-            // Calculate display panel background size and position
-            RectTransform displayPanelTransform = displayPanel.GetComponent<RectTransform>();
-            float newWidth = Screen.width - 256f - 320f;
-            float newPosition = 256f + ((Screen.width - 320f) - 256f) / 2f - (Screen.width / 2f);
-            displayPanelTransform.localPosition = new Vector3(newPosition, -32f, 0f);
-            displayPanelTransform.sizeDelta = new Vector2(newWidth, displayPanelTransform.sizeDelta.y);
-
-            // Check if an update is required for display boxes
-            if (InputManager.instance.getKeyDown("TypeSelect") || InputManager.instance.getKeyDown("Deselect") ||
-                InputManager.instance.getKeyUp("TypeSelect") || InputManager.instance.getKeyUp("Deselect"))
-            {
-                updateDisplayBoxes();
-            }
-        }
-
-        public void clearCommandButtons()
-        {
-            for (int i = 0; i < commandButtons.Count; i++)
-            {
-                Destroy(commandButtons[i]);
-            }
-            commandButtons.Clear();
-        }
-
-        public void populateCommandButtons()
-        {
-            // Create new ui and populate command buttons
-            for (int i = 0; i < CommandManagerBase.instance.activeCommands.Count; i++)
-            {
-                Command activeCommand = CommandManagerBase.instance.activeCommands[i];
-
-                // Skip null commands
-                if (activeCommand == null) continue;
-
-                // Create new button
-                GameObject newButtonObject = Instantiate(commandButtonPrefab, commandPanel.transform);
-                CommandButton newCommandButton = newButtonObject.GetComponent<CommandButton>();
-
-                // Assign command to button
-                newCommandButton.command = activeCommand;
-                newCommandButton.commandIndex = i;
-                newButtonObject.GetComponent<Button>().onClick.AddListener(() => CommandManagerBase.instance.executeCommand(newCommandButton.commandIndex));
-
-                // Set button position
-                float xOffset = (i % 4) * 64.0f;
-                float yOffset = (Mathf.Floor(i / 4.0f)) * -64.0f;
-                newButtonObject.transform.localPosition = new Vector2(-96.0f + xOffset, 64.0f + yOffset);
-
-                // Attach command texture to new button
-                switch (activeCommand.commandType)
-                {
-                    case CommandType.MOVE:
-                        newButtonObject.GetComponent<Image>().sprite = moveCommandSprite;
-                        break;
-                    case CommandType.ATTACK:
-                        newButtonObject.GetComponent<Image>().sprite = attackCommandSprite;
-                        break;
-                    case CommandType.HOLD:
-                        newButtonObject.GetComponent<Image>().sprite = holdCommandSprite;
-                        break;
-                    case CommandType.HARVEST:
-                        newButtonObject.GetComponent<Image>().sprite = harvestCommandSprite;
-                        break;
-                    case CommandType.OPEN_BUILD_MENU:
-                        newButtonObject.GetComponent<Image>().sprite = openBuildMenuCommandSprite;
-                        break;
-                    case CommandType.CANCEL_BUILD_MENU:
-                        newButtonObject.GetComponent<Image>().sprite = cancelBuildMenuCommandSprite;
-                        break;
-
-                    case CommandType.BUILD_NEST:
-                        newButtonObject.GetComponent<Image>().sprite = buildNestCommandSprite;
-                        break;
-                    case CommandType.BUILD_WOMB:
-                        newButtonObject.GetComponent<Image>().sprite = buildWombCommandSprite;
-                        break;
-                }
-                commandButtons.Add(newButtonObject);
-            }
-        }
-
-        public void clearDisplayBoxes()
-        {
-            foreach (List<GameObject> row in displayBoxes)
-            {
-                foreach (GameObject displayBox in row)
-                {
-                    Destroy(displayBox);
-                }
-                row.Clear();
-            }
-            displayBoxes.Clear();
-        }
-
-        public void showDisplayBoxes()
+        public override void showDisplayBoxes()
         {
             List<GameObject> selectedObjects = SelectionManager.instance.selectedObjects;
             if (selectedObjects.Count == 0)
@@ -218,7 +67,7 @@ namespace MiniJam159.UI
 
         // doPositionUpdate false means we skip setting position and target position of display boxes, and only update frame colour
         // setPosition flag is only true for initialization to immediately set target position of boxes
-        public void updateDisplayBoxes(bool doPositionUpdate = true, bool setPosition = false)
+        public override void updateDisplayBoxes(bool doPositionUpdate = true, bool setPosition = false)
         {
             // Get key statuses
             bool deselectKey = InputManager.instance.getKey("Deselect");
@@ -338,7 +187,7 @@ namespace MiniJam159.UI
 
         }
 
-        public void onDisplayBoxClicked(int index)
+        public override void onDisplayBoxClicked(int index)
         {
             // Clear commands
             CommandManagerBase.instance.clearCommands();
@@ -360,37 +209,10 @@ namespace MiniJam159.UI
                 SelectionController.instance.populateCommands(index);
 
                 // Update display boxes
-                EventManager.instance.setFocusCompleteEvent.Invoke();
+                updateDisplayBoxes(false);
             }
             // Reselect single if already focused
             else SelectionController.instance.reselectSingle(index);
         }
-
-        private void onSelectionStartCallback()
-        {
-            clearDisplayBoxes();
-            clearCommandButtons();
-        }
-
-        private void onSelectionSortedCallback()
-        {
-            showDisplayBoxes();
-        }
-
-        private void onPopulateCommandsStartCallback()
-        {
-            clearCommandButtons();
-        }
-
-        private void onPopulateCommandsCompleteCallback()
-        {
-            populateCommandButtons();
-        }
-
-        private void onSetFocusCompleteCallback()
-        {
-            updateDisplayBoxes(false);
-        }
-
     }
 }
