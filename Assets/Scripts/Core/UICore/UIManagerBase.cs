@@ -12,6 +12,8 @@ namespace MiniJam159.UICore
     {
         #region Inspector members
 
+        public GameObject minimapPanel;
+        public GameObject displayPanel;
         public GameObject commandPanel;
 
         public GameObject commandButtonPrefab;
@@ -26,7 +28,6 @@ namespace MiniJam159.UICore
         public Sprite buildNestCommandSprite;
         public Sprite buildWombCommandSprite;
 
-        public GameObject displayPanel;
         public GameObject displayBoxPrefab;
         public float displayCenterHeight;
         public float displayBoxDefaultSize;
@@ -58,9 +59,13 @@ namespace MiniJam159.UICore
         {
             // Calculate display panel background size and position
             RectTransform displayPanelTransform = displayPanel.GetComponent<RectTransform>();
-            float newWidth = Screen.width - 256f - 320f;
-            float newPosition = 256f + ((Screen.width - 320f) - 256f) / 2f - (Screen.width / 2f);
-            displayPanelTransform.localPosition = new Vector3(newPosition, -32f, 0f);
+
+            float minimapPanelWidth = minimapPanel.GetComponent<RectTransform>().sizeDelta.x;
+            float commandPanelWidth = commandPanel.GetComponent<RectTransform>().sizeDelta.x;
+
+            float newWidth = Screen.width - minimapPanelWidth - commandPanelWidth;
+            float newPosition = minimapPanelWidth + ((Screen.width - commandPanelWidth) - minimapPanelWidth) / 2f - (Screen.width / 2f);
+            displayPanelTransform.localPosition = new Vector3(newPosition, displayPanelTransform.localPosition.y, 0f);
             displayPanelTransform.sizeDelta = new Vector2(newWidth, displayPanelTransform.sizeDelta.y);
 
             // Check if an update is required for display boxes

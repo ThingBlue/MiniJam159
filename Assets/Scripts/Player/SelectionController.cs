@@ -30,6 +30,8 @@ namespace MiniJam159.Player
 
         public float selectionRaycastDistance;
 
+        public bool drawMassSelectBoxCastGizmo;
+
         #endregion
 
         public GameObject hoveredObject;
@@ -433,13 +435,6 @@ namespace MiniJam159.Player
             return castNormals;
         }
 
-        private Vector2 closestPointOnNormal(Vector2 normal, Vector2 point)
-        {
-            Vector2 normalized = normal.normalized;
-            float d = Vector2.Dot(point, normalized);
-            return normalized * d;
-        }
-
         public void reselectSingle(int index)
         {
             // Store the one object we want to keep
@@ -576,6 +571,20 @@ namespace MiniJam159.Player
             }
         }
 
+        public void createSquadFromCurrentSelection()
+        {
+            // Add clone of current selection list to squads
+            SelectionManager.instance.squads.Add(new List<GameObject>(SelectionManager.instance.selectedObjects));
+
+            // Create new squad icon in squads UI
+
+        }
+
+        public void addToSquad()
+        {
+
+        }
+
         private void onOpenBuildMenuCommandCallback()
         {
             // First selected unit must be a worker
@@ -603,38 +612,41 @@ namespace MiniJam159.Player
 
         private void OnDrawGizmos()
         {
-            // Transform position into world space
-            // Find boundaries of selection box in screen space
-            //Vector3 center = massSelectBoxTransform.position + ((massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta) - massSelectBoxTransform.position) / 2f;
-            Vector3 bottomLeft = massSelectBoxTransform.position;
-            Vector3 bottomRight = massSelectBoxTransform.position + new Vector3(massSelectBoxTransform.sizeDelta.x, 0, 0);
-            Vector3 topRight = massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta;
-            Vector3 topLeft = massSelectBoxTransform.position + new Vector3(0, massSelectBoxTransform.sizeDelta.y, 0);
+            if (drawMassSelectBoxCastGizmo)
+            {
+                // Transform position into world space
+                // Find boundaries of selection box in screen space
+                //Vector3 center = massSelectBoxTransform.position + ((massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta) - massSelectBoxTransform.position) / 2f;
+                Vector3 bottomLeft = massSelectBoxTransform.position;
+                Vector3 bottomRight = massSelectBoxTransform.position + new Vector3(massSelectBoxTransform.sizeDelta.x, 0, 0);
+                Vector3 topRight = massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta;
+                Vector3 topLeft = massSelectBoxTransform.position + new Vector3(0, massSelectBoxTransform.sizeDelta.y, 0);
 
-            Plane worldPlane = new Plane(Vector3.up, Vector3.zero);
+                Plane worldPlane = new Plane(Vector3.up, Vector3.zero);
 
-            // Transform position into world space
-            //Ray centerRay = Camera.main.ScreenPointToRay(center);
-            Ray bottomLeftRay = Camera.main.ScreenPointToRay(bottomLeft);
-            Ray bottomRightRay = Camera.main.ScreenPointToRay(bottomRight);
-            Ray topRightRay = Camera.main.ScreenPointToRay(topRight);
-            Ray topLeftRay = Camera.main.ScreenPointToRay(topLeft);
-            //Vector3 centerWorldSpace = Vector3.zero;
-            Vector3 bottomLeftWorldSpace = Vector3.zero;
-            Vector3 bottomRightWorldSpace = Vector3.zero;
-            Vector3 topRightWorldSpace = Vector3.zero;
-            Vector3 topLeftWorldSpace = Vector3.zero;
-            //if (worldPlane.Raycast(centerRay, out float centerEnter)) centerWorldSpace = centerRay.GetPoint(centerEnter);
-            if (worldPlane.Raycast(bottomLeftRay, out float bottomLeftEnter)) bottomLeftWorldSpace = bottomLeftRay.GetPoint(bottomLeftEnter);
-            if (worldPlane.Raycast(bottomRightRay, out float bottomRightEnter)) bottomRightWorldSpace = bottomRightRay.GetPoint(bottomRightEnter);
-            if (worldPlane.Raycast(topRightRay, out float topRightEnter)) topRightWorldSpace = topRightRay.GetPoint(topRightEnter);
-            if (worldPlane.Raycast(topLeftRay, out float topLeftEnter)) topLeftWorldSpace = topLeftRay.GetPoint(topLeftEnter);
+                // Transform position into world space
+                //Ray centerRay = Camera.main.ScreenPointToRay(center);
+                Ray bottomLeftRay = Camera.main.ScreenPointToRay(bottomLeft);
+                Ray bottomRightRay = Camera.main.ScreenPointToRay(bottomRight);
+                Ray topRightRay = Camera.main.ScreenPointToRay(topRight);
+                Ray topLeftRay = Camera.main.ScreenPointToRay(topLeft);
+                //Vector3 centerWorldSpace = Vector3.zero;
+                Vector3 bottomLeftWorldSpace = Vector3.zero;
+                Vector3 bottomRightWorldSpace = Vector3.zero;
+                Vector3 topRightWorldSpace = Vector3.zero;
+                Vector3 topLeftWorldSpace = Vector3.zero;
+                //if (worldPlane.Raycast(centerRay, out float centerEnter)) centerWorldSpace = centerRay.GetPoint(centerEnter);
+                if (worldPlane.Raycast(bottomLeftRay, out float bottomLeftEnter)) bottomLeftWorldSpace = bottomLeftRay.GetPoint(bottomLeftEnter);
+                if (worldPlane.Raycast(bottomRightRay, out float bottomRightEnter)) bottomRightWorldSpace = bottomRightRay.GetPoint(bottomRightEnter);
+                if (worldPlane.Raycast(topRightRay, out float topRightEnter)) topRightWorldSpace = topRightRay.GetPoint(topRightEnter);
+                if (worldPlane.Raycast(topLeftRay, out float topLeftEnter)) topLeftWorldSpace = topLeftRay.GetPoint(topLeftEnter);
 
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(bottomLeftWorldSpace, 1.0f);
-            Gizmos.DrawWireSphere(bottomRightWorldSpace, 1.0f);
-            Gizmos.DrawWireSphere(topLeftWorldSpace, 1.0f);
-            Gizmos.DrawWireSphere(topRightWorldSpace, 1.0f);
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(bottomLeftWorldSpace, 1.0f);
+                Gizmos.DrawWireSphere(bottomRightWorldSpace, 1.0f);
+                Gizmos.DrawWireSphere(topLeftWorldSpace, 1.0f);
+                Gizmos.DrawWireSphere(topRightWorldSpace, 1.0f);
+            }
 
         }
 
