@@ -912,10 +912,10 @@ RectTransform:
   m_Father: {fileID: 1396749504}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 32, y: 128}
-  m_SizeDelta: {x: 1216, y: 256}
+  m_SizeDelta: {x: -704, y: 256}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &764688802
 MonoBehaviour:
@@ -967,9 +967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15a565d3fa654c34bb9035febedd91fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minimapPanel: {fileID: 1941822591}
   selectionDisplayPanel: {fileID: 764688800}
-  commandPanel: {fileID: 490044869}
   displayBoxPrefab: {fileID: 819183560958668974, guid: d2c93924818aa414e9e0b5c36104e6e1, type: 3}
   displayCenterHeight: 0
   displayBoxDefaultSize: 32
@@ -1135,7 +1133,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -2242,9 +2240,12 @@ MonoBehaviour:
   cameraBoundaryEnd: {x: 100, y: 0, z: 88}
   disablePan: 1
   panSpeed: 0.4
-  smoothTime: 0.05
-  targetPosition: {x: 0, y: 0, z: 0}
-  velocity: {x: 0, y: 0, z: 0}
+  panSmoothTime: 0.05
+  disableZoom: 0
+  zoomSpeed: 40
+  zoomSmoothTime: 0.05
+  minZoom: 5
+  maxZoom: 50
 --- !u!1001 &1622119238
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -33,6 +33,7 @@ namespace MiniJam159.Player
         private bool mouse1Down;
         private bool mouse0Up;
         private bool mouse1Up;
+        private float mouseScroll;
         private bool cancelCommandKeyDown;
 
         private bool canSelect;
@@ -58,6 +59,9 @@ namespace MiniJam159.Player
             if (InputManager.instance.getKeyUp("Mouse0") && !ignoreNextMouse0Up) mouse0Up = true;
             if (InputManager.instance.getKeyUp("Mouse0") && ignoreNextMouse0Up) ignoreNextMouse0Up = false;
             if (InputManager.instance.getKeyUp("Mouse1")) mouse1Up = true;
+
+            // Camera zooming
+            mouseScroll += Input.GetAxis("Mouse ScrollWheel");
 
             // Keyboard
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
@@ -88,6 +92,9 @@ namespace MiniJam159.Player
             if (Input.mousePosition.x >= Screen.width) CameraController.instance.panCamera(Vector3.right);
             if (Input.mousePosition.y >= Screen.height) CameraController.instance.panCamera(Vector3.forward);
             if (Input.mousePosition.y <= 0) CameraController.instance.panCamera(Vector3.back);
+
+            // Camera zooming
+            CameraController.instance.zoomCamera(mouseScroll);
 
             // Handle input based on state
             switch (PlayerModeManager.instance.playerMode)
@@ -247,6 +254,7 @@ namespace MiniJam159.Player
             mouse1Down = false;
             mouse0Up = false;
             mouse1Up = false;
+            mouseScroll = 0;
             cancelCommandKeyDown = false;
         }
 

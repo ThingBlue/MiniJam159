@@ -13,13 +13,23 @@ namespace MiniJam159.PlayerCore
         public Vector3 cameraBoundaryEnd;
 
         public bool disablePan = false;
+
         public float panSpeed;
-        public float smoothTime;
+        public float panSmoothTime;
+
+        public bool disableZoom = false;
+
+        public float zoomSpeed;
+        public float zoomSmoothTime;
+
+        public float minZoom;
+        public float maxZoom;
 
         #endregion
 
-        public Vector3 targetPosition;
-        public Vector3 velocity;
+        private float defaultZoom;
+        private Vector3 targetPosition;
+        private Vector3 panVelocity;
 
         // Singleton
         public static CameraController instance;
@@ -31,12 +41,13 @@ namespace MiniJam159.PlayerCore
             else Destroy(this);
 
             targetPosition = transform.position;
+            defaultZoom = transform.position.y;
         }
 
         private void LateUpdate()
         {
             // Move towards target position
-            transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
+            transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref panVelocity, panSmoothTime);
 
             // Clamp to boundary
             transform.position = new Vector3(
@@ -50,11 +61,14 @@ namespace MiniJam159.PlayerCore
         {
             if (disablePan) return;
 
+            // Scale pan speed with current zoom
+            float scaledPanSpeed = panSpeed * (transform.position.y / defaultZoom);
+
             // Pan towards direction
-            if (direction == Vector3.forward) targetPosition = new Vector3(targetPosition.x, transform.position.y, targetPosition.z + panSpeed);
-            if (direction == Vector3.back) targetPosition = new Vector3(targetPosition.x, transform.position.y, targetPosition.z - panSpeed);
-            if (direction == Vector3.left) targetPosition = new Vector3(targetPosition.x - panSpeed, transform.position.y, targetPosition.z);
-            if (direction == Vector3.right) targetPosition = new Vector3(targetPosition.x + panSpeed, transform.position.y, targetPosition.z);
+            if (direction == Vector3.forward) targetPosition = new Vector3(targetPosition.x, transform.position.y, targetPosition.z + scaledPanSpeed);
+            if (direction == Vector3.back) targetPosition = new Vector3(targetPosition.x, transform.position.y, targetPosition.z - scaledPanSpeed);
+            if (direction == Vector3.left) targetPosition = new Vector3(targetPosition.x - scaledPanSpeed, transform.position.y, targetPosition.z);
+            if (direction == Vector3.right) targetPosition = new Vector3(targetPosition.x + scaledPanSpeed, transform.position.y, targetPosition.z);
 
             // Clamp to boundary
             targetPosition = new Vector3(
@@ -70,6 +84,18 @@ namespace MiniJam159.PlayerCore
             if (direction == Vector2.left) transform.position = new Vector3(transform.position.x + panSpeed, transform.position.y, transform.position.z - panSpeed);
             if (direction == Vector2.right) transform.position = new Vector3(transform.position.x - panSpeed, transform.position.y, transform.position.z + panSpeed);
             */
+        }
+
+        public void zoomCamera(float mouseScroll)
+        {
+            targetPosition = new Vector3(targetPosition.x, transform.position.y - mouseScroll * zoomSpeed, targetPosition.z);
+
+            // Clamp to boundary
+            targetPosition = new Vector3(
+                targetPosition.x,
+                Mathf.Clamp(targetPosition.y, minZoom, maxZoom),
+                targetPosition.z
+                );
         }
 
         public void setMapPositionPercent(Vector2 positionPercent)
