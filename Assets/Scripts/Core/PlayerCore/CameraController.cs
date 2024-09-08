@@ -12,24 +12,22 @@ namespace MiniJam159.PlayerCore
         public Vector3 cameraBoundaryStart;
         public Vector3 cameraBoundaryEnd;
 
-        public bool disablePan = false;
+        public float minZoom;
+        public float maxZoom;
 
+        public bool disablePan = false;
         public float panSpeed;
         public float panSmoothTime;
 
         public bool disableZoom = false;
-
         public float zoomSpeed;
-        public float zoomSmoothTime;
-
-        public float minZoom;
-        public float maxZoom;
 
         #endregion
 
-        private float defaultZoom;
-        private Vector3 targetPosition;
+        public Vector3 targetPosition;
         private Vector3 panVelocity;
+
+        private float defaultZoom;
 
         // Singleton
         public static CameraController instance;
@@ -52,7 +50,7 @@ namespace MiniJam159.PlayerCore
             // Clamp to boundary
             transform.position = new Vector3(
                 Mathf.Clamp(transform.position.x, cameraBoundaryStart.x, cameraBoundaryEnd.x),
-                transform.position.y,
+                Mathf.Clamp(transform.position.y, minZoom, maxZoom),
                 Mathf.Clamp(transform.position.z, cameraBoundaryStart.z, cameraBoundaryEnd.z)
                 );
         }
@@ -70,10 +68,10 @@ namespace MiniJam159.PlayerCore
             if (direction == Vector3.left) targetPosition = new Vector3(targetPosition.x - scaledPanSpeed, transform.position.y, targetPosition.z);
             if (direction == Vector3.right) targetPosition = new Vector3(targetPosition.x + scaledPanSpeed, transform.position.y, targetPosition.z);
 
-            // Clamp to boundary
+            // Clamp to boundaries
             targetPosition = new Vector3(
                 Mathf.Clamp(targetPosition.x, cameraBoundaryStart.x, cameraBoundaryEnd.x),
-                targetPosition.y,
+                Mathf.Clamp(targetPosition.y, minZoom, maxZoom),
                 Mathf.Clamp(targetPosition.z, cameraBoundaryStart.z, cameraBoundaryEnd.z)
                 );
 
@@ -88,13 +86,33 @@ namespace MiniJam159.PlayerCore
 
         public void zoomCamera(float mouseScroll)
         {
-            targetPosition = new Vector3(targetPosition.x, transform.position.y - mouseScroll * zoomSpeed, targetPosition.z);
+            // Calculate zoom movement direction based on camera angle
+            float yMovement = -Mathf.Sin(transform.rotation.eulerAngles.x * Mathf.Deg2Rad);
+            float zMovement = Mathf.Cos(transform.rotation.eulerAngles.x * Mathf.Deg2Rad);
+            Vector3 zoomMoveDirection = new Vector3(0, yMovement, zMovement).normalized;
 
-            // Clamp to boundary
+            // Do zoom by changing target y and z position
+            Vector3 zoomMovement = zoomMoveDirection * mouseScroll * zoomSpeed;
+
+            // Don't allow z movement if y movement will pass boundary
+            float allowedMovement = 1f;
+            if (targetPosition.y + zoomMovement.y > maxZoom)
+            {
+                allowedMovement = Mathf.Abs(Mathf.Abs(maxZoom - targetPosition.y) / zoomMovement.y);
+            }
+            else if (targetPosition.y + zoomMovement.y < minZoom)
+            {
+                allowedMovement = Mathf.Abs(Mathf.Abs(minZoom - targetPosition.y) / zoomMovement.y);
+            }
+
+            // Do movement
+            targetPosition += zoomMovement * allowedMovement;
+
+            // Clamp to boundaries
             targetPosition = new Vector3(
-                targetPosition.x,
+                Mathf.Clamp(targetPosition.x, cameraBoundaryStart.x, cameraBoundaryEnd.x),
                 Mathf.Clamp(targetPosition.y, minZoom, maxZoom),
-                targetPosition.z
+                Mathf.Clamp(targetPosition.z, cameraBoundaryStart.z, cameraBoundaryEnd.z)
                 );
         }
 
