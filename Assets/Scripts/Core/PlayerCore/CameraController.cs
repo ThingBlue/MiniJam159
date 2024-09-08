@@ -1,3 +1,4 @@
+using MiniJam159.GameCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace MiniJam159.PlayerCore
 
         #endregion
 
-        public Vector3 targetPosition;
+        private Vector3 targetPosition;
         private Vector3 panVelocity;
 
         private float defaultZoom;
@@ -52,7 +53,7 @@ namespace MiniJam159.PlayerCore
                 Mathf.Clamp(transform.position.x, cameraBoundaryStart.x, cameraBoundaryEnd.x),
                 Mathf.Clamp(transform.position.y, minZoom, maxZoom),
                 Mathf.Clamp(transform.position.z, cameraBoundaryStart.z, cameraBoundaryEnd.z)
-                );
+            );
         }
 
         public void panCamera(Vector3 direction)
@@ -73,7 +74,7 @@ namespace MiniJam159.PlayerCore
                 Mathf.Clamp(targetPosition.x, cameraBoundaryStart.x, cameraBoundaryEnd.x),
                 Mathf.Clamp(targetPosition.y, minZoom, maxZoom),
                 Mathf.Clamp(targetPosition.z, cameraBoundaryStart.z, cameraBoundaryEnd.z)
-                );
+            );
 
             // Stuff for 45 degree camera
             /*
@@ -86,26 +87,21 @@ namespace MiniJam159.PlayerCore
 
         public void zoomCamera(float mouseScroll)
         {
-            // Calculate zoom movement direction based on camera angle
-            float yMovement = -Mathf.Sin(transform.rotation.eulerAngles.x * Mathf.Deg2Rad);
-            float zMovement = Mathf.Cos(transform.rotation.eulerAngles.x * Mathf.Deg2Rad);
-            Vector3 zoomMoveDirection = new Vector3(0, yMovement, zMovement).normalized;
+            // Find direction of movement baesd on mouse position in world
+            Vector3 zoomDirection = (InputManager.instance.getMousePositionInWorld() - transform.position).normalized;
 
-            // Do zoom by changing target y and z position
-            Vector3 zoomMovement = zoomMoveDirection * mouseScroll * zoomSpeed;
+            // Scale y component to -1
+            Vector3 scaledZoomDirection = zoomDirection / -zoomDirection.y;
 
-            // Don't allow z movement if y movement will pass boundary
+            // Scale movement based off scroll value and zoom speed
+            Vector3 zoomMovement = scaledZoomDirection * mouseScroll * zoomSpeed;
+
+            // Don't allow x and z movement if y movement will pass boundary
             float allowedMovement = 1f;
-            if (targetPosition.y + zoomMovement.y > maxZoom)
-            {
-                allowedMovement = Mathf.Abs(Mathf.Abs(maxZoom - targetPosition.y) / zoomMovement.y);
-            }
-            else if (targetPosition.y + zoomMovement.y < minZoom)
-            {
-                allowedMovement = Mathf.Abs(Mathf.Abs(minZoom - targetPosition.y) / zoomMovement.y);
-            }
+            if (targetPosition.y + zoomMovement.y > maxZoom) allowedMovement = Mathf.Abs(Mathf.Abs(maxZoom - targetPosition.y) / zoomMovement.y);
+            else if (targetPosition.y + zoomMovement.y < minZoom) allowedMovement = Mathf.Abs(Mathf.Abs(minZoom - targetPosition.y) / zoomMovement.y);
 
-            // Do movement
+            // Commit movement to target position
             targetPosition += zoomMovement * allowedMovement;
 
             // Clamp to boundaries
@@ -113,17 +109,29 @@ namespace MiniJam159.PlayerCore
                 Mathf.Clamp(targetPosition.x, cameraBoundaryStart.x, cameraBoundaryEnd.x),
                 Mathf.Clamp(targetPosition.y, minZoom, maxZoom),
                 Mathf.Clamp(targetPosition.z, cameraBoundaryStart.z, cameraBoundaryEnd.z)
-                );
+            );
         }
 
         public void setMapPositionPercent(Vector2 positionPercent)
         {
-            Vector3 newTargetPosition = new Vector3(
+            targetPosition = new Vector3(
                 cameraBoundaryStart.x + positionPercent.x * (cameraBoundaryEnd.x - cameraBoundaryStart.x),
                 transform.position.y,
                 cameraBoundaryStart.z + positionPercent.y * (cameraBoundaryEnd.z - cameraBoundaryStart.z)
-                );
-            targetPosition = newTargetPosition;
+            );
+        }
+
+        public Vector3 getCameraCenterPositionInWorld()
+        {
+            // Create plane at zero
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+            // Cast ray onto plane
+            Ray ray = Camera.main.ScreenPointToRay(new Vector2(Screen.width / 2f, Screen.height / 2f));
+
+            // Return hit location
+            if (plane.Raycast(ray, out float enter)) return ray.GetPoint(enter);
+            return Vector3.zero; // Should never execute
         }
     }
 }

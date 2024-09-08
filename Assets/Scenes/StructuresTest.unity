@@ -1680,7 +1680,7 @@ GameObject:
   - component: {fileID: 1159401566}
   - component: {fileID: 1159401565}
   - component: {fileID: 1159401564}
-  m_Layer: 0
+  m_Layer: 30
   m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2238,14 +2238,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraBoundaryStart: {x: 0, y: 0, z: -12}
   cameraBoundaryEnd: {x: 100, y: 0, z: 88}
+  minZoom: 5
+  maxZoom: 50
   disablePan: 1
   panSpeed: 0.4
   panSmoothTime: 0.05
   disableZoom: 0
   zoomSpeed: 40
-  zoomSmoothTime: 0.05
-  minZoom: 5
-  maxZoom: 50
+  mouseZoomSpeed: 2
+  targetPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &1622119238
 PrefabInstance:
   m_ObjectHideFlags: 0
