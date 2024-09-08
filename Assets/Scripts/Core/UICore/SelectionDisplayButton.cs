@@ -77,7 +77,7 @@ namespace MiniJam159.UICore
             hovered = true;
 
             // Trigger UI update
-            UIManagerBase.instance.updateDisplayBoxes();
+            SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes();
 
             /*
             // Add hovered outline to corresponding entity
@@ -97,7 +97,7 @@ namespace MiniJam159.UICore
             hovered = false;
 
             // Trigger UI update
-            UIManagerBase.instance.updateDisplayBoxes();
+            SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes();
 
             /*
             // Remove hovered outline from corresponding entity

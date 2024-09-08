@@ -281,7 +281,7 @@ namespace MiniJam159.Player
             SelectionController.instance.populateCommands(newFocusIndex);
 
             // Update UI
-            UIManagerBase.instance.updateDisplayBoxes(false);
+            SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes(false);
         }
 
         public void executeMove()

@@ -8,11 +8,6 @@ using MiniJam159.AICore;
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
-using System;
-using static UnityEngine.UI.CanvasScaler;
-using System.Linq;
-using static UnityEngine.EventSystems.EventTrigger;
-using UnityEditor.SearchService;
 using MiniJam159.UICore;
 
 namespace MiniJam159.Player
@@ -278,8 +273,8 @@ namespace MiniJam159.Player
         public void executeMassSelect()
         {
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             List<Vector2> castPoints = getMassSelectionBoxPoints();
             List<Vector2> castNormals = getMassSelectionBoxNormals(castPoints);
@@ -342,8 +337,8 @@ namespace MiniJam159.Player
         public void executeSelect(List<GameObject> newSelection)
         {
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Get key states
             bool deselectKey = InputManager.instance.getKey("Deselect");
@@ -441,8 +436,8 @@ namespace MiniJam159.Player
             GameObject targetObject = SelectionManager.instance.selectedObjects[index];
 
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Clear list
             SelectionManager.instance.clearSelectedObjects();
@@ -477,8 +472,8 @@ namespace MiniJam159.Player
             }
 
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Clear list
             SelectionManager.instance.clearSelectedObjects();
@@ -499,8 +494,8 @@ namespace MiniJam159.Player
             SelectionManager.instance.removeSelectedObject(SelectionManager.instance.selectedObjects[index]);
 
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Sort
             sortSelection();
@@ -524,8 +519,8 @@ namespace MiniJam159.Player
             foreach (GameObject objectToDeselect in objectsToDeselect) SelectionManager.instance.removeSelectedObject(objectToDeselect);
 
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Sort
             sortSelection();
@@ -547,7 +542,7 @@ namespace MiniJam159.Player
             }
 
             // Create display boxes
-            UIManagerBase.instance.showDisplayBoxes();
+            SelectionDisplayManagerBase.instance.showSelectionDisplayBoxes();
         }
 
         public void populateCommands(int focusIndex = 0)

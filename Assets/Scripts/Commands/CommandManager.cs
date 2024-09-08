@@ -14,7 +14,7 @@ namespace MiniJam159.Commands
             activeCommands.Clear();
 
             // Clear UI
-            UIManagerBase.instance.clearCommandButtons();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Create new ui
             for (int i = 0; i < newCommandTypes.Count; i++)
@@ -64,7 +64,7 @@ namespace MiniJam159.Commands
             }
 
             // Update UI
-            UIManagerBase.instance.populateCommandButtons();
+            CommandPanelManagerBase.instance.populateCommandButtons();
         }
 
     }
