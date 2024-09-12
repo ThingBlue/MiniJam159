@@ -51,5 +51,26 @@ MonoBehaviour:
     keys: 34010000
   - name: AddToSelection
     keys: 30010000
-  - name: FormSquad
+  - name: CreateSquad
     keys: 67000000
+  - name: ToggleSquadPanel
+    keys: 62000000
+  - name: Squad1
+    keys: 31000000
+  - name: Squad2
+    keys: 32000000
+  - name: Squad3
+    keys: 33000000
+  - name: Squad4
+    keys: 34000000
+  - name: Squad5
+    keys: 35000000
+  - name: Squad6
+    keys: 36000000
+  - name: Squad7
+    keys: 37000000
+  - name: Squad8
+    keys: 38000000
+  - name: ToggleSquadBind
+    keys: 44010000
+  doubleClickMaxDelay: 0.5

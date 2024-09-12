@@ -8,108 +8,13 @@ using MiniJam159.AICore;
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
-using System;
-using static UnityEngine.UI.CanvasScaler;
-using System.Linq;
-using static UnityEngine.EventSystems.EventTrigger;
-using UnityEditor.SearchService;
 using MiniJam159.UICore;
 
 namespace MiniJam159.Player
 {
-    public class SelectionController : MonoBehaviour
+    public class SelectionController : SelectionControllerBase
     {
-        #region Inspector members
-
-        public RectTransform massSelectBoxTransform;
-        public float massSelectDelay;
-        public float massSelectMouseMoveDistance;
-
-        public LayerMask unitLayer;
-        public LayerMask structureLayer;
-
-        public float selectionRaycastDistance;
-
-        #endregion
-
-        public GameObject hoveredObject;
-        public Vector3 massSelectStartPosition;
-
-        // Singleton
-        public static SelectionController instance;
-
-        private void Awake()
-        {
-            // Singleton
-            if (instance == null) instance = this;
-            else Destroy(this);
-
-            massSelectStartPosition = Vector3.zero;
-        }
-
-        private void Start()
-        {
-            // Subscribe to events
-            EventManager.instance.openBuildMenuCommandEvent.AddListener(onOpenBuildMenuCommandCallback);
-            EventManager.instance.cancelBuildMenuCommandEvent.AddListener(onCancelBuildMenuCommandCallback);
-        }
-
-        public void updateMouseHover()
-        {
-            // Raycast from mouse and grab first hit
-            LayerMask raycastMask = unitLayer | structureLayer;
-            GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
-
-            // Handle outline of previous hovered object
-            if (hoveredObject != null && hitObject != hoveredObject)
-            {
-                // Reset outline of previous object
-                if (SelectionManager.instance.selectedObjects.Contains(hoveredObject))
-                {
-                    // Set outline back to selected
-                    hoveredObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
-                }
-                else
-                {
-                    // Clear outline from previous hovered object
-                    hoveredObject.GetComponent<Entity>().clearOutline(SelectionManager.instance.selectedOutlineMaterial);
-                }
-            }
-
-            // Handle outline of new hovered object
-            if (hitObject != null)// && hitObject != hoveredObject)
-            {
-                Entity hitEntity = hitObject.GetComponent<Entity>();
-                if (hitEntity == null) Debug.Log("hitEntity is null for object " + hitObject);
-
-                // Add outline to new hovered object
-                if (InputManager.instance.getKey("Deselect"))
-                {
-                    // Only apply deselect outline if object is selected
-                    if (SelectionManager.instance.selectedObjects.Contains(hitObject))
-                    {
-                        // Deselect
-                        hitEntity.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.deselectOutlineColor);
-                    }
-                    // Deselecting but current object is not selected
-                    else
-                    {
-                        // Clear outline
-                        hitEntity.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
-                    }
-                }
-                else
-                {
-                    // Regular hover
-                    hitEntity.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
-                }
-            }
-
-            // Set hovered object
-            hoveredObject = hitObject;
-        }
-
-        public void updateMassSelectBox()
+        public override void updateMassSelectBox()
         {
             bool massSelecting = (PlayerModeManager.instance.playerMode == PlayerMode.MASS_SELECT);
             massSelectBoxTransform.gameObject.GetComponent<Image>().enabled = massSelecting;
@@ -229,7 +134,7 @@ namespace MiniJam159.Player
             }
         }
 
-        public void executeSingleSelect()
+        public override void executeSingleSelect()
         {
             // Raycast from mouse and grab first hit
             LayerMask raycastMask = unitLayer | structureLayer;
@@ -273,11 +178,11 @@ namespace MiniJam159.Player
             executeSelect(newSelection);
         }
 
-        public void executeMassSelect()
+        public override void executeMassSelect()
         {
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             List<Vector2> castPoints = getMassSelectionBoxPoints();
             List<Vector2> castNormals = getMassSelectionBoxNormals(castPoints);
@@ -337,11 +242,11 @@ namespace MiniJam159.Player
         }
 
         // Takes a list of new selected objects and adds them to selection manager
-        public void executeSelect(List<GameObject> newSelection)
+        public override void executeSelect(List<GameObject> newSelection)
         {
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Get key states
             bool deselectKey = InputManager.instance.getKey("Deselect");
@@ -433,21 +338,14 @@ namespace MiniJam159.Player
             return castNormals;
         }
 
-        private Vector2 closestPointOnNormal(Vector2 normal, Vector2 point)
-        {
-            Vector2 normalized = normal.normalized;
-            float d = Vector2.Dot(point, normalized);
-            return normalized * d;
-        }
-
-        public void reselectSingle(int index)
+        public override void reselectSingle(int index)
         {
             // Store the one object we want to keep
             GameObject targetObject = SelectionManager.instance.selectedObjects[index];
 
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Clear list
             SelectionManager.instance.clearSelectedObjects();
@@ -462,7 +360,7 @@ namespace MiniJam159.Player
             populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
-        public void reselectType(int index)
+        public override void reselectType(int index)
         {
             // Store the objects we want to keep
             List<GameObject> reselectedObjects = new List<GameObject>();
@@ -482,8 +380,8 @@ namespace MiniJam159.Player
             }
 
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Clear list
             SelectionManager.instance.clearSelectedObjects();
@@ -498,14 +396,14 @@ namespace MiniJam159.Player
             populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
-        public void deselectSingle(int index)
+        public override void deselectSingle(int index)
         {
             // Remove target object
             SelectionManager.instance.removeSelectedObject(SelectionManager.instance.selectedObjects[index]);
 
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Sort
             sortSelection();
@@ -514,7 +412,7 @@ namespace MiniJam159.Player
             populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
-        public void deselectType(int index)
+        public override void deselectType(int index)
         {
             Entity targetEntity = SelectionManager.instance.selectedObjects[index].GetComponent<Entity>();
 
@@ -529,8 +427,8 @@ namespace MiniJam159.Player
             foreach (GameObject objectToDeselect in objectsToDeselect) SelectionManager.instance.removeSelectedObject(objectToDeselect);
 
             // Clear UI
-            UIManagerBase.instance.clearDisplayBoxes();
-            UIManagerBase.instance.clearCommandButtons();
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
 
             // Sort
             sortSelection();
@@ -539,7 +437,7 @@ namespace MiniJam159.Player
             populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
-        public void sortSelection()
+        public override void sortSelection()
         {
             SelectionManager.instance.selectedObjects.Sort(new EntityGameObjectComparer());
 
@@ -552,10 +450,10 @@ namespace MiniJam159.Player
             }
 
             // Create display boxes
-            UIManagerBase.instance.showDisplayBoxes();
+            SelectionDisplayManagerBase.instance.showSelectionDisplayBoxes();
         }
 
-        public void populateCommands(int focusIndex = 0)
+        public override void populateCommands(int focusIndex = 0)
         {
             if (SelectionManager.instance.selectedObjects.Count < focusIndex + 1) return;
             if (focusIndex == -1) return;
@@ -576,7 +474,41 @@ namespace MiniJam159.Player
             }
         }
 
-        private void onOpenBuildMenuCommandCallback()
+        public override void createSquadFromCurrentSelection()
+        {
+            // Create new squad
+            Squad newSquad = new Squad(SelectionManager.instance.assignSquadId(), SelectionManager.instance.selectedObjects);
+            SelectionManager.instance.squads.Add(newSquad);
+
+            // Create new squad icon in squads UI
+            GameObject newSquadDisplayBox = SquadPanelManagerBase.instance.createSquadDisplayBox(newSquad);
+        }
+
+        public override void addToSquad()
+        {
+
+        }
+
+        public override void retrieveSquad(Squad squad)
+        {
+            // Clear UI
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
+
+            // Clear list
+            SelectionManager.instance.clearSelectedObjects();
+
+            // Add objects back in from squad
+            if (squad != null) SelectionManager.instance.setSelectedObjects(squad.entities);
+
+            // Sort
+            sortSelection();
+
+            // Populate commands after sorting
+            populateCommands(SelectionManager.instance.getFocusIndex());
+        }
+
+        protected override void onOpenBuildMenuCommandCallback()
         {
             // First selected unit must be a worker
             if (SelectionManager.instance.selectedObjects.Count == 0) return;
@@ -596,45 +528,48 @@ namespace MiniJam159.Player
             }
         }
 
-        private void onCancelBuildMenuCommandCallback()
+        protected override void onCancelBuildMenuCommandCallback()
         {
             populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
-        private void OnDrawGizmos()
+        protected override void OnDrawGizmos()
         {
-            // Transform position into world space
-            // Find boundaries of selection box in screen space
-            //Vector3 center = massSelectBoxTransform.position + ((massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta) - massSelectBoxTransform.position) / 2f;
-            Vector3 bottomLeft = massSelectBoxTransform.position;
-            Vector3 bottomRight = massSelectBoxTransform.position + new Vector3(massSelectBoxTransform.sizeDelta.x, 0, 0);
-            Vector3 topRight = massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta;
-            Vector3 topLeft = massSelectBoxTransform.position + new Vector3(0, massSelectBoxTransform.sizeDelta.y, 0);
+            if (drawMassSelectBoxCastGizmo)
+            {
+                // Transform position into world space
+                // Find boundaries of selection box in screen space
+                //Vector3 center = massSelectBoxTransform.position + ((massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta) - massSelectBoxTransform.position) / 2f;
+                Vector3 bottomLeft = massSelectBoxTransform.position;
+                Vector3 bottomRight = massSelectBoxTransform.position + new Vector3(massSelectBoxTransform.sizeDelta.x, 0, 0);
+                Vector3 topRight = massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta;
+                Vector3 topLeft = massSelectBoxTransform.position + new Vector3(0, massSelectBoxTransform.sizeDelta.y, 0);
 
-            Plane worldPlane = new Plane(Vector3.up, Vector3.zero);
+                Plane worldPlane = new Plane(Vector3.up, Vector3.zero);
 
-            // Transform position into world space
-            //Ray centerRay = Camera.main.ScreenPointToRay(center);
-            Ray bottomLeftRay = Camera.main.ScreenPointToRay(bottomLeft);
-            Ray bottomRightRay = Camera.main.ScreenPointToRay(bottomRight);
-            Ray topRightRay = Camera.main.ScreenPointToRay(topRight);
-            Ray topLeftRay = Camera.main.ScreenPointToRay(topLeft);
-            //Vector3 centerWorldSpace = Vector3.zero;
-            Vector3 bottomLeftWorldSpace = Vector3.zero;
-            Vector3 bottomRightWorldSpace = Vector3.zero;
-            Vector3 topRightWorldSpace = Vector3.zero;
-            Vector3 topLeftWorldSpace = Vector3.zero;
-            //if (worldPlane.Raycast(centerRay, out float centerEnter)) centerWorldSpace = centerRay.GetPoint(centerEnter);
-            if (worldPlane.Raycast(bottomLeftRay, out float bottomLeftEnter)) bottomLeftWorldSpace = bottomLeftRay.GetPoint(bottomLeftEnter);
-            if (worldPlane.Raycast(bottomRightRay, out float bottomRightEnter)) bottomRightWorldSpace = bottomRightRay.GetPoint(bottomRightEnter);
-            if (worldPlane.Raycast(topRightRay, out float topRightEnter)) topRightWorldSpace = topRightRay.GetPoint(topRightEnter);
-            if (worldPlane.Raycast(topLeftRay, out float topLeftEnter)) topLeftWorldSpace = topLeftRay.GetPoint(topLeftEnter);
+                // Transform position into world space
+                //Ray centerRay = Camera.main.ScreenPointToRay(center);
+                Ray bottomLeftRay = Camera.main.ScreenPointToRay(bottomLeft);
+                Ray bottomRightRay = Camera.main.ScreenPointToRay(bottomRight);
+                Ray topRightRay = Camera.main.ScreenPointToRay(topRight);
+                Ray topLeftRay = Camera.main.ScreenPointToRay(topLeft);
+                //Vector3 centerWorldSpace = Vector3.zero;
+                Vector3 bottomLeftWorldSpace = Vector3.zero;
+                Vector3 bottomRightWorldSpace = Vector3.zero;
+                Vector3 topRightWorldSpace = Vector3.zero;
+                Vector3 topLeftWorldSpace = Vector3.zero;
+                //if (worldPlane.Raycast(centerRay, out float centerEnter)) centerWorldSpace = centerRay.GetPoint(centerEnter);
+                if (worldPlane.Raycast(bottomLeftRay, out float bottomLeftEnter)) bottomLeftWorldSpace = bottomLeftRay.GetPoint(bottomLeftEnter);
+                if (worldPlane.Raycast(bottomRightRay, out float bottomRightEnter)) bottomRightWorldSpace = bottomRightRay.GetPoint(bottomRightEnter);
+                if (worldPlane.Raycast(topRightRay, out float topRightEnter)) topRightWorldSpace = topRightRay.GetPoint(topRightEnter);
+                if (worldPlane.Raycast(topLeftRay, out float topLeftEnter)) topLeftWorldSpace = topLeftRay.GetPoint(topLeftEnter);
 
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(bottomLeftWorldSpace, 1.0f);
-            Gizmos.DrawWireSphere(bottomRightWorldSpace, 1.0f);
-            Gizmos.DrawWireSphere(topLeftWorldSpace, 1.0f);
-            Gizmos.DrawWireSphere(topRightWorldSpace, 1.0f);
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(bottomLeftWorldSpace, 1.0f);
+                Gizmos.DrawWireSphere(bottomRightWorldSpace, 1.0f);
+                Gizmos.DrawWireSphere(topLeftWorldSpace, 1.0f);
+                Gizmos.DrawWireSphere(topRightWorldSpace, 1.0f);
+            }
 
         }
 

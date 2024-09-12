@@ -24,8 +24,11 @@ namespace MiniJam159.PlayerCore
         #endregion
 
         public List<GameObject> selectedObjects;
-        public List<List<GameObject>> Squads;
+        public List<Squad> squads;
+        public List<Squad> boundSquads;
         public int focusSortPriority = -1;
+
+        public int currentSquadId = 0;
 
         // Singleton
         public static SelectionManager instance;
@@ -36,7 +39,13 @@ namespace MiniJam159.PlayerCore
             if (instance == null) instance = this;
             else Destroy(this);
 
+            // Initialize lists
             selectedObjects = new List<GameObject>();
+            squads = new List<Squad>();
+
+            // Initialize boundSquads with empty squads
+            boundSquads = new List<Squad>();
+            for (int i = 0; i < 8; i++) boundSquads.Add(null);
         }
 
         public void addSelectedObject(GameObject selectedObject)
@@ -131,6 +140,13 @@ namespace MiniJam159.PlayerCore
         public int getSortPriorityWithIndex(int index)
         {
             return selectedObjects[index].GetComponent<Entity>().sortPriority;
+        }
+
+        // Returns current squad id and increments it
+        public int assignSquadId()
+        {
+            currentSquadId++;
+            return currentSquadId - 1;
         }
     }
 }

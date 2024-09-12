@@ -1,37 +1,37 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-
-using MiniJam159.AICore;
 using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
 using MiniJam159.Player;
 using MiniJam159.PlayerCore;
 using MiniJam159.UICore;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace MiniJam159.UI
 {
-    public class UIManager : UIManagerBase
+    public class SelectionDisplayManager : SelectionDisplayManagerBase
     {
-        public override void showDisplayBoxes()
+        public override void showSelectionDisplayBoxes()
         {
             List<GameObject> selectedObjects = SelectionManager.instance.selectedObjects;
             if (selectedObjects.Count == 0)
             {
                 // Hide display panel
-                displayPanel.SetActive(false);
+                selectionDisplayPanelObject.SetActive(false);
                 return;
             }
 
             // Show display panel
-            displayPanel.SetActive(true);
+            selectionDisplayPanelObject.SetActive(true);
 
             // Calculate rows and columns
-            float displayPanelWidth = displayPanel.GetComponent<RectTransform>().sizeDelta.x - displayBoxDefaultSize;
-            int columns = Mathf.FloorToInt(displayPanelWidth / displayBoxDefaultSize);
-            int rows = Mathf.CeilToInt((float)selectedObjects.Count / (float)columns);
+            float displayPanelWidth = selectionDisplayPanelObject.GetComponent<RectTransform>().rect.size.x;
+            displayPanelWidth -= (displayBoxDefaultSize * 2);
+
+            // Don't create display boxes if the screen is too thin to fit display panel
+            int columns = displayPanelWidth > 0 ?  Mathf.FloorToInt(displayPanelWidth / displayBoxDefaultSize) : 0;
+            int rows = displayPanelWidth > 0 ? Mathf.CeilToInt((float)selectedObjects.Count / (float)columns) : 0;
 
             // Create all buttons
             for (int r = 0; r < rows; r++)
@@ -45,7 +45,7 @@ namespace MiniJam159.UI
                     if (selectedIndex >= selectedObjects.Count) break;
 
                     // Create box
-                    GameObject newDisplayBox = Instantiate(displayBoxPrefab, displayPanel.transform);
+                    GameObject newDisplayBox = Instantiate(displayBoxPrefab, selectionDisplayPanelObject.transform);
                     newDisplayBox.GetComponent<Image>().sprite = selectedObjects[selectedIndex].GetComponent<Entity>().displayIcon;
 
                     // Set up button
@@ -54,20 +54,20 @@ namespace MiniJam159.UI
                     newDisplayButton.selectedIndex = selectedIndex;
                     newDisplayButton.defaultSize = displayBoxDefaultSize;
                     newDisplayButton.hoveredSize = displayBoxHoveredSize;
-                    newDisplayBox.GetComponent<Button>().onClick.AddListener(() => onDisplayBoxClicked(newDisplayButton.selectedIndex));
+                    newDisplayBox.GetComponent<Button>().onClick.AddListener(() => onSelectionDisplayBoxClicked(newDisplayButton.selectedIndex));
 
                     row.Add(newDisplayBox);
                 }
-                displayBoxes.Add(row);
+                selectionDisplayBoxes.Add(row);
             }
 
             // Set starting positions for each box
-            updateDisplayBoxes(true, true);
+            updateSelectionDisplayBoxes(true, true);
         }
 
         // doPositionUpdate false means we skip setting position and target position of display boxes, and only update frame colour
         // setPosition flag is only true for initialization to immediately set target position of boxes
-        public override void updateDisplayBoxes(bool doPositionUpdate = true, bool setPosition = false)
+        public override void updateSelectionDisplayBoxes(bool doPositionUpdate = true, bool setPosition = false)
         {
             // Get key statuses
             bool deselectKey = InputManager.instance.getKey("Deselect");
@@ -80,14 +80,14 @@ namespace MiniJam159.UI
             int hoveredRow = -1;
 
             // Loop through rows
-            for (int r = 0; r < displayBoxes.Count; r++)
+            for (int r = 0; r < selectionDisplayBoxes.Count; r++)
             {
                 float rowWidth = 0;
 
                 // Loop through columns
-                for (int c = 0; c < displayBoxes[r].Count; c++)
+                for (int c = 0; c < selectionDisplayBoxes[r].Count; c++)
                 {
-                    SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
+                    SelectionDisplayButton displayButton = selectionDisplayBoxes[r][c].GetComponent<SelectionDisplayButton>();
 
                     // Check for hovered status (There should only be 1 hovered box)
                     if (hoveredDisplayButton == null && displayButton.hovered)
@@ -103,7 +103,7 @@ namespace MiniJam159.UI
                 rowWidths.Add(rowWidth);
 
                 // Initialize default row y positions
-                float rowYPosition = r > 0 ? rowYPositions[rowYPositions.Count - 1] - displayBoxDefaultSize : 0;
+                float rowYPosition = r > 0 ? rowYPositions[rowYPositions.Count - 1] - displayBoxDefaultSize : displayCenterHeight;
                 rowYPositions.Add(rowYPosition);
             }
 
@@ -112,7 +112,7 @@ namespace MiniJam159.UI
             {
                 for (int r = 0; r < rowYPositions.Count; r++)
                 {
-                    float sizeDifference = displayBoxes[r][0].GetComponent<SelectionDisplayButton>().hoveredSize - displayBoxDefaultSize;
+                    float sizeDifference = selectionDisplayBoxes[r][0].GetComponent<SelectionDisplayButton>().hoveredSize - displayBoxDefaultSize;
                     if (r < hoveredRow) rowYPositions[r] += sizeDifference / 2f;
                     if (r > hoveredRow) rowYPositions[r] -= sizeDifference / 2f;
                 }
@@ -120,13 +120,13 @@ namespace MiniJam159.UI
 
             // Second pass to set positions/sizes/frame colours
             // Loop through rows
-            for (int r = 0; r < displayBoxes.Count; r++)
+            for (int r = 0; r < selectionDisplayBoxes.Count; r++)
             {
                 // Loop through columns
                 float currentPosition = 0f - (rowWidths[r] / 2f);
-                for (int c = 0; c < displayBoxes[r].Count; c++)
+                for (int c = 0; c < selectionDisplayBoxes[r].Count; c++)
                 {
-                    SelectionDisplayButton displayButton = displayBoxes[r][c].GetComponent<SelectionDisplayButton>();
+                    SelectionDisplayButton displayButton = selectionDisplayBoxes[r][c].GetComponent<SelectionDisplayButton>();
 
                     // Do position update
                     if (doPositionUpdate)
@@ -140,7 +140,7 @@ namespace MiniJam159.UI
                         currentPosition += displayButton.hovered ? displayBoxHoveredSize : displayBoxDefaultSize;
 
                         // Set target position
-                        RectTransform boxTransform = displayBoxes[r][c].GetComponent<RectTransform>();
+                        RectTransform boxTransform = selectionDisplayBoxes[r][c].GetComponent<RectTransform>();
                         displayButton.targetLocalPosition = boxLocalPosition;
 
                         // Immediately set position if flag is true
@@ -151,9 +151,9 @@ namespace MiniJam159.UI
                     Entity displayButtonEntity = SelectionManager.instance.selectedObjects[displayButton.selectedIndex].GetComponent<Entity>();
                     if (displayButtonEntity.sortPriority == SelectionManager.instance.focusSortPriority)
                     {
-                        displayButton.setSelectStatus(SelectStatus.FOCUSED);
+                        displayButton.setFrameColour(HoverStatus.FOCUS);
                     }
-                    else displayButton.setSelectStatus(SelectStatus.DEFAULT);
+                    else displayButton.setFrameColour(HoverStatus.DEFAULT);
 
                     // Set selection status of all boxes of the same sorting priority
                     if (hoveredDisplayButton != null)
@@ -163,22 +163,22 @@ namespace MiniJam159.UI
                         // Single reselect
                         if (!deselectKey && !typeSelectKey && displayButton.hovered)
                         {
-                            displayButton.setSelectStatus(SelectStatus.RESELECT);
+                            displayButton.setFrameColour(HoverStatus.HOVER);
                         }
                         // Single deselect
                         else if (deselectKey && !typeSelectKey && displayButton.hovered)
                         {
-                            displayButton.setSelectStatus(SelectStatus.DESELECT);
+                            displayButton.setFrameColour(HoverStatus.REMOVE);
                         }
                         // Type reselect
                         else if (!deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
                         {
-                            displayButton.setSelectStatus(SelectStatus.RESELECT);
+                            displayButton.setFrameColour(HoverStatus.HOVER);
                         }
                         // Type deselect
                         else if (deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
                         {
-                            displayButton.setSelectStatus(SelectStatus.DESELECT);
+                            displayButton.setFrameColour(HoverStatus.REMOVE);
                         }
                     }
 
@@ -187,7 +187,7 @@ namespace MiniJam159.UI
 
         }
 
-        public override void onDisplayBoxClicked(int index)
+        public override void onSelectionDisplayBoxClicked(int index)
         {
             // Clear commands
             CommandManagerBase.instance.clearCommands();
@@ -197,22 +197,22 @@ namespace MiniJam159.UI
             bool typeSelectKey = InputManager.instance.getKey("TypeSelect");
 
             // Deselect type
-            if (deselectKey && typeSelectKey) SelectionController.instance.deselectType(index);
+            if (deselectKey && typeSelectKey) SelectionControllerBase.instance.deselectType(index);
             // Deselect single
-            else if (deselectKey) SelectionController.instance.deselectSingle(index);
+            else if (deselectKey) SelectionControllerBase.instance.deselectSingle(index);
             // Reselect type
-            else if (typeSelectKey) SelectionController.instance.reselectType(index);
+            else if (typeSelectKey) SelectionControllerBase.instance.reselectType(index);
             // Set focus
             else if (SelectionManager.instance.getSortPriorityWithIndex(index) != SelectionManager.instance.focusSortPriority)
             {
                 SelectionManager.instance.focusSortPriority = SelectionManager.instance.getSortPriorityWithIndex(index);
-                SelectionController.instance.populateCommands(index);
+                SelectionControllerBase.instance.populateCommands(index);
 
                 // Update display boxes
-                updateDisplayBoxes(false);
+                updateSelectionDisplayBoxes(false);
             }
             // Reselect single if already focused
-            else SelectionController.instance.reselectSingle(index);
+            else SelectionControllerBase.instance.reselectSingle(index);
         }
     }
 }

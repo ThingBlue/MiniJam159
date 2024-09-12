@@ -6,14 +6,6 @@ using UnityEngine.UI;
 
 namespace MiniJam159.UICore
 {
-    public enum SelectStatus
-    {
-        DEFAULT = 0,
-        FOCUSED,
-        RESELECT,
-        DESELECT
-    }
-
     public class SelectionDisplayButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         #region Inspector members
@@ -53,20 +45,20 @@ namespace MiniJam159.UICore
             rectTransform.sizeDelta = Vector2.SmoothDamp(rectTransform.sizeDelta, targetSize, ref sizeVelocity, smoothTime);
         }
 
-        public void setSelectStatus(SelectStatus status)
+        public void setFrameColour(HoverStatus status)
         {
             switch (status)
             {
-                case SelectStatus.DEFAULT:
+                case HoverStatus.DEFAULT:
                     frameImage.color = defaultColor;
                     break;
-                case SelectStatus.FOCUSED:
+                case HoverStatus.FOCUS:
                     frameImage.color = focusedColor;
                     break;
-                case SelectStatus.RESELECT:
+                case HoverStatus.HOVER:
                     frameImage.color = reselectColor;
                     break;
-                case SelectStatus.DESELECT:
+                case HoverStatus.REMOVE:
                     frameImage.color = deselectColor;
                     break;
             }
@@ -77,7 +69,7 @@ namespace MiniJam159.UICore
             hovered = true;
 
             // Trigger UI update
-            UIManagerBase.instance.updateDisplayBoxes();
+            SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes();
 
             /*
             // Add hovered outline to corresponding entity
@@ -97,7 +89,7 @@ namespace MiniJam159.UICore
             hovered = false;
 
             // Trigger UI update
-            UIManagerBase.instance.updateDisplayBoxes();
+            SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes();
 
             /*
             // Remove hovered outline from corresponding entity

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace MiniJam159.GameCore
 {
@@ -24,6 +25,7 @@ namespace MiniJam159.GameCore
     {
         #region Inspector members
 
+        public EventSystem eventSystem;
         public float mouseRaycastDistance;
 
         #endregion
@@ -116,7 +118,7 @@ namespace MiniJam159.GameCore
         // Returns all objects hit by raycast
         public List<GameObject> mouseRaycastAll(LayerMask layerMask)
         {
-            // Raycast from mouse and grab first hit
+            // Raycast from mouse and grab all hits
             Ray mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] hits = Physics.RaycastAll(mouseRay, mouseRaycastDistance, layerMask);
 
@@ -126,6 +128,21 @@ namespace MiniJam159.GameCore
             // Convert hits to a list of gameobjects
             List<GameObject> hitObjects = new List<GameObject>();
             foreach (RaycastHit hit in hits) hitObjects.Add(hit.collider.gameObject);
+            return hitObjects;
+        }
+
+        // Returns all objects hit by event system raycast
+        public List<GameObject> mouseRaycastAllUI()
+        {
+            // Raycast from mouse and grab all hits
+            PointerEventData raycastData = new PointerEventData(eventSystem) { position = Input.mousePosition };
+            List<RaycastResult> hits = new List<RaycastResult>();
+
+            eventSystem.RaycastAll(raycastData, hits);
+
+            // Convert hits to a list of gameobjects
+            List<GameObject> hitObjects = new List<GameObject>();
+            foreach (RaycastResult hit in hits) hitObjects.Add(hit.gameObject);
             return hitObjects;
         }
 
