@@ -180,7 +180,7 @@ namespace MiniJam159.Player
                         canSelect = false;
                     }
 
-                    SelectionController.instance.updateMassSelectBox();
+                    SelectionControllerBase.instance.updateMassSelectBox();
 
                     if (mouse0Up)
                     {
@@ -188,28 +188,28 @@ namespace MiniJam159.Player
                         CommandManagerBase.instance.clearCommands();
 
                         // Execute mass select
-                        SelectionController.instance.executeMassSelect();
+                        SelectionControllerBase.instance.executeMassSelect();
                     }
                     break;
 
                 case PlayerMode.NORMAL:
                     // Update mouse raycast for hovered object
-                    SelectionController.instance.updateMouseHover();
+                    SelectionControllerBase.instance.updateMouseHover();
 
                     // Check for squad input
-                    if (squad1KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[0]);
-                    if (squad2KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[1]);
-                    if (squad3KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[2]);
-                    if (squad4KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[3]);
-                    if (squad5KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[4]);
-                    if (squad6KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[5]);
-                    if (squad7KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[6]);
-                    if (squad8KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[7]);
+                    if (squad1KeyDown) SelectionControllerBase.instance.retrieveSquad(SelectionManager.instance.boundSquads[0]);
+                    if (squad2KeyDown) SelectionControllerBase.instance.retrieveSquad(SelectionManager.instance.boundSquads[1]);
+                    if (squad3KeyDown) SelectionControllerBase.instance.retrieveSquad(SelectionManager.instance.boundSquads[2]);
+                    if (squad4KeyDown) SelectionControllerBase.instance.retrieveSquad(SelectionManager.instance.boundSquads[3]);
+                    if (squad5KeyDown) SelectionControllerBase.instance.retrieveSquad(SelectionManager.instance.boundSquads[4]);
+                    if (squad6KeyDown) SelectionControllerBase.instance.retrieveSquad(SelectionManager.instance.boundSquads[5]);
+                    if (squad7KeyDown) SelectionControllerBase.instance.retrieveSquad(SelectionManager.instance.boundSquads[6]);
+                    if (squad8KeyDown) SelectionControllerBase.instance.retrieveSquad(SelectionManager.instance.boundSquads[7]);
 
                     // Set start position for mass select
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
                     {
-                        SelectionController.instance.massSelectStartPosition = Input.mousePosition;
+                        SelectionControllerBase.instance.massSelectStartPosition = Input.mousePosition;
                         canSelect = true;
                     }
                     if (mouse0Down && EventSystem.current.IsPointerOverGameObject())
@@ -221,8 +221,8 @@ namespace MiniJam159.Player
                     if (InputManager.instance.getKey("Mouse0") && canSelect)
                     {
                         massSelectStartTimer += Time.deltaTime;
-                        if (massSelectStartTimer >= SelectionController.instance.massSelectDelay ||
-                            Vector3.Distance(SelectionController.instance.massSelectStartPosition, Input.mousePosition) > SelectionController.instance.massSelectMouseMoveDistance)
+                        if (massSelectStartTimer >= SelectionControllerBase.instance.massSelectDelay ||
+                            Vector3.Distance(SelectionControllerBase.instance.massSelectStartPosition, Input.mousePosition) > SelectionController.instance.massSelectMouseMoveDistance)
                         {
                             // Start mass select
                             PlayerModeManager.instance.playerMode = PlayerMode.MASS_SELECT;
@@ -232,9 +232,9 @@ namespace MiniJam159.Player
                     {
                         // Reset mass select timer
                         massSelectStartTimer = 0.0f;
-                        SelectionController.instance.massSelectStartPosition = Input.mousePosition;
+                        SelectionControllerBase.instance.massSelectStartPosition = Input.mousePosition;
                     }
-                    SelectionController.instance.updateMassSelectBox();
+                    SelectionControllerBase.instance.updateMassSelectBox();
 
                     // Execute single select
                     if (mouse0Up && canSelect && !EventSystem.current.IsPointerOverGameObject())
@@ -242,7 +242,7 @@ namespace MiniJam159.Player
                         // Clear commands
                         CommandManagerBase.instance.clearCommands();
 
-                        SelectionController.instance.executeSingleSelect();
+                        SelectionControllerBase.instance.executeSingleSelect();
                     }
 
                     // Movement commands
@@ -274,7 +274,7 @@ namespace MiniJam159.Player
             // Don't allow start of mass select when occupied
             if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL && PlayerModeManager.instance.playerMode != PlayerMode.MASS_SELECT)
             {
-                SelectionController.instance.massSelectStartPosition = Input.mousePosition;
+                SelectionControllerBase.instance.massSelectStartPosition = Input.mousePosition;
                 canSelect = false;
             }
 
@@ -323,7 +323,7 @@ namespace MiniJam159.Player
             }
 
             // Update commands
-            SelectionController.instance.populateCommands(newFocusIndex);
+            SelectionControllerBase.instance.populateCommands(newFocusIndex);
 
             // Update UI
             SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes(false);

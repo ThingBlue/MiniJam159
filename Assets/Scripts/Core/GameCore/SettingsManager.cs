@@ -13,7 +13,7 @@ namespace MiniJam159.GameCore
         PAUSED
     }
 
-    public class GameManager : MonoBehaviour
+    public class SettingsManager : MonoBehaviour
     {
         #region Inspector members
 
@@ -22,7 +22,7 @@ namespace MiniJam159.GameCore
         #endregion
 
         // Singleton
-        public static GameManager instance;
+        public static SettingsManager instance;
 
         public static GameState gameState = GameState.NONE;
 

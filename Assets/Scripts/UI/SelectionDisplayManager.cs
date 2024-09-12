@@ -197,22 +197,22 @@ namespace MiniJam159.UI
             bool typeSelectKey = InputManager.instance.getKey("TypeSelect");
 
             // Deselect type
-            if (deselectKey && typeSelectKey) SelectionController.instance.deselectType(index);
+            if (deselectKey && typeSelectKey) SelectionControllerBase.instance.deselectType(index);
             // Deselect single
-            else if (deselectKey) SelectionController.instance.deselectSingle(index);
+            else if (deselectKey) SelectionControllerBase.instance.deselectSingle(index);
             // Reselect type
-            else if (typeSelectKey) SelectionController.instance.reselectType(index);
+            else if (typeSelectKey) SelectionControllerBase.instance.reselectType(index);
             // Set focus
             else if (SelectionManager.instance.getSortPriorityWithIndex(index) != SelectionManager.instance.focusSortPriority)
             {
                 SelectionManager.instance.focusSortPriority = SelectionManager.instance.getSortPriorityWithIndex(index);
-                SelectionController.instance.populateCommands(index);
+                SelectionControllerBase.instance.populateCommands(index);
 
                 // Update display boxes
                 updateSelectionDisplayBoxes(false);
             }
             // Reselect single if already focused
-            else SelectionController.instance.reselectSingle(index);
+            else SelectionControllerBase.instance.reselectSingle(index);
         }
     }
 }

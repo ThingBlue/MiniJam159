@@ -9,5 +9,6 @@ namespace MiniJam159.GameCore
     {
         [Header("CONTROLS")]
         public List<KeyBind> keyBinds;
+        public float doubleClickMaxDelay;
     }
 }

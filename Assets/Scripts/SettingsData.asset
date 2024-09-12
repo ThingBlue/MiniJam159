@@ -71,3 +71,6 @@ MonoBehaviour:
     keys: 37000000
   - name: Squad8
     keys: 38000000
+  - name: ToggleSquadBind
+    keys: 44010000
+  doubleClickMaxDelay: 0.5

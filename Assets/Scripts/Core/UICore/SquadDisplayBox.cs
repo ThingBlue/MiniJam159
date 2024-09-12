@@ -9,7 +9,7 @@ using MiniJam159.PlayerCore;
 
 namespace MiniJam159.UICore
 {
-    public class SquadDisplayBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public class SquadDisplayBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
     {
         #region Inspector members
 
@@ -26,10 +26,29 @@ namespace MiniJam159.UICore
 
         public Squad squad;
 
-        public bool hovered;
+        public bool hovered = false;
+        private float timeSinceLastMouse0 = 0;
+        private bool mouse1Down = false;
 
         private Vector3 originalPosition;
         private Vector3 mouseOffset;
+
+        private void Update()
+        {
+            // Check for squad bind toggle (Right click on default)
+            if (InputManager.instance.getKeyDown("Mouse1") && hovered) mouse1Down = true;
+            if (InputManager.instance.getKeyUp("Mouse1") && mouse1Down && hovered)
+            {
+                toggleSquadBind();
+                mouse1Down = false;
+            }
+
+            // Reset clicking if button is released while not hovering
+            if (InputManager.instance.getKeyUp("Mouse1") && mouse1Down && !hovered) mouse1Down = false;
+
+            // Increment double click timer
+            timeSinceLastMouse0 += Time.deltaTime;
+        }
 
         public void setFrameColour(HoverStatus status)
         {
@@ -47,6 +66,54 @@ namespace MiniJam159.UICore
                 case HoverStatus.REMOVE:
                     frameImage.color = deselectColor;
                     break;
+            }
+        }
+
+        public void unbindSquad(Squad matchingSquad)
+        {
+            if (matchingSquad == null) return;
+
+            // Remove from squad binds list
+            int bindSlot = SelectionManager.instance.boundSquads.IndexOf(matchingSquad);
+            if (bindSlot != -1) SelectionManager.instance.boundSquads[bindSlot] = null;
+        }
+
+        private void toggleSquadBind()
+        {
+            // Already bound
+            if (SelectionManager.instance.boundSquads.Contains(squad))
+            {
+                // Unbind
+                unbindSquad(squad);
+
+                // Update positions of unbound squad display boxes
+                SquadPanelManagerBase.instance.updateSquadDisplayBoxes();
+            }
+            // Not bound yet, bind to first open slot
+            else
+            {
+                // Get first open slot
+                int firstOpenSlot = -1;
+                for (int i = 0; i < SelectionManager.instance.boundSquads.Count; i++)
+                {
+                    if (SelectionManager.instance.boundSquads[i] == null)
+                    {
+                        firstOpenSlot = i;
+                        break;
+                    }
+                }
+
+                // All slots occupied, do nothing
+                if (firstOpenSlot == -1) return;
+
+                // Assign to corresponding slot
+                SelectionManager.instance.boundSquads[firstOpenSlot] = squad;
+
+                // Update positions of unbound squad display boxes
+                SquadPanelManagerBase.instance.updateSquadDisplayBoxes();
+
+                // Set position
+                GetComponent<RectTransform>().localPosition = SquadPanelManagerBase.instance.squadSlotBoxes[firstOpenSlot].GetComponent<RectTransform>().localPosition;
             }
         }
 
@@ -157,25 +224,25 @@ namespace MiniJam159.UICore
             if (dropSlot == -3) Destroy(gameObject);
         }
 
-        public void unbindSquad(Squad matchingSquad)
+        public void OnPointerDown(PointerEventData eventData)
         {
-            if (matchingSquad == null) return;
-
-            // Remove from squad binds list
-            int bindSlot = SelectionManager.instance.boundSquads.IndexOf(matchingSquad);
-            if (bindSlot != -1) SelectionManager.instance.boundSquads[bindSlot] = null;
-
-            /*
-            // Move corresponding display box back to unbound area
-            GameObject squadDisplayBoxObject = SquadPanelManagerBase.instance.getSquadDisplayBox(matchingSquad);
-            if (!squadDisplayBoxObject)
+            if (eventData.button == PointerEventData.InputButton.Left)
             {
-                Debug.LogError("Error: No squad display box associated with squad: " + squad);
-                return;
-            }
+                // Execute double click
+                if (timeSinceLastMouse0 < SettingsManager.instance.settingsData.doubleClickMaxDelay)
+                {
+                    // Retrieve squad
+                    SelectionControllerBase.instance.retrieveSquad(squad);
 
-            squadDisplayBoxObject.GetComponent<RectTransform>().localPosition = ;
-            */
+                    // Make sure we can't double click again on the next click
+                    timeSinceLastMouse0 = SettingsManager.instance.settingsData.doubleClickMaxDelay + 1f;
+                }
+                else
+                {
+                    // Reset timer
+                    timeSinceLastMouse0 = 0;
+                }
+            }
         }
     }
 }
