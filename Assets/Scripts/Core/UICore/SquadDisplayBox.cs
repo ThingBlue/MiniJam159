@@ -35,6 +35,7 @@ namespace MiniJam159.UICore
 
         private void Update()
         {
+            // Quick bind
             // Check for squad bind toggle (Right click on default)
             if (InputManager.instance.getKeyDown("Mouse1") && hovered) mouse1Down = true;
             if (InputManager.instance.getKeyUp("Mouse1") && mouse1Down && hovered)
@@ -76,6 +77,21 @@ namespace MiniJam159.UICore
             // Remove from squad binds list
             int bindSlot = SelectionManager.instance.boundSquads.IndexOf(matchingSquad);
             if (bindSlot != -1) SelectionManager.instance.boundSquads[bindSlot] = null;
+        }
+
+        public void deleteSquad()
+        {
+            // Remove from slot if bound
+            unbindSquad(squad);
+
+            // Remove from lists
+            SelectionManager.instance.squads.Remove(squad);
+            SquadPanelManagerBase.instance.squadDisplayBoxes.Remove(gameObject);
+
+            // Update positions of unbound squad display boxes
+            SquadPanelManagerBase.instance.updateSquadDisplayBoxes();
+
+            // IMPORTANT: Need to call Destroy(gameObject) after calling this function
         }
 
         private void toggleSquadBind()
@@ -171,15 +187,8 @@ namespace MiniJam159.UICore
             // Dropped over delete box
             else if (dropSlot == -3)
             {
-                // Remove from slot if bound
-                unbindSquad(squad);
-
-                // Remove from lists
-                SelectionManager.instance.squads.Remove(squad);
-                SquadPanelManagerBase.instance.squadDisplayBoxes.Remove(gameObject);
-
-                // Update positions of unbound squad display boxes
-                SquadPanelManagerBase.instance.updateSquadDisplayBoxes();
+                // Delete this squad
+                deleteSquad();
             }
             // Dropped over squad slot box
             else
@@ -228,6 +237,14 @@ namespace MiniJam159.UICore
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
+                // Quick delete
+                if (InputManager.instance.getKey("Deselect"))
+                {
+                    deleteSquad();
+                    Destroy(gameObject);
+                }
+
+                // Quick retrieve
                 // Execute double click
                 if (timeSinceLastMouse0 < SettingsManager.instance.settingsData.doubleClickMaxDelay)
                 {
