@@ -16,13 +16,12 @@ namespace MiniJam159.Player
     {
         #region Inspector members
 
-        public RectTransform massSelectBoxTransform;
-        public float massSelectDelay;
-        public float massSelectMouseMoveDistance;
-
         public LayerMask unitLayer;
         public LayerMask structureLayer;
 
+        public RectTransform massSelectBoxTransform;
+        public float massSelectDelay;
+        public float massSelectMouseMoveDistance;
         public float selectionRaycastDistance;
 
         public bool drawMassSelectBoxCastGizmo;
@@ -49,6 +48,12 @@ namespace MiniJam159.Player
             // Subscribe to events
             EventManager.instance.openBuildMenuCommandEvent.AddListener(onOpenBuildMenuCommandCallback);
             EventManager.instance.cancelBuildMenuCommandEvent.AddListener(onCancelBuildMenuCommandCallback);
+        }
+
+        private void Update()
+        {
+            // DEBUG
+            if (InputManager.instance.getKeyDown("SquadTest")) createSquadFromCurrentSelection();
         }
 
         public void updateMouseHover()
@@ -568,11 +573,12 @@ namespace MiniJam159.Player
 
         public void createSquadFromCurrentSelection()
         {
-            // Add clone of current selection list to squads
-            SelectionManager.instance.squads.Add(new List<GameObject>(SelectionManager.instance.selectedObjects));
+            // Create new squad
+            Squad newSquad = new Squad(SelectionManager.instance.assignSquadId(), SelectionManager.instance.selectedObjects);
+            SelectionManager.instance.squads.Add(newSquad);
 
             // Create new squad icon in squads UI
-
+            GameObject newSquadDisplayBox = SquadPanelManagerBase.instance.createSquadDisplayBox(newSquad);
         }
 
         public void addToSquad()

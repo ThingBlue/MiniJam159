@@ -53,3 +53,5 @@ MonoBehaviour:
     keys: 30010000
   - name: FormSquad
     keys: 67000000
+  - name: SquadTest
+    keys: 67000000

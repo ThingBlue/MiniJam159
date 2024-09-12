@@ -8,10 +8,9 @@ namespace MiniJam159.UICore
 {
     public class SelectionDisplayManagerBase : MonoBehaviour
     {
-
         #region Inspector members
 
-        public GameObject selectionDisplayPanel;
+        public GameObject selectionDisplayPanelObject;
 
         public GameObject displayBoxPrefab;
         public float displayCenterHeight;
@@ -35,7 +34,7 @@ namespace MiniJam159.UICore
             selectionDisplayBoxes = new List<List<GameObject>>();
 
             // Hide display panel at the start
-            selectionDisplayPanel.SetActive(false);
+            selectionDisplayPanelObject.SetActive(false);
         }
 
         protected virtual void Update()

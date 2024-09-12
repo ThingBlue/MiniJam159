@@ -18,15 +18,15 @@ namespace MiniJam159.UI
             if (selectedObjects.Count == 0)
             {
                 // Hide display panel
-                selectionDisplayPanel.SetActive(false);
+                selectionDisplayPanelObject.SetActive(false);
                 return;
             }
 
             // Show display panel
-            selectionDisplayPanel.SetActive(true);
+            selectionDisplayPanelObject.SetActive(true);
 
             // Calculate rows and columns
-            float displayPanelWidth = selectionDisplayPanel.GetComponent<RectTransform>().rect.size.x;
+            float displayPanelWidth = selectionDisplayPanelObject.GetComponent<RectTransform>().rect.size.x;
             displayPanelWidth -= (displayBoxDefaultSize * 2);
 
             // Don't create display boxes if the screen is too thin to fit display panel
@@ -45,7 +45,7 @@ namespace MiniJam159.UI
                     if (selectedIndex >= selectedObjects.Count) break;
 
                     // Create box
-                    GameObject newDisplayBox = Instantiate(displayBoxPrefab, selectionDisplayPanel.transform);
+                    GameObject newDisplayBox = Instantiate(displayBoxPrefab, selectionDisplayPanelObject.transform);
                     newDisplayBox.GetComponent<Image>().sprite = selectedObjects[selectedIndex].GetComponent<Entity>().displayIcon;
 
                     // Set up button
@@ -103,7 +103,7 @@ namespace MiniJam159.UI
                 rowWidths.Add(rowWidth);
 
                 // Initialize default row y positions
-                float rowYPosition = r > 0 ? rowYPositions[rowYPositions.Count - 1] - displayBoxDefaultSize : 0;
+                float rowYPosition = r > 0 ? rowYPositions[rowYPositions.Count - 1] - displayBoxDefaultSize : displayCenterHeight;
                 rowYPositions.Add(rowYPosition);
             }
 
@@ -151,9 +151,9 @@ namespace MiniJam159.UI
                     Entity displayButtonEntity = SelectionManager.instance.selectedObjects[displayButton.selectedIndex].GetComponent<Entity>();
                     if (displayButtonEntity.sortPriority == SelectionManager.instance.focusSortPriority)
                     {
-                        displayButton.setSelectStatus(SelectStatus.FOCUSED);
+                        displayButton.setFrameColour(HoverStatus.FOCUS);
                     }
-                    else displayButton.setSelectStatus(SelectStatus.DEFAULT);
+                    else displayButton.setFrameColour(HoverStatus.DEFAULT);
 
                     // Set selection status of all boxes of the same sorting priority
                     if (hoveredDisplayButton != null)
@@ -163,22 +163,22 @@ namespace MiniJam159.UI
                         // Single reselect
                         if (!deselectKey && !typeSelectKey && displayButton.hovered)
                         {
-                            displayButton.setSelectStatus(SelectStatus.RESELECT);
+                            displayButton.setFrameColour(HoverStatus.HOVER);
                         }
                         // Single deselect
                         else if (deselectKey && !typeSelectKey && displayButton.hovered)
                         {
-                            displayButton.setSelectStatus(SelectStatus.DESELECT);
+                            displayButton.setFrameColour(HoverStatus.REMOVE);
                         }
                         // Type reselect
                         else if (!deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
                         {
-                            displayButton.setSelectStatus(SelectStatus.RESELECT);
+                            displayButton.setFrameColour(HoverStatus.HOVER);
                         }
                         // Type deselect
                         else if (deselectKey && typeSelectKey && displayButtonEntity.sortPriority == hoveredEntity.sortPriority)
                         {
-                            displayButton.setSelectStatus(SelectStatus.DESELECT);
+                            displayButton.setFrameColour(HoverStatus.REMOVE);
                         }
                     }
 
