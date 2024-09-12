@@ -12,6 +12,7 @@ namespace MiniJam159.UICore
         #region Inspector members
 
         public GameObject squadPanelObject;
+        public GameObject unbindBox;
 
         public GameObject squadDisplayBoxPrefab;
 
@@ -85,6 +86,11 @@ namespace MiniJam159.UICore
             }
         }
 
+        public void toggleUnbindBox(bool enable)
+        {
+            unbindBox.GetComponent<CanvasGroup>().blocksRaycasts = enable;
+        }
+
         // Return values:
         //     0 - 7 = Corresponding squad slot
         //     -1 = Nothing found
@@ -92,6 +98,9 @@ namespace MiniJam159.UICore
         //     -3 = Delete
         public int getDropTarget(out GameObject targetObject)
         {
+            // Default to null out object
+            targetObject = null;
+
             // Raycast on UI layer
             List<GameObject> mouseRaycastResult = InputManager.instance.mouseRaycastAllUI();
 
@@ -105,15 +114,13 @@ namespace MiniJam159.UICore
                 }
             }
 
+            // Unbind box
+            if (mouseRaycastResult.Contains(unbindBox)) return -2;
+
             // Deletion box
-            if (mouseRaycastResult.Contains(squadDeleteBox))
-            {
-                targetObject = squadDeleteBox;
-                return -3;
-            }
+            if (mouseRaycastResult.Contains(squadDeleteBox)) return -3;
 
             // Nothing
-            targetObject = null;
             return -1;
         }
     }

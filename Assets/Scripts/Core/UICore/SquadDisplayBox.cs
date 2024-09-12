@@ -66,6 +66,9 @@ namespace MiniJam159.UICore
             // Add transparency effect and disable raycasts
             canvasGroup.alpha = 0.25f;
             canvasGroup.blocksRaycasts = false;
+
+            // Allow raycasts on unbind box
+            SquadPanelManagerBase.instance.toggleUnbindBox(true);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -79,18 +82,24 @@ namespace MiniJam159.UICore
             GameObject dropTargetObject = null;
             int dropSlot = SquadPanelManagerBase.instance.getDropTarget(out dropTargetObject);
 
+            // Not dropped over useful UI object
             if (dropSlot == -1)
             {
-                // Not dropped over useful UI object
+                // Reset position and return
                 GetComponent<RectTransform>().localPosition = originalPosition;
             }
+            // Dropped over main area
             else if (dropSlot == -2)
             {
-                // Dropped over main area, unbind
+                // Unbind
+                unbindSquad(squad);
+
+                // Update positions of unbound squad display boxes
+                SquadPanelManagerBase.instance.updateUnboundBoxes();
             }
+            // Dropped over delete box
             else if (dropSlot == -3)
             {
-                // Dropped over delete box
                 // Remove from slot if bound
                 unbindSquad(squad);
 
@@ -98,9 +107,9 @@ namespace MiniJam159.UICore
                 SquadPanelManagerBase.instance.updateUnboundBoxes();
 
             }
+            // Dropped over squad slot box
             else
             {
-                // Dropped over squad slot box
                 // Remove from previous slot if bound
                 unbindSquad(squad);
 
@@ -123,6 +132,9 @@ namespace MiniJam159.UICore
             // Reset canvas group modifiers
             canvasGroup.alpha = 0.75f;
             canvasGroup.blocksRaycasts = true;
+
+            // Reset unbind box
+            SquadPanelManagerBase.instance.toggleUnbindBox(false);
         }
 
         public void unbindSquad(Squad matchingSquad)

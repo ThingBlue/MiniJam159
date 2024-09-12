@@ -45,7 +45,7 @@ namespace MiniJam159.PlayerCore
 
             // Initialize boundSquads with empty squads
             boundSquads = new List<Squad>();
-            for (int i = 0; i < 8; i++) boundSquads.Add(new Squad());
+            for (int i = 0; i < 8; i++) boundSquads.Add(null);
         }
 
         public void addSelectedObject(GameObject selectedObject)
