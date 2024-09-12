@@ -13,14 +13,15 @@ namespace MiniJam159.UICore
 
         public GameObject squadPanelObject;
         public GameObject unbindBox;
+        public GameObject deleteBox;
 
         public GameObject squadDisplayBoxPrefab;
 
         public List<GameObject> squadBindBoxes;
         public GameObject squadDeleteBox;
 
-        public float topRowYPosition;
         public Vector2 squadDisplayBoxSize;
+        public Vector2 firstBoxPosition;
         public int squadDisplayBoxRowCount;
         public int squadDisplayBoxColumnCount;
 
@@ -72,23 +73,21 @@ namespace MiniJam159.UICore
                 if (!SelectionManager.instance.boundSquads.Contains(squad)) unboundBoxes.Add(boxObject);
             }
 
-            // Calculate starting x position
-            float leftBoxXPosition = -(squadDisplayBoxColumnCount * squadDisplayBoxSize.x);
-
             // Set positions for each box
             for (int i = 0; i < unboundBoxes.Count; i++)
             {
                 unboundBoxes[i].GetComponent<RectTransform>().localPosition = new Vector3(
-                    leftBoxXPosition + (i % squadDisplayBoxColumnCount) * squadDisplayBoxSize.x,
-                    topRowYPosition - Mathf.Floor(i / squadDisplayBoxColumnCount) * squadDisplayBoxSize.y,
+                    firstBoxPosition.x + (i % squadDisplayBoxColumnCount) * squadDisplayBoxSize.x,
+                    firstBoxPosition.y - Mathf.Floor(i / squadDisplayBoxColumnCount) * squadDisplayBoxSize.y,
                     0
                 );
             }
         }
 
-        public void toggleUnbindBox(bool enable)
+        public void toggleRaycastBoxes(bool enable)
         {
             unbindBox.GetComponent<CanvasGroup>().blocksRaycasts = enable;
+            deleteBox.GetComponent<CanvasGroup>().blocksRaycasts = enable;
         }
 
         // Return values:
@@ -118,7 +117,7 @@ namespace MiniJam159.UICore
             if (mouseRaycastResult.Contains(unbindBox)) return -2;
 
             // Deletion box
-            if (mouseRaycastResult.Contains(squadDeleteBox)) return -3;
+            if (mouseRaycastResult.Contains(deleteBox)) return -3;
 
             // Nothing
             return -1;

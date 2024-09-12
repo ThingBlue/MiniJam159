@@ -67,8 +67,8 @@ namespace MiniJam159.UICore
             canvasGroup.alpha = 0.25f;
             canvasGroup.blocksRaycasts = false;
 
-            // Allow raycasts on unbind box
-            SquadPanelManagerBase.instance.toggleUnbindBox(true);
+            // Allow raycasts on unbind and delete boxes
+            SquadPanelManagerBase.instance.toggleRaycastBoxes(true);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -103,9 +103,12 @@ namespace MiniJam159.UICore
                 // Remove from slot if bound
                 unbindSquad(squad);
 
+                // Remove from lists
+                SelectionManager.instance.squads.Remove(squad);
+                SquadPanelManagerBase.instance.squadDisplayBoxes.Remove(gameObject);
+
                 // Update positions of unbound squad display boxes
                 SquadPanelManagerBase.instance.updateUnboundBoxes();
-
             }
             // Dropped over squad slot box
             else
@@ -133,8 +136,21 @@ namespace MiniJam159.UICore
             canvasGroup.alpha = 0.75f;
             canvasGroup.blocksRaycasts = true;
 
-            // Reset unbind box
-            SquadPanelManagerBase.instance.toggleUnbindBox(false);
+            // Reset unbind and delete boxes
+            SquadPanelManagerBase.instance.toggleRaycastBoxes(false);
+
+            /*
+            // DEBUG
+            Debug.Log("Squad count: " + SelectionManager.instance.squads.Count);
+            foreach (Squad squad in SelectionManager.instance.boundSquads)
+            {
+                if (squad == null) Debug.Log("NULL");
+                else Debug.Log(squad.id);
+            }
+            */
+
+            // Delete this box
+            if (dropSlot == -3) Destroy(gameObject);
         }
 
         public void unbindSquad(Squad matchingSquad)
