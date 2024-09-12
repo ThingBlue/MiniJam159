@@ -26,6 +26,8 @@ namespace MiniJam159.UICore
 
         public Squad squad;
 
+        public bool hovered;
+
         private Vector3 originalPosition;
         private Vector3 mouseOffset;
 
@@ -50,12 +52,14 @@ namespace MiniJam159.UICore
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            setFrameColour(HoverStatus.HOVER);
+            hovered = true;
+            SquadPanelManagerBase.instance.updateSquadDisplayBoxes();
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            setFrameColour(HoverStatus.DEFAULT);
+            hovered = false;
+            SquadPanelManagerBase.instance.updateSquadDisplayBoxes();
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -95,7 +99,7 @@ namespace MiniJam159.UICore
                 unbindSquad(squad);
 
                 // Update positions of unbound squad display boxes
-                SquadPanelManagerBase.instance.updateUnboundBoxes();
+                SquadPanelManagerBase.instance.updateSquadDisplayBoxes();
             }
             // Dropped over delete box
             else if (dropSlot == -3)
@@ -108,7 +112,7 @@ namespace MiniJam159.UICore
                 SquadPanelManagerBase.instance.squadDisplayBoxes.Remove(gameObject);
 
                 // Update positions of unbound squad display boxes
-                SquadPanelManagerBase.instance.updateUnboundBoxes();
+                SquadPanelManagerBase.instance.updateSquadDisplayBoxes();
             }
             // Dropped over squad slot box
             else
@@ -126,7 +130,7 @@ namespace MiniJam159.UICore
                 SelectionManager.instance.boundSquads[dropSlot] = squad;
 
                 // Update positions of unbound squad display boxes
-                SquadPanelManagerBase.instance.updateUnboundBoxes();
+                SquadPanelManagerBase.instance.updateSquadDisplayBoxes();
 
                 // Set position
                 GetComponent<RectTransform>().localPosition = dropTargetObject.GetComponent<RectTransform>().localPosition;

@@ -35,6 +35,14 @@ namespace MiniJam159.Player
         private bool mouse1Up;
         private float mouseScroll;
         private bool cancelCommandKeyDown;
+        private bool squad1KeyDown;
+        private bool squad2KeyDown;
+        private bool squad3KeyDown;
+        private bool squad4KeyDown;
+        private bool squad5KeyDown;
+        private bool squad6KeyDown;
+        private bool squad7KeyDown;
+        private bool squad8KeyDown;
 
         private bool canSelect;
         private bool ignoreNextMouse0Up;
@@ -80,6 +88,16 @@ namespace MiniJam159.Player
                 if (InputManager.instance.getKeyDown("VCommand")) CommandManagerBase.instance.executeCommand(11);
 
                 if (InputManager.instance.getKeyDown("CycleFocus")) cycleFocus();
+
+                if (InputManager.instance.getKeyDown("Squad1")) squad1KeyDown = true;
+                if (InputManager.instance.getKeyDown("Squad2")) squad2KeyDown = true;
+                if (InputManager.instance.getKeyDown("Squad3")) squad3KeyDown = true;
+                if (InputManager.instance.getKeyDown("Squad4")) squad4KeyDown = true;
+                if (InputManager.instance.getKeyDown("Squad5")) squad5KeyDown = true;
+                if (InputManager.instance.getKeyDown("Squad6")) squad6KeyDown = true;
+                if (InputManager.instance.getKeyDown("Squad7")) squad7KeyDown = true;
+                if (InputManager.instance.getKeyDown("Squad8")) squad8KeyDown = true;
+
             }
 
             if (InputManager.instance.getKeyDown("CancelCommand")) cancelCommandKeyDown = true;
@@ -178,6 +196,16 @@ namespace MiniJam159.Player
                     // Update mouse raycast for hovered object
                     SelectionController.instance.updateMouseHover();
 
+                    // Check for squad input
+                    if (squad1KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[0]);
+                    if (squad2KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[1]);
+                    if (squad3KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[2]);
+                    if (squad4KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[3]);
+                    if (squad5KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[4]);
+                    if (squad6KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[5]);
+                    if (squad7KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[6]);
+                    if (squad8KeyDown) SelectionController.instance.replaceSelectionWithSquad(SelectionManager.instance.boundSquads[7]);
+
                     // Set start position for mass select
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject())
                     {
@@ -189,6 +217,7 @@ namespace MiniJam159.Player
                         canSelect = false;
                     }
 
+                    // Detect start of mass select
                     if (InputManager.instance.getKey("Mouse0") && canSelect)
                     {
                         massSelectStartTimer += Time.deltaTime;
@@ -256,6 +285,14 @@ namespace MiniJam159.Player
             mouse1Up = false;
             mouseScroll = 0;
             cancelCommandKeyDown = false;
+            squad1KeyDown = false;
+            squad2KeyDown = false;
+            squad3KeyDown = false;
+            squad4KeyDown = false;
+            squad5KeyDown = false;
+            squad6KeyDown = false;
+            squad7KeyDown = false;
+            squad8KeyDown = false;
         }
 
         public void cycleFocus()

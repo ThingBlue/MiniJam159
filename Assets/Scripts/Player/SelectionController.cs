@@ -53,7 +53,7 @@ namespace MiniJam159.Player
         private void Update()
         {
             // DEBUG
-            if (InputManager.instance.getKeyDown("SquadTest")) createSquadFromCurrentSelection();
+            if (InputManager.instance.getKeyDown("CreateSquad")) createSquadFromCurrentSelection();
         }
 
         public void updateMouseHover()
@@ -584,6 +584,25 @@ namespace MiniJam159.Player
         public void addToSquad()
         {
 
+        }
+
+        public void replaceSelectionWithSquad(Squad squad)
+        {
+            // Clear UI
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
+
+            // Clear list
+            SelectionManager.instance.clearSelectedObjects();
+
+            // Add objects back in from squad
+            if (squad != null) SelectionManager.instance.setSelectedObjects(squad.entities);
+
+            // Sort
+            sortSelection();
+
+            // Populate commands after sorting
+            populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
         private void onOpenBuildMenuCommandCallback()

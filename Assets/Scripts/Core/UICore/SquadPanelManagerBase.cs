@@ -2,6 +2,7 @@ using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace MiniJam159.UICore
 
         public GameObject squadDisplayBoxPrefab;
 
-        public List<GameObject> squadBindBoxes;
+        public List<GameObject> squadSlotBoxes;
         public GameObject squadDeleteBox;
 
         public Vector2 squadDisplayBoxSize;
@@ -25,9 +26,17 @@ namespace MiniJam159.UICore
         public int squadDisplayBoxRowCount;
         public int squadDisplayBoxColumnCount;
 
+        public float panelSmoothTime;
+        public float showPosition;
+        public float hidePosition;
+
         #endregion
 
         public List<GameObject> squadDisplayBoxes;
+
+        private bool showPanel;
+        private float targetPanelPosition;
+        private float panelVelocity;
 
         // Singleton
         public static SquadPanelManagerBase instance;
@@ -37,6 +46,28 @@ namespace MiniJam159.UICore
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
+
+            // Initialize target position to current position
+            targetPanelPosition = hidePosition;
+            showPanel = false;
+        }
+
+        private void Update()
+        {
+            // Handle panel toggle
+            if (InputManager.instance.getKeyDown("ToggleSquadPanel")) togglePanel(!showPanel);
+
+            // May need new frame colours for boxes on deselect key state change
+            if (InputManager.instance.getKeyDown("Deselect") || InputManager.instance.getKeyUp("Deselect")) updateSquadDisplayBoxes();
+        }
+
+        private void FixedUpdate()
+        {
+            RectTransform rectTransform = GetComponent<RectTransform>();
+            rectTransform.anchoredPosition = new Vector2(
+                Mathf.SmoothDamp(rectTransform.anchoredPosition.x, targetPanelPosition, ref panelVelocity, panelSmoothTime),
+                rectTransform.anchoredPosition.y
+            );
         }
 
         public GameObject createSquadDisplayBox(Squad squad)
@@ -47,7 +78,7 @@ namespace MiniJam159.UICore
             squadDisplayBoxes.Add(newSquadDisplayBox);
 
             // Update positions of all boxes
-            updateUnboundBoxes();
+            updateSquadDisplayBoxes();
 
             return newSquadDisplayBox;
         }
@@ -63,14 +94,28 @@ namespace MiniJam159.UICore
             return null;
         }
 
-        public void updateUnboundBoxes()
+        public void updateSquadDisplayBoxes()
         {
-            // Get unbound boxes
+            // Get unbound boxes and set frame colours
             List<GameObject> unboundBoxes = new List<GameObject>();
             foreach (GameObject boxObject in squadDisplayBoxes)
             {
-                Squad squad = boxObject.GetComponent<SquadDisplayBox>().squad;
-                if (!SelectionManager.instance.boundSquads.Contains(squad)) unboundBoxes.Add(boxObject);
+                // Get unbound boxes
+                SquadDisplayBox squadDisplayBox = boxObject.GetComponent<SquadDisplayBox>();
+                bool bound = SelectionManager.instance.boundSquads.Contains(squadDisplayBox.squad);
+                if (!bound) unboundBoxes.Add(boxObject);
+            
+                // Set frame colours
+                if (squadDisplayBox.hovered)
+                {
+                    if (InputManager.instance.getKey("Deselect")) squadDisplayBox.setFrameColour(HoverStatus.REMOVE);
+                    else squadDisplayBox.setFrameColour(HoverStatus.HOVER);
+                }
+                else
+                {
+                    if (bound) squadDisplayBox.setFrameColour(HoverStatus.FOCUS);
+                    else squadDisplayBox.setFrameColour(HoverStatus.DEFAULT);
+                }
             }
 
             // Set positions for each box
@@ -81,6 +126,14 @@ namespace MiniJam159.UICore
                     firstBoxPosition.y - Mathf.Floor(i / squadDisplayBoxColumnCount) * squadDisplayBoxSize.y,
                     0
                 );
+            }
+
+            // Set slot box alphas
+            for (int i = 0; i < squadSlotBoxes.Count; i++)
+            {
+                // Show slot box if there's not a squad assigned to that slot
+                if (SelectionManager.instance.boundSquads[i] == null) squadSlotBoxes[i].GetComponent<CanvasGroup>().alpha = 1;
+                else squadSlotBoxes[i].GetComponent<CanvasGroup>().alpha = 0;
             }
         }
 
@@ -104,11 +157,11 @@ namespace MiniJam159.UICore
             List<GameObject> mouseRaycastResult = InputManager.instance.mouseRaycastAllUI();
 
             // Bind boxes
-            for (int i = 0; i < squadBindBoxes.Count; i++)
+            for (int i = 0; i < squadSlotBoxes.Count; i++)
             {
-                if (mouseRaycastResult.Contains(squadBindBoxes[i]))
+                if (mouseRaycastResult.Contains(squadSlotBoxes[i]))
                 {
-                    targetObject = squadBindBoxes[i];
+                    targetObject = squadSlotBoxes[i];
                     return i;
                 }
             }
@@ -121,6 +174,12 @@ namespace MiniJam159.UICore
 
             // Nothing
             return -1;
+        }
+
+        public void togglePanel(bool show)
+        {
+            targetPanelPosition = show ? showPosition : hidePosition;
+            showPanel = show;
         }
     }
 }

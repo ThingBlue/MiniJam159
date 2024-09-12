@@ -432,6 +432,7 @@ GameObject:
   - component: {fileID: 154440643}
   - component: {fileID: 154440645}
   - component: {fileID: 154440644}
+  - component: {fileID: 154440646}
   m_Layer: 5
   m_Name: SquadSlot7
   m_TagString: Untagged
@@ -497,6 +498,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 154440642}
   m_CullTransparentMesh: 1
+--- !u!225 &154440646
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 154440642}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &177129412
 GameObject:
   m_ObjectHideFlags: 0
@@ -600,7 +613,7 @@ MonoBehaviour:
   unbindBox: {fileID: 502852886}
   deleteBox: {fileID: 1129032647}
   squadDisplayBoxPrefab: {fileID: 5349138052447107023, guid: de953bc84b9a51c489846bf9f3e65b57, type: 3}
-  squadBindBoxes:
+  squadSlotBoxes:
   - {fileID: 1582354887}
   - {fileID: 517479284}
   - {fileID: 275518470}
@@ -614,6 +627,9 @@ MonoBehaviour:
   firstBoxPosition: {x: -656, y: 144}
   squadDisplayBoxRowCount: 2
   squadDisplayBoxColumnCount: 8
+  panelSmoothTime: 0.05
+  showPosition: 0
+  hidePosition: 720
   squadDisplayBoxes: []
 --- !u!1 &263267997
 GameObject:
@@ -671,6 +687,7 @@ GameObject:
   - component: {fileID: 275518471}
   - component: {fileID: 275518473}
   - component: {fileID: 275518472}
+  - component: {fileID: 275518474}
   m_Layer: 5
   m_Name: SquadSlot3
   m_TagString: Untagged
@@ -736,6 +753,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 275518470}
   m_CullTransparentMesh: 1
+--- !u!225 &275518474
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275518470}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &308521646
 GameObject:
   m_ObjectHideFlags: 0
@@ -802,6 +831,7 @@ GameObject:
   - component: {fileID: 396252266}
   - component: {fileID: 396252268}
   - component: {fileID: 396252267}
+  - component: {fileID: 396252269}
   m_Layer: 5
   m_Name: SquadSlot4
   m_TagString: Untagged
@@ -867,6 +897,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 396252265}
   m_CullTransparentMesh: 1
+--- !u!225 &396252269
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 396252265}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &401467586
 GameObject:
   m_ObjectHideFlags: 0
@@ -1192,6 +1234,7 @@ GameObject:
   - component: {fileID: 517479285}
   - component: {fileID: 517479287}
   - component: {fileID: 517479286}
+  - component: {fileID: 517479288}
   m_Layer: 5
   m_Name: SquadSlot2
   m_TagString: Untagged
@@ -1257,6 +1300,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517479284}
   m_CullTransparentMesh: 1
+--- !u!225 &517479288
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 517479284}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &659864629
 GameObject:
   m_ObjectHideFlags: 0
@@ -2117,6 +2172,7 @@ GameObject:
   - component: {fileID: 1081918108}
   - component: {fileID: 1081918110}
   - component: {fileID: 1081918109}
+  - component: {fileID: 1081918111}
   m_Layer: 5
   m_Name: SquadSlot8
   m_TagString: Untagged
@@ -2182,6 +2238,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081918107}
   m_CullTransparentMesh: 1
+--- !u!225 &1081918111
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081918107}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &1096690017
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2457,6 +2525,7 @@ GameObject:
   - component: {fileID: 1211941435}
   - component: {fileID: 1211941437}
   - component: {fileID: 1211941436}
+  - component: {fileID: 1211941438}
   m_Layer: 5
   m_Name: SquadSlot6
   m_TagString: Untagged
@@ -2522,6 +2591,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1211941434}
   m_CullTransparentMesh: 1
+--- !u!225 &1211941438
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1211941434}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1269178573
 GameObject:
   m_ObjectHideFlags: 0
@@ -2720,6 +2801,7 @@ GameObject:
   - component: {fileID: 1345606514}
   - component: {fileID: 1345606516}
   - component: {fileID: 1345606515}
+  - component: {fileID: 1345606517}
   m_Layer: 5
   m_Name: SquadSlot5
   m_TagString: Untagged
@@ -2785,6 +2867,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1345606513}
   m_CullTransparentMesh: 1
+--- !u!225 &1345606517
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1345606513}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1440866639
 GameObject:
   m_ObjectHideFlags: 0
@@ -2904,6 +2998,7 @@ GameObject:
   - component: {fileID: 1582354888}
   - component: {fileID: 1582354890}
   - component: {fileID: 1582354889}
+  - component: {fileID: 1582354891}
   m_Layer: 5
   m_Name: SquadSlot1
   m_TagString: Untagged
@@ -2969,6 +3064,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1582354887}
   m_CullTransparentMesh: 1
+--- !u!225 &1582354891
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582354887}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1606605245
 GameObject:
   m_ObjectHideFlags: 0
