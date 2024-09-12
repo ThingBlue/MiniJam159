@@ -177,11 +177,9 @@ namespace MiniJam159
 
                 return newStructureObject;
             }
-            else
-            {
-                Debug.Log("Blocked");
-                return null;
-            }
+
+            // Default to null when structure placement is blocked
+            return null;
         }
 
         public void cancelPlacement()

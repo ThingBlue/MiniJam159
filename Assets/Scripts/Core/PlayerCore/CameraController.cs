@@ -23,6 +23,8 @@ namespace MiniJam159.PlayerCore
         public bool disableZoom = false;
         public float zoomSpeed;
 
+        public Vector3 mapSize;
+
         #endregion
 
         private Vector3 targetPosition;
@@ -112,12 +114,16 @@ namespace MiniJam159.PlayerCore
             );
         }
 
-        public void setMapPositionPercent(Vector2 positionPercent)
+        public void setScaledMapPosition(Vector2 scaledPosition)
         {
+            // Calculate Z offset due to camera angle
+            float zOffset = getCameraCenterPositionInWorld().z - transform.position.z;
+
+            // Set new target position
             targetPosition = new Vector3(
-                cameraBoundaryStart.x + positionPercent.x * (cameraBoundaryEnd.x - cameraBoundaryStart.x),
+                scaledPosition.x * mapSize.x,
                 transform.position.y,
-                cameraBoundaryStart.z + positionPercent.y * (cameraBoundaryEnd.z - cameraBoundaryStart.z)
+                scaledPosition.y * mapSize.z - zOffset
             );
         }
 
@@ -132,6 +138,43 @@ namespace MiniJam159.PlayerCore
             // Return hit location
             if (plane.Raycast(ray, out float enter)) return ray.GetPoint(enter);
             return Vector3.zero; // Should never execute
+        }
+
+        public List<Vector3> getCameraViewCornerPoints()
+        {
+            // Create plane at zero
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+            // Do raycasts at the top left and bottom right corners
+            Ray bottomLeftRay = Camera.main.ScreenPointToRay(new Vector2(0, 0));
+            Ray topLeftRay = Camera.main.ScreenPointToRay(new Vector2(0, Screen.height));
+            Ray topRightRay = Camera.main.ScreenPointToRay(new Vector2(Screen.width, Screen.height));
+            Ray bottomRightRay = Camera.main.ScreenPointToRay(new Vector2(Screen.width, 0));
+
+            // Get hit locations
+            List<Vector3> cameraViewCornerPoints = new List<Vector3>();
+            if (plane.Raycast(bottomLeftRay, out float bottomLeftEnter)) cameraViewCornerPoints.Add(bottomLeftRay.GetPoint(bottomLeftEnter));
+            if (plane.Raycast(topLeftRay, out float topLeftEnter)) cameraViewCornerPoints.Add(topLeftRay.GetPoint(topLeftEnter));
+            if (plane.Raycast(topRightRay, out float topRightEnter)) cameraViewCornerPoints.Add(topRightRay.GetPoint(topRightEnter));
+            if (plane.Raycast(bottomRightRay, out float bottomRightEnter)) cameraViewCornerPoints.Add(bottomRightRay.GetPoint(bottomRightEnter));
+
+            return cameraViewCornerPoints;
+        }
+
+        public List<Vector2> getScaledCameraViewCornerPoints()
+        {
+            List<Vector3> cameraViewCornerPoints = getCameraViewCornerPoints();
+
+            // Scale all points to a value between 0 and 1
+            List<Vector2> scaledViewCornerPoints = new List<Vector2>();
+            foreach (Vector3 cornerPoint in cameraViewCornerPoints)
+            {
+                scaledViewCornerPoints.Add(new Vector2(
+                    cornerPoint.x / mapSize.x,
+                    cornerPoint.z / mapSize.z
+                ));
+            }
+            return scaledViewCornerPoints;
         }
     }
 }
