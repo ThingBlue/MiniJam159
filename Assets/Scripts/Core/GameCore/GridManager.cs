@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace MiniJam159.GameCore
 {
-    public enum CellType
+    public enum TileType
     {
         EMPTY = 0,
         BUILDING,
@@ -24,40 +26,57 @@ namespace MiniJam159.GameCore
         // Singleton
         public static GridManager instance;
 
-        public List<List<CellType>> gridMatrix;
+        public List<List<TileType>> gridMatrix;
+
+        // DEBUG
+        public List<Vector2> debugPath;
 
         private void Awake()
         {
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
+
+            // DEBUG
+            debugPath = new List<Vector2>();
         }
 
         private void Start()
         {
-            gridMatrix = new List<List<CellType>>();
+            gridMatrix = new List<List<TileType>>();
             for (int i = 0; i < mapZLength; i++)
             {
-                List<CellType> newList = new List<CellType>();
+                List<TileType> newList = new List<TileType>();
                 for (int j = 0; j < mapXLength; j++)
                 {
-                    newList.Add(CellType.EMPTY);
+                    newList.Add(TileType.EMPTY);
                 }
                 gridMatrix.Add(newList);
             }
         }
 
-        public bool isCellOccupied(int x, int z)
+        private void Update()
+        {
+            // DEBUG
+            if (InputManager.instance.getKeyDown("Mouse1"))
+            {
+                debugPath = findPath(new Vector2(0, 0), new Vector2(10, 10));
+                foreach (Vector2 tile in debugPath) Debug.Log(tile);
+            }
+
+        }
+
+        public bool isTileOccupied(int x, int z)
         {
             if (x < 0 || x >= gridMatrix[0].Count || z < 0 || z >= gridMatrix.Count)
             {
-                throw new System.Exception("Invalid cell position");
+                throw new System.Exception("Invalid tile position");
             }
 
-            return gridMatrix[z][x] != CellType.EMPTY;
+            return gridMatrix[z][x] != TileType.EMPTY;
         }
 
-        public void occupyCells(Vector2 startPosition, Vector2 size, CellType occupationType = CellType.BUILDING)
+        public void occupyTiles(Vector2 startPosition, Vector2 size, TileType occupationType = TileType.BUILDING)
         {
             for (int i = 0; i < size.x; i++)
             {
@@ -68,13 +87,120 @@ namespace MiniJam159.GameCore
             }
         }
 
-        public void occupyCells(Vector3 startPosition, Vector3 size, CellType occupationType = CellType.BUILDING)
+        public void occupyTiles(Vector3 startPosition, Vector3 size, TileType occupationType = TileType.BUILDING)
         {
             for (int i = 0; i < size.x; i++)
             {
                 for (int j = 0; j < size.z; j++)
                 {
                     gridMatrix[(int)startPosition.z + j][(int)startPosition.x + i] = occupationType;
+                }
+            }
+        }
+
+        public List<Vector2> findPath(Vector2 startTile, Vector2 targetTile)
+        {
+            // Initialize matrices to hold calculation info
+            List<List<Vector2>> predecessorMatrix = new List<List<Vector2>>();
+            List<List<float>> costMatrix = new List<List<float>>();
+            for (int y = 0; y < gridMatrix.Count; y++)
+            {
+                List<Vector2> predecessorRow = new List<Vector2>();
+                List<float> costRow = new List<float>();
+                for (int x = 0; x < gridMatrix[y].Count; x++)
+                {
+                    predecessorRow.Add(new Vector2(-1, -1));
+                    costRow.Add(-1);
+                }
+                predecessorMatrix.Add(predecessorRow);
+                costMatrix.Add(costRow);
+            }
+
+            // Initialize queue and matrices with start tile
+            PriorityQueue<Vector2> queue = new PriorityQueue<Vector2>();
+            queue.add(0, startTile);
+            costMatrix[(int)startTile.y][(int)startTile.x] = 0;
+
+            // Loop until target found or all tiles exhausted
+            while (queue.count() != 0)
+            {
+                Vector2 tile = queue.pop();
+
+                // Check if target reached
+                if (tile == targetTile) break;
+
+                // Convert from float to int
+                float cost = costMatrix[(int)tile.y][(int)tile.x];
+
+                // Add neighbours to queue (Only add if cost is less)
+                addTileToQueue(new Vector2(tile.x, tile.y + 1), queue, costMatrix, predecessorMatrix, tile, targetTile); // Above
+                addTileToQueue(new Vector2(tile.x, tile.y - 1), queue, costMatrix, predecessorMatrix, tile, targetTile); // Below
+                addTileToQueue(new Vector2(tile.x - 1, tile.y), queue, costMatrix, predecessorMatrix, tile, targetTile); // Left
+                addTileToQueue(new Vector2(tile.x + 1, tile.y), queue, costMatrix, predecessorMatrix, tile, targetTile); // Right
+            }
+
+            // Retrace path from target back to start
+            List<Vector2> path = new List<Vector2>();
+            Vector2 retraceTile = targetTile;
+            while (retraceTile != new Vector2(-1, -1))
+            {
+                path.Add(retraceTile);
+                retraceTile = predecessorMatrix[(int)retraceTile.y][(int)retraceTile.x];
+            }
+
+            return path;
+        }
+
+        private void addTileToQueue(Vector2 tile, PriorityQueue<Vector2> queue, List<List<float>> costMatrix, List<List<Vector2>> predecessorMatrix, Vector2 predecessorTile, Vector2 targetTile)
+        {
+            // Convert from float to int
+            int xPosition = (int)tile.x;
+            int zPosition = (int)tile.y;
+
+            // Check if out of bounds
+            if (xPosition < 0 || xPosition > mapXLength) return;
+            if (zPosition < 0 || zPosition > mapZLength) return;
+
+            // Check if tile is occupied
+            if (isTileOccupied((int)tile.x, (int)tile.y)) return;
+
+            float predecessorCost = costMatrix[(int)predecessorTile.y][(int)predecessorTile.x];
+
+            // Make sure we don't already have a better path to this tile
+            if (costMatrix[zPosition][xPosition] == -1 ||
+                costMatrix[zPosition][xPosition] > predecessorCost + 1)
+            {
+                // Calculate heuristic for this tile
+                float heuristic = Vector2.Distance(tile, targetTile);
+
+                // Add to matrices
+                costMatrix[zPosition][xPosition] = predecessorCost + 1;
+                predecessorMatrix[zPosition][xPosition] = predecessorTile;
+
+                // Add to queue
+                queue.add(predecessorCost + 1 + heuristic, tile);
+            }
+        }
+
+        protected virtual void OnDrawGizmos()
+        {
+            // DEBUG
+            if (debugPath.Count > 0)
+            {
+                Gizmos.color = Color.red;
+                for (int i = 0; i < debugPath.Count - 1; i++)
+                {
+                    Vector3 position1 = new Vector3(
+                        debugPath[i].x + 0.5f,
+                        0.1f,
+                        debugPath[i].y + 0.5f
+                    );
+                    Vector3 position2 = new Vector3(
+                        debugPath[i + 1].x + 0.5f,
+                        0.1f,
+                        debugPath[i + 1].y + 0.5f
+                    );
+                    Gizmos.DrawLine(position1, position2);
                 }
             }
         }

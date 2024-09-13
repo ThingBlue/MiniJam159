@@ -51,6 +51,7 @@ namespace MiniJam159.PlayerCore
         {
             // DEBUG
             if (InputManager.instance.getKeyDown("CreateSquad")) createSquadFromCurrentSelection();
+
         }
 
         public virtual void updateMouseHover()
@@ -199,44 +200,5 @@ namespace MiniJam159.PlayerCore
             populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
-        protected virtual void OnDrawGizmos()
-        {
-            if (drawMassSelectBoxCastGizmo)
-            {
-                // Transform position into world space
-                // Find boundaries of selection box in screen space
-                //Vector3 center = massSelectBoxTransform.position + ((massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta) - massSelectBoxTransform.position) / 2f;
-                Vector3 bottomLeft = massSelectBoxTransform.position;
-                Vector3 bottomRight = massSelectBoxTransform.position + new Vector3(massSelectBoxTransform.sizeDelta.x, 0, 0);
-                Vector3 topRight = massSelectBoxTransform.position + (Vector3)massSelectBoxTransform.sizeDelta;
-                Vector3 topLeft = massSelectBoxTransform.position + new Vector3(0, massSelectBoxTransform.sizeDelta.y, 0);
-
-                Plane worldPlane = new Plane(Vector3.up, Vector3.zero);
-
-                // Transform position into world space
-                //Ray centerRay = Camera.main.ScreenPointToRay(center);
-                Ray bottomLeftRay = Camera.main.ScreenPointToRay(bottomLeft);
-                Ray bottomRightRay = Camera.main.ScreenPointToRay(bottomRight);
-                Ray topRightRay = Camera.main.ScreenPointToRay(topRight);
-                Ray topLeftRay = Camera.main.ScreenPointToRay(topLeft);
-                //Vector3 centerWorldSpace = Vector3.zero;
-                Vector3 bottomLeftWorldSpace = Vector3.zero;
-                Vector3 bottomRightWorldSpace = Vector3.zero;
-                Vector3 topRightWorldSpace = Vector3.zero;
-                Vector3 topLeftWorldSpace = Vector3.zero;
-                //if (worldPlane.Raycast(centerRay, out float centerEnter)) centerWorldSpace = centerRay.GetPoint(centerEnter);
-                if (worldPlane.Raycast(bottomLeftRay, out float bottomLeftEnter)) bottomLeftWorldSpace = bottomLeftRay.GetPoint(bottomLeftEnter);
-                if (worldPlane.Raycast(bottomRightRay, out float bottomRightEnter)) bottomRightWorldSpace = bottomRightRay.GetPoint(bottomRightEnter);
-                if (worldPlane.Raycast(topRightRay, out float topRightEnter)) topRightWorldSpace = topRightRay.GetPoint(topRightEnter);
-                if (worldPlane.Raycast(topLeftRay, out float topLeftEnter)) topLeftWorldSpace = topLeftRay.GetPoint(topLeftEnter);
-
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(bottomLeftWorldSpace, 1.0f);
-                Gizmos.DrawWireSphere(bottomRightWorldSpace, 1.0f);
-                Gizmos.DrawWireSphere(topLeftWorldSpace, 1.0f);
-                Gizmos.DrawWireSphere(topRightWorldSpace, 1.0f);
-            }
-
-        }
     }
 }

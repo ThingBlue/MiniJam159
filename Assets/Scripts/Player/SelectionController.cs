@@ -533,7 +533,7 @@ namespace MiniJam159.Player
             populateCommands(SelectionManager.instance.getFocusIndex());
         }
 
-        protected override void OnDrawGizmos()
+        protected void OnDrawGizmos()
         {
             if (drawMassSelectBoxCastGizmo)
             {
@@ -570,7 +570,6 @@ namespace MiniJam159.Player
                 Gizmos.DrawWireSphere(topLeftWorldSpace, 1.0f);
                 Gizmos.DrawWireSphere(topRightWorldSpace, 1.0f);
             }
-
         }
 
     }

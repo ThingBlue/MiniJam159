@@ -142,7 +142,7 @@ namespace MiniJam159
             {
                 // Complete placement
                 PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-                GridManager.instance.occupyCells(startPosition, placementStructureSize, CellType.BUILDING);
+                GridManager.instance.occupyTiles(startPosition, placementStructureSize, TileType.BUILDING);
 
                 // Instantiate strucutre
                 GameObject newStructureObject = null;
@@ -195,7 +195,7 @@ namespace MiniJam159
                 {
                     if ((int)startPosition.x + i < 0 || (int)startPosition.z + j < 0 ||
                         (int)startPosition.x + i >= GridManager.instance.mapXLength || (int)startPosition.z + j >= GridManager.instance.mapZLength ||
-                        GridManager.instance.isCellOccupied((int)startPosition.x + i, (int)startPosition.z + j))
+                        GridManager.instance.isTileOccupied((int)startPosition.x + i, (int)startPosition.z + j))
                     {
                         return true;
                     }
