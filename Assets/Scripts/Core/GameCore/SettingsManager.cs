@@ -18,6 +18,9 @@ namespace MiniJam159.GameCore
         #region Inspector members
 
         public SettingsData settingsData;
+        public SettingsData debugSettingsData;
+
+        public bool enableDebugging;
 
         #endregion
 
@@ -68,6 +71,15 @@ namespace MiniJam159.GameCore
             foreach (KeyBind keyBind in settingsData.keyBinds)
             {
                 InputManager.instance.setKeyListInMap(keyBind.name, keyBind.keys);
+            }
+
+            if (enableDebugging)
+            {
+                // Add debug keybinds
+                foreach (KeyBind keyBind in debugSettingsData.keyBinds)
+                {
+                    InputManager.instance.setKeyListInMap(keyBind.name, keyBind.keys);
+                }
             }
         }
 

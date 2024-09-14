@@ -24,25 +24,16 @@ namespace MiniJam159.GameCore
 
         #endregion
 
-        // Singleton
-        public static GridManager instance;
-
         public List<List<TileType>> gridMatrix;
 
-        // DEBUG
-        public List<Vector2> debugPath;
-        public Vector2 debugLineStart = new Vector2(10, 10);
-        public Vector2 debugLineEnd = new Vector2(20, 15);
-        public List<Vector2> debugTiles;
+        // Singleton
+        public static GridManager instance;
 
         private void Awake()
         {
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
-
-            // DEBUG
-            debugPath = new List<Vector2>();
         }
 
         private void Start()
@@ -57,24 +48,6 @@ namespace MiniJam159.GameCore
                 }
                 gridMatrix.Add(newList);
             }
-        }
-
-        private void Update()
-        {
-            // DEBUG
-            if (InputManager.instance.getKeyDown("Mouse1"))
-            {
-                debugPath = findPath(new Vector2(0, 0), new Vector2(10, 10));
-                debugPath = simplifyPath(debugPath);
-                Debug.Log("Path count: " + debugPath.Count);
-                //foreach (Vector2 tile in debugPath) Debug.Log(tile);
-            }
-            if (InputManager.instance.getKeyDown("Deselect"))
-            {
-                debugTiles = getTilesOnLine(debugLineStart, debugLineEnd);
-                // foreach (Vector2 tile in debugTiles) Debug.Log(tile);
-            }
-
         }
 
         public bool isTileOccupied(int x, int z)
@@ -296,53 +269,5 @@ namespace MiniJam159.GameCore
             return tilesOnLine;
         }
 
-        protected virtual void OnDrawGizmos()
-        {
-            // DEBUG
-            if (debugPath.Count > 0)
-            {
-                Gizmos.color = Color.red;
-                for (int i = 0; i < debugPath.Count - 1; i++)
-                {
-                    Vector3 position1 = new Vector3(
-                        debugPath[i].x + 0.5f,
-                        0.1f,
-                        debugPath[i].y + 0.5f
-                    );
-                    Vector3 position2 = new Vector3(
-                        debugPath[i + 1].x + 0.5f,
-                        0.1f,
-                        debugPath[i + 1].y + 0.5f
-                    );
-                    Gizmos.DrawLine(position1, position2);
-                }
-            }
-            if (debugTiles.Count > 0)
-            {
-                Gizmos.color = Color.blue;
-                for (int i = 0; i < debugTiles.Count; i++)
-                {
-                    Vector3 position = new Vector3(
-                        debugTiles[i].x + 0.5f,
-                        0.1f,
-                        debugTiles[i].y + 0.5f
-                    );
-
-                    Gizmos.DrawWireCube(position, new Vector3(1, 1, 1));
-                }
-                Gizmos.color = Color.yellow;
-                Vector3 debugLineStartPosition = new Vector3(
-                    debugLineStart.x + 0.5f,
-                    0.1f,
-                    debugLineStart.y + 0.5f
-                );
-                Vector3 debugLineEndPosition = new Vector3(
-                    debugLineEnd.x + 0.5f,
-                    0.1f,
-                    debugLineEnd.y + 0.5f
-                );
-                Gizmos.DrawLine(debugLineStartPosition, debugLineEndPosition);
-            }
-        }
     }
 }
