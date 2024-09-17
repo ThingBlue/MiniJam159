@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
-using MiniJam159.CommandCore;
 using System.Runtime.InteropServices.WindowsRuntime;
+
+using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
 
-namespace MiniJam159.AICore
+namespace MiniJam159.UnitCore
 {
-    public enum AIJob
+    public enum UnitJobType
     {
         // Common jobs
         IDLE = 0,
@@ -18,7 +19,7 @@ namespace MiniJam159.AICore
         BUILD
     }
 
-    public abstract class GameAI : Entity
+    public abstract class Unit : Entity
     {
         #region Inspector members
 
@@ -26,9 +27,9 @@ namespace MiniJam159.AICore
 
         #endregion
 
-        public static List<GameAI> allAIs = new List<GameAI>(); // List of all AI instances
+        public static List<Unit> allAIs = new List<Unit>(); // List of all AI instances
 
-        public AIJob currentAIJob = AIJob.IDLE;
+        public UnitJobType currentAIJob = UnitJobType.IDLE;
         public List<CommandType> commands = new List<CommandType>();
 
         public float health;
@@ -52,7 +53,7 @@ namespace MiniJam159.AICore
             EntityManager.instance.playerUnitObjects.Add(gameObject);
             EntityManager.instance.playerEntityObjects.Add(gameObject);
 
-            currentAIJob = AIJob.IDLE;
+            currentAIJob = UnitJobType.IDLE;
             moveIgnoreEnemies = false;
 
             // Start at max health
@@ -87,7 +88,7 @@ namespace MiniJam159.AICore
 
                 if (target != null)
                 {
-                    currentAIJob = AIJob.IDLE;
+                    currentAIJob = UnitJobType.IDLE;
                     moveIgnoreEnemies = false;
                     return; // Stop moving to position if a target is found
                 }
@@ -96,7 +97,7 @@ namespace MiniJam159.AICore
             // Stop moving to position if reached
             if (Vector3.Distance(transform.position, moveToPosition) <= 0.5f)
             {
-                currentAIJob = AIJob.IDLE;
+                currentAIJob = UnitJobType.IDLE;
                 moveIgnoreEnemies = false;
             }
 
@@ -107,7 +108,7 @@ namespace MiniJam159.AICore
         public void MoveTo(Vector3 position, bool ignoreEnemies)
         {
             moveToPosition = position;
-            currentAIJob = AIJob.MOVE_TO_POSITION;
+            currentAIJob = UnitJobType.MOVE_TO_POSITION;
             target = null; // Reset target
             moveIgnoreEnemies = ignoreEnemies;
         }
@@ -127,7 +128,7 @@ namespace MiniJam159.AICore
             target = null; // Reset target
             
             // Stop moving to position if hold command is issued
-            currentAIJob = AIJob.IDLE;
+            currentAIJob = UnitJobType.IDLE;
             moveToPosition = transform.position;
         }
 

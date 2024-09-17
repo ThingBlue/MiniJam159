@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -140,6 +141,7 @@ namespace MiniJam159.GameCore
                 path.Add(retraceTile);
                 retraceTile = predecessorMatrix[(int)retraceTile.y][(int)retraceTile.x];
             }
+            path.Reverse();
 
             return path;
         }
@@ -151,11 +153,11 @@ namespace MiniJam159.GameCore
             int zPosition = (int)tile.y;
 
             // Check if out of bounds
-            if (xPosition < 0 || xPosition > mapXLength) return;
-            if (zPosition < 0 || zPosition > mapZLength) return;
+            if (xPosition < 0 || xPosition >= mapXLength) return;
+            if (zPosition < 0 || zPosition >= mapZLength) return;
 
             // Check if tile is occupied
-            if (isTileOccupied((int)tile.x, (int)tile.y)) return;
+            if (isTileOccupied(xPosition, zPosition)) return;
 
             float predecessorCost = costMatrix[(int)predecessorTile.y][(int)predecessorTile.x];
 
@@ -194,6 +196,9 @@ namespace MiniJam159.GameCore
                     break;
                 }
             }
+
+            // Remove first point from path since it's the starting tile
+            if (path.Count > 0) path.RemoveAt(0);
 
             return path;
         }

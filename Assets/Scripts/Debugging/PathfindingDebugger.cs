@@ -32,8 +32,9 @@ namespace MiniJam159.Debugging
             {
                 debugPath = GridManager.instance.findPath(new Vector2(0, 0), new Vector2(10, 10));
                 debugPath = GridManager.instance.simplifyPath(debugPath);
+                debugPath.Insert(0, pathfindingStartPosition);
                 Debug.Log("Path count: " + debugPath.Count);
-                //foreach (Vector2 tile in debugPath) Debug.Log(tile);
+                foreach (Vector2 tile in debugPath) Debug.Log(tile);
             }
 
         }

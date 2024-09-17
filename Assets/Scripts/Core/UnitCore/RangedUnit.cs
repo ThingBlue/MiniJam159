@@ -1,9 +1,10 @@
 using UnityEngine;
+
 using MiniJam159.GameCore;
 
-namespace MiniJam159.AICore
+namespace MiniJam159.UnitCore
 {
-    public class RangedAI : GameAI
+    public class RangedUnit : Unit
     {
         public string targetTag = "Enemy"; // Tag to identify targets
         public float detectionRadius = 20.0f; // Radius to detect the nearest target
@@ -38,7 +39,7 @@ namespace MiniJam159.AICore
         {
             switch (currentAIJob)
             {
-                case AIJob.MOVE_TO_POSITION:
+                case UnitJobType.MOVE_TO_POSITION:
                     handleMoveJob(moveSpeed);
                     break;
                 default:
@@ -117,7 +118,7 @@ namespace MiniJam159.AICore
         public virtual void attackAICommand(Transform newTarget)
         {
             target = newTarget;
-            currentAIJob = AIJob.ATTACK;
+            currentAIJob = UnitJobType.ATTACK;
         }
 
         void OnDrawGizmosSelected()

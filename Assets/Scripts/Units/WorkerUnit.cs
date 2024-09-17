@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-using MiniJam159.AICore;
+using MiniJam159.UnitCore;
 using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
 using MiniJam159.Resources;
@@ -10,9 +10,9 @@ using MiniJam159.Structures;
 
 using TMPro;
 
-namespace MiniJam159.AI
+namespace MiniJam159.Units
 {
-    public class WorkerAI : GroundMeleeAI
+    public class WorkerUnit : MeleeUnit
     {
         #region Inspector members
 
@@ -67,10 +67,10 @@ namespace MiniJam159.AI
         {
             switch (currentAIJob)
             {
-                case AIJob.HARVEST_RESOURCE:
+                case UnitJobType.HARVEST_RESOURCE:
                     handleHarvestResourceJob();
                     break;
-                case AIJob.BUILD:
+                case UnitJobType.BUILD:
                     handleBuildJob();
                     break;
                 default:
@@ -84,12 +84,12 @@ namespace MiniJam159.AI
         {
             // HELP WHAT DO WE DO HERE 
             // AFK AS TEMP SOLUTION
-            if (targetResourceObject == null) currentAIJob = AIJob.IDLE;
+            if (targetResourceObject == null) currentAIJob = UnitJobType.IDLE;
             //if (targetResourceObject == null) ReturnToBase(basePosition);
 
             Resource targetResource = targetResourceObject.GetComponent<Resource>();
             // AFK AS TEMP SOLUTION
-            if (targetResource == null || targetResource.resourceAmount <= 0) currentAIJob = AIJob.IDLE;
+            if (targetResource == null || targetResource.resourceAmount <= 0) currentAIJob = UnitJobType.IDLE;
             //if (targetResource == null || targetResource.resourceAmount <= 0) ReturnToBase(basePosition);
 
             // Pouch not full, harvest resource
@@ -149,7 +149,7 @@ namespace MiniJam159.AI
                 if (depositPointObject == null)
                 {
                     // Return to IDLE
-                    currentAIJob = AIJob.IDLE;
+                    currentAIJob = UnitJobType.IDLE;
                     return;
                 }
 
@@ -195,7 +195,7 @@ namespace MiniJam159.AI
                 if (targetStructure.buildProgress >= targetStructure.maxBuildProgress)
                 {
                     // Reset and return to idle
-                    currentAIJob = AIJob.IDLE;
+                    currentAIJob = UnitJobType.IDLE;
                     buildTimer = 0;
                 }
 
@@ -250,7 +250,7 @@ namespace MiniJam159.AI
 
         public void harvestAICommand(GameObject resourceObject)
         {
-            currentAIJob = AIJob.HARVEST_RESOURCE;
+            currentAIJob = UnitJobType.HARVEST_RESOURCE;
             targetResourceObject = resourceObject;
         }
 
@@ -260,7 +260,7 @@ namespace MiniJam159.AI
             onCommandReceived();
 
             // Begin build job
-            currentAIJob = AIJob.BUILD;
+            currentAIJob = UnitJobType.BUILD;
             targetStructureObject = structureObject;
         }
 

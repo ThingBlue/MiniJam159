@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Reflection;
 
-using MiniJam159.AICore;
+using MiniJam159.UnitCore;
 using MiniJam159.GameCore;
 using UnityEngine.UI;
-using System.Reflection;
 
 namespace MiniJam159.PlayerCore
 {
@@ -183,7 +183,7 @@ namespace MiniJam159.PlayerCore
             GameObject selectedObject = SelectionManager.instance.selectedObjects[SelectionManager.instance.getFocusIndex()];
             if (selectedObject == null) return;
 
-            GameAI selectedUnit = selectedObject.GetComponent<GameAI>();
+            Unit selectedUnit = selectedObject.GetComponent<Unit>();
             if (selectedUnit == null) return;
 
             // Populate commands using worker's structure data list

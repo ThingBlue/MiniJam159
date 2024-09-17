@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+
 using MiniJam159.GameCore;
 
-namespace MiniJam159.AICore
+namespace MiniJam159.UnitCore
 {
-    public class GroundMeleeAI : GameAI
+    public class MeleeUnit : Unit
     {
         public string targetTag = "Enemy"; // Tag to identify targets
         public float detectionRadius = 15.0f; // Radius to detect the nearest target
@@ -45,7 +46,7 @@ namespace MiniJam159.AICore
         {
             switch (currentAIJob)
             {
-                case AIJob.MOVE_TO_POSITION:
+                case UnitJobType.MOVE_TO_POSITION:
                     handleMoveJob(moveSpeed);
                     break;
                 default:
@@ -122,7 +123,7 @@ namespace MiniJam159.AICore
             if (target == null) return transform.position;
 
             // Filter the list of activeAIs to include only those targeting the same target
-            List<GroundMeleeAI> sameTargetAIs = GameAI.allAIs.OfType<GroundMeleeAI>().Where(ai => ai.target == this.target).ToList();
+            List<MeleeUnit> sameTargetAIs = Unit.allAIs.OfType<MeleeUnit>().Where(ai => ai.target == this.target).ToList();
 
             // Default offset for single attacker
             Vector3 offset = new Vector3(Mathf.Cos(0), 0, Mathf.Sin(0)) * surroundDistance;
@@ -152,7 +153,7 @@ namespace MiniJam159.AICore
 
         void CoordinatedAttack()
         {
-            foreach (var ai in GameAI.allAIs.OfType<GroundMeleeAI>())
+            foreach (var ai in Unit.allAIs.OfType<MeleeUnit>())
             {
                 if (ai.target == this.target && Vector3.Distance(transform.position, ai.transform.position) <= coordinationRadius)
                 {
@@ -164,9 +165,9 @@ namespace MiniJam159.AICore
         void AssignLeader()
         {
             float minDistance = Mathf.Infinity;
-            GroundMeleeAI leader = null;
+            MeleeUnit leader = null;
 
-            foreach (var ai in GameAI.allAIs.OfType<GroundMeleeAI>())
+            foreach (var ai in Unit.allAIs.OfType<MeleeUnit>())
             {
                 if (ai.target == this.target)
                 {
@@ -182,7 +183,7 @@ namespace MiniJam159.AICore
             if (leader != null)
             {
                 leader.isLeader = true;
-                foreach (var ai in GameAI.allAIs.OfType<GroundMeleeAI>())
+                foreach (var ai in Unit.allAIs.OfType<MeleeUnit>())
                 {
                     if (ai != leader)
                     {
@@ -195,7 +196,7 @@ namespace MiniJam159.AICore
         public virtual void attackAICommand(Transform newTarget)
         {
             target = newTarget;
-            currentAIJob = AIJob.ATTACK;
+            currentAIJob = UnitJobType.ATTACK;
         }
 
         protected virtual void onHoldCommandCallback()

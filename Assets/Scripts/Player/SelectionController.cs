@@ -4,7 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
-using MiniJam159.AICore;
+using MiniJam159.UnitCore;
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
@@ -47,7 +47,7 @@ namespace MiniJam159.Player
                 if (entity.insideCast(castPoints, castNormals))
                 {
                     entitiesInsideBox.Add(entityObject);
-                    if (entityObject.GetComponent<GameAI>() != null) unitInBox = true;
+                    if (entityObject.GetComponent<Unit>() != null) unitInBox = true;
                 }
                 else
                 {
@@ -61,7 +61,7 @@ namespace MiniJam159.Player
             {
                 foreach (GameObject entityObject in entitiesInsideBox)
                 {
-                    GameAI unit = entityObject.GetComponent<GameAI>();
+                    Unit unit = entityObject.GetComponent<Unit>();
                     if (unit != null && !SelectionManager.instance.selectedObjects.Contains(entityObject))
                     {
                         // There is a unit in the box that is not in our current selection
@@ -147,7 +147,7 @@ namespace MiniJam159.Player
             foreach (GameObject hitObject in hitObjects)
             {
                 if (hitObject.GetComponent<Structure>() != null && firstHitStructure == null) firstHitStructure = hitObject;
-                if (hitObject.GetComponent<GameAI>() != null && firstHitUnit == null) firstHitUnit = hitObject;
+                if (hitObject.GetComponent<Unit>() != null && firstHitUnit == null) firstHitUnit = hitObject;
             }
 
             // Get key states
@@ -198,7 +198,7 @@ namespace MiniJam159.Player
                 if (entity.insideCast(castPoints, castNormals))
                 {
                     newSelection.Add(entityObject);
-                    if (entityObject.GetComponent<GameAI>() != null) unitInBox = true;
+                    if (entityObject.GetComponent<Unit>() != null) unitInBox = true;
                 }
             }
 
@@ -212,7 +212,7 @@ namespace MiniJam159.Player
             {
                 foreach (GameObject entityObject in newSelection)
                 {
-                    GameAI unit = entityObject.GetComponent<GameAI>();
+                    Unit unit = entityObject.GetComponent<Unit>();
                     if (unit != null && !SelectionManager.instance.selectedObjects.Contains(entityObject))
                     {
                         // There is a unit in the box that is not in our current selection
@@ -464,7 +464,7 @@ namespace MiniJam159.Player
 
             if (selectedObject.layer == LayerMask.NameToLayer("Unit"))
             {
-                GameAI newUnit = selectedObject.GetComponent<GameAI>();
+                Unit newUnit = selectedObject.GetComponent<Unit>();
                 newUnit.populateCommands();
             }
             else if (selectedObject.layer == LayerMask.NameToLayer("Structure"))
@@ -516,7 +516,7 @@ namespace MiniJam159.Player
             GameObject selectedObject = SelectionManager.instance.selectedObjects[SelectionManager.instance.getFocusIndex()];
             if (selectedObject == null) return;
 
-            GameAI selectedUnit = selectedObject.GetComponent<GameAI>();
+            Unit selectedUnit = selectedObject.GetComponent<Unit>();
             if (selectedUnit == null) return;
 
             // Populate commands using worker's structure data list

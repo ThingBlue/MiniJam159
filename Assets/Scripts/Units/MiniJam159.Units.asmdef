@@ -1,9 +1,13 @@
 {
-    "name": "MiniJam159.AICore",
+    "name": "MiniJam159.Units",
     "rootNamespace": "",
     "references": [
         "GUID:0f3c0a8212f3aa04ab219718b9a57984",
-        "GUID:bbef0f67528fa3d449a56cbaab41cf97"
+        "GUID:4d11028396cb5ee4b95cd3a6952d535b",
+        "GUID:69e7709a215e3994fbfc46cf45d28bc4",
+        "GUID:93e74733a7c5d3c4a9c9444e69ede51c",
+        "GUID:bbef0f67528fa3d449a56cbaab41cf97",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

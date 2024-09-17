@@ -1,7 +1,7 @@
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
-using MiniJam159.AICore;
+using MiniJam159.UnitCore;
 using MiniJam159.CommandCore;
 using MiniJam159.Resources;
 using System.Collections;
@@ -251,11 +251,11 @@ namespace MiniJam159.Player
                         // Raycast at mouse position to check what the player is hovering over
                         GameObject target = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer | resourceLayer);
                         Entity targetEntity = null;
-                        GameAI targetUnit = null;
+                        Unit targetUnit = null;
                         Structure targetStructure = null;
                         Resource targetResource = null;
                         if (target) targetEntity = target.GetComponent<Entity>();
-                        if (target) targetUnit = target.GetComponent<GameAI>();
+                        if (target) targetUnit = target.GetComponent<Unit>();
                         if (target) targetStructure = target.GetComponent<Structure>();
                         if (target) targetResource = target.GetComponent<Resource>();
 
@@ -335,7 +335,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
+                Unit ai = selectedObject.GetComponent<Unit>();
                 if (ai == null) continue;
 
                 MethodInfo method = ai.GetType().GetMethod("moveAICommand");
@@ -357,7 +357,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
+                Unit ai = selectedObject.GetComponent<Unit>();
                 if (ai == null) continue;
 
                 MethodInfo method = ai.GetType().GetMethod("attackMoveAICommand");
@@ -381,7 +381,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
+                Unit ai = selectedObject.GetComponent<Unit>();
                 if (ai == null) continue;
 
                 MethodInfo method = ai.GetType().GetMethod("attackAICommand");
@@ -404,7 +404,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
+                Unit ai = selectedObject.GetComponent<Unit>();
                 if (ai == null) continue;
 
                 MethodInfo method = ai.GetType().GetMethod("harvestAICommand");
@@ -427,7 +427,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
+                Unit ai = selectedObject.GetComponent<Unit>();
                 if (ai == null) continue;
 
                 MethodInfo method = ai.GetType().GetMethod("buildStructureCommand");
