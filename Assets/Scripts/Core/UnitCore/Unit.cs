@@ -75,8 +75,6 @@ namespace MiniJam159.UnitCore
 
         protected virtual void handleActions()
         {
-            // We remove actions from the queue after completing them
-
             if (actionQueue.Count == 0) return;
 
             // Handle current action
@@ -89,6 +87,8 @@ namespace MiniJam159.UnitCore
                 case ActionType.IDLE:
                     break;
             }
+
+            // We remove actions from the queue after completing them
         }
 
         protected virtual void endAction()
@@ -121,7 +121,7 @@ namespace MiniJam159.UnitCore
             }
             else
             {
-                Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.deltaTime);
+                Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.fixedDeltaTime);
                 transform.position = moveTowardsDestination;
             }
         }

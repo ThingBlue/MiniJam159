@@ -376,7 +376,7 @@ MonoBehaviour:
   maxHealth: 100
   healthBar: {fileID: 6922051565218666619}
   commands: 010000000200000000000000030000000000000000000000000000000000000004000000000000000000000005000000
-  moveSpeed: 3
+  moveSpeed: 5
   pathUpdateInterval: 0
   pathfindingRadius: 0.4
   health: 0

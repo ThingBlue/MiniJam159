@@ -44,8 +44,6 @@ namespace MiniJam159.UnitCore
 
         protected override void handleActions()
         {
-            // We remove actions from the queue after completing them
-
             if (actionQueue.Count == 0) return;
 
             // Handle current action
@@ -58,34 +56,12 @@ namespace MiniJam159.UnitCore
                 case ActionType.ATTACK_MOVE:
                     handleAttackMoveAction(currentAction as AttackMoveAction);
                     break;
-                case ActionType.IDLE:
-                    /*
-                    // Check if any enemy targets are nearby
-                    if (target == null) FindNearestTarget();
-                    if (target == null) return; // No target found, do nothing
-
-                    // Target found
-                    float distanceToTarget = Vector3.Distance(transform.position, target.position);
-                    if (distanceToTarget <= attackRange)
-                    {
-                        if (isLeader)
-                        {
-                            CoordinatedAttack();
-                        }
-                        else
-                        {
-                            Attack();
-                        }
-                    }
-                    else
-                    {
-                        MoveTowardsSurroundPosition();
-                    }
-                    */
+                default:
+                    base.handleActions();
                     break;
             }
 
-            base.handleActions();
+            // We remove actions from the queue after completing them
         }
 
         protected virtual void handleAttackAction(AttackAction action)

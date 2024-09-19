@@ -72,7 +72,7 @@ namespace MiniJam159.GameCore
 
         public bool isTileOccupied(int x, int z)
         {
-            if (x < 0 || x >= gridMatrix[0].Count || z < 0 || z >= gridMatrix.Count)
+            if (x < 0 || x >= mapXLength || z < 0 || z >= mapZLength)
             {
                 throw new System.Exception("Invalid tile position");
             }
@@ -213,11 +213,14 @@ namespace MiniJam159.GameCore
             {
                 for (int j = path.Count - 1; j > i; j--)
                 {
+                    /*
                     // Do linecast from i to j and check for occupied tiles
                     List<Vector2> tilesOnLine = getTilesOnLine(path[i], path[j], radius);
 
                     // At least one occupied tile, we cannot shorten path with current tiles
                     if (isAnyTileOccupied(tilesOnLine)) continue;
+                    */
+                    if (isLineBlocked(path[i] + new Vector2(0.5f, 0.5f), path[j] + new Vector2(0.5f, 0.5f), radius)) continue;
 
                     // No occupied tiles, we can shorten path
                     for (int k = i + 1; k < j; k++) path.RemoveAt(i + 1);
@@ -229,6 +232,103 @@ namespace MiniJam159.GameCore
             if (path.Count > 0) path.RemoveAt(0);
 
             return path;
+        }
+
+        private bool isLineBlocked(Vector2 startPosition, Vector2 endPosition, float radius)
+        {
+            // Only cast 1 line if radius is 0
+            if (radius == 0) return isLineBlocked(startPosition, endPosition);
+
+            // Calculate direction
+            Vector2 direction = (endPosition - startPosition).normalized;
+
+            // Create one line on either side
+            Vector2 normal = new Vector2(-direction.y, direction.x);
+            Vector2 startPosition1 = startPosition + (normal * radius);
+            Vector2 startPosition2 = startPosition - (normal * radius);
+            Vector2 endPosition1 = endPosition + (normal * radius);
+            Vector2 endPosition2 = endPosition - (normal * radius);
+
+            // Check that adding radius doesn't put us outside the map
+            if (endPosition1.x < 0 || endPosition1.x >= mapXLength || endPosition1.y < 0 || endPosition1.y >= mapZLength) return true;
+            if (endPosition2.x < 0 || endPosition2.x >= mapXLength || endPosition2.y < 0 || endPosition2.y >= mapZLength) return true;
+
+            // Get tiles on line for both lines
+            if (isLineBlocked(startPosition1, endPosition1)) return true;
+            return isLineBlocked(startPosition2, endPosition2);
+        }
+
+        private bool isLineBlocked(Vector2 startPosition, Vector2 endPosition)
+        {
+            // Calculate distance and direction
+            float distance = Vector2.Distance(startPosition, endPosition);
+            Vector2 direction = (endPosition - startPosition).normalized;
+
+            // Initialize current tile and line start
+            Vector2 linePosition = startPosition;
+            Vector2 tile = getTileFromPosition(startPosition);
+
+            List<Vector2> tilesOnLine = new List<Vector2>();
+
+            // Loop until we reach the end tile
+            float currentDistance = 0f;
+            while (currentDistance < distance)
+            {
+                if (isTileOccupied((int)tile.x, (int)tile.y)) return true;
+
+                // Calculate the next axes along the line
+                float nextX = tile.x;
+                float nextY = tile.y;
+                if (direction.x > 0) nextX = tile.x + 1;
+                if (direction.y > 0) nextY = tile.y + 1;
+
+                // Calculate distance to next axes
+                float distanceToNextX = Mathf.Infinity;
+                float distanceToNextY = Mathf.Infinity;
+
+                if (direction.x != 0) distanceToNextX = Mathf.Abs(nextX - linePosition.x);
+                if (direction.y != 0) distanceToNextY = Mathf.Abs(nextY - linePosition.y);
+
+                // Calculate when the line crosses the next X and Y axes
+                float timeToNextX = Mathf.Infinity;
+                float timeToNextY = Mathf.Infinity;
+
+                if (distanceToNextX != Mathf.Infinity) timeToNextX = Mathf.Abs(distanceToNextX / direction.x);
+                if (distanceToNextY != Mathf.Infinity) timeToNextY = Mathf.Abs(distanceToNextY / direction.y);
+
+                // Move horizontally
+                if (timeToNextX < timeToNextY)
+                {
+                    if (currentDistance + timeToNextX > distance) break;
+
+                    linePosition += direction * timeToNextX;
+                    tile.x += Mathf.Sign(direction.x);
+                    currentDistance += timeToNextX;
+                }
+                // Move vertically
+                else if (timeToNextX > timeToNextY)
+                {
+                    if (currentDistance + timeToNextY > distance) break;
+
+                    linePosition += direction * timeToNextY;
+                    tile.y += Mathf.Sign(direction.y);
+                    currentDistance += timeToNextY;
+                }
+                // Exact diagonal
+                else
+                {
+                    if (currentDistance + timeToNextX > distance) break;
+
+                    // Move along both axes
+                    linePosition += direction * timeToNextX;
+                    tile.x += Mathf.Sign(direction.x);
+                    tile.y += Mathf.Sign(direction.y);
+                    currentDistance += timeToNextX;
+                }
+            }
+
+            // No tiles on line occupied
+            return false;
         }
 
         private List<Vector2> getTilesOnLine(Vector2 startPosition, Vector2 endPosition, float radius)

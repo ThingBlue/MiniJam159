@@ -65,8 +65,6 @@ namespace MiniJam159.Units
 
         protected override void handleActions()
         {
-            // We remove actions from the queue after completing them
-
             if (actionQueue.Count == 0) return;
 
             // Handle current action
@@ -79,9 +77,12 @@ namespace MiniJam159.Units
                 case ActionType.BUILD:
                     handleBuildAction(currentAction as BuildAction);
                     break;
+                default:
+                    base.handleActions();
+                    break;
             }
 
-            base.handleActions();
+            // We remove actions from the queue after completing them
         }
 
         protected virtual void handleHarvestAction(HarvestAction action)
