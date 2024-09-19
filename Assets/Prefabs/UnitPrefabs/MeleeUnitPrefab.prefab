@@ -192,8 +192,9 @@ GameObject:
   m_Component:
   - component: {fileID: 9018097853522243624}
   - component: {fileID: 9018097853522243625}
-  - component: {fileID: 2750277581510662005}
+  - component: {fileID: 5600978479329750819}
   - component: {fileID: 8850321739734179687}
+  - component: {fileID: 2750277581510662005}
   m_Layer: 10
   m_Name: MeleeUnitPrefab
   m_TagString: PlayerControlled
@@ -235,17 +236,45 @@ MonoBehaviour:
   displayIcon: {fileID: 21300000, guid: cd9f05cf0dc137243a07d149c8e22bd9, type: 3}
   maxHealth: 200
   healthBar: {fileID: 6224580914414646629}
-  currentAIJob: 0
   commands: 
+  moveSpeed: 3
+  pathUpdateInterval: 0
+  pathfindingRadius: 0.5
   health: 0
   targetTag: Enemy
+  attackDamage: 10
+  attackCooldown: 1
   detectionRadius: 15
   attackRange: 2
-  attackCooldown: 1
-  attackDamage: 10
-  moveSpeed: 3
   surroundDistance: 1.5
   coordinationRadius: 5
+--- !u!136 &5600978479329750819
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018097853522243631}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.4
+  m_Height: 0.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.4, z: 0}
+--- !u!65 &8850321739734179687
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9018097853522243631}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.8, y: 0.8, z: 0.8}
+  m_Center: {x: 0, y: 0.4, z: 0}
 --- !u!54 &2750277581510662005
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -262,19 +291,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
---- !u!65 &8850321739734179687
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9018097853522243631}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.8, y: 0.8, z: 0.8}
-  m_Center: {x: 0, y: 0.4, z: 0}
 --- !u!1001 &929083514777512073
 PrefabInstance:
   m_ObjectHideFlags: 0

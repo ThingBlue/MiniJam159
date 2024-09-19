@@ -28,21 +28,26 @@ namespace MiniJam159.UnitCore
             //if (moveIgnoreTargetTimer > 0) moveIgnoreTargetTimer -= Time.deltaTime;
         }
 
-        protected override void FixedUpdate()
-        {
-            base.FixedUpdate();
+        #region Action handling
 
-            offensiveMovementUpdate();
-        }
-
-        protected virtual void offensiveMovementUpdate()
+        protected override void handleActions()
         {
-            switch (currentAIJob)
+            // We remove actions from the queue after completing them
+
+            if (actionQueue.Count == 0) return;
+
+            // Handle current action
+            Action currentAction = actionQueue.Peek();
+            switch (currentAction.type)
             {
-                case UnitJobType.MOVE_TO_POSITION:
-                    handleMoveJob(moveSpeed);
+                case ActionType.ATTACK:
+                    handleAttackAction(currentAction as AttackAction);
                     break;
-                default:
+                case ActionType.ATTACK_MOVE:
+                    handleAttackMoveAction(currentAction as AttackMoveAction);
+                    break;
+                case ActionType.IDLE:
+                    /*
                     // Search for target
                     if (target == null) FindNearestTarget();
                     if (target == null) return; // No target found, do nothing
@@ -57,25 +62,78 @@ namespace MiniJam159.UnitCore
                     {
                         MoveTowardsTarget();
                     }
+                    */
                     break;
             }
-        }
 
-        public void SetTargetTag(string newTargetTag)
-        {
-            targetTag = newTargetTag;
+            base.handleActions();
         }
-
-        protected override void FindNearestTarget()
+        protected virtual void handleAttackAction(AttackAction action)
         {
-            if (moveIgnoreEnemies)// moveIgnoreTargetTimer > 0)
+            // Target within attack range, can attack
+            if (Vector3.Distance(transform.position, action.targetObject.transform.position) <= attackRange)
             {
-                return; // Ignore finding targets if timer is active
-            }
+                if (attackTimer >= attackCooldown)
+                {
+                    // Implement health reduction on the target here
+                    Debug.Log("Attacking target");
 
+                    // Reset attack timer
+                    attackTimer = 0;
+                }
+            }
+            // Target outside attack range, move towards target
+            else
+            {
+                // Calculate path
+                if (pathUpdateTimer > pathUpdateInterval || path.Count == 0)
+                {
+                    path = GridManager.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius);
+                    pathUpdateTimer = 0f;
+                }
+
+                if (Vector3.Distance(transform.position, path.Peek()) <= 0.5f)
+                {
+                    // Pop current waypoint
+                    path.Dequeue();
+                }
+                else
+                {
+                    // Move towards current waypoint
+                    Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.deltaTime);
+                    transform.position = moveTowardsDestination;
+                }
+            }
+        }
+
+        protected virtual void handleAttackMoveAction(AttackMoveAction action)
+        {
+
+        }
+
+        #endregion
+
+        #region Command handling
+
+        public virtual void attackCommand(bool addToQueue, GameObject targetObject)
+        {
+            if (!addToQueue) actionQueue.Clear();
+            actionQueue.Enqueue(new AttackAction(targetObject));
+        }
+
+        public virtual void attackMoveCommand(bool addToQueue, Vector3 targetPosition)
+        {
+            if (!addToQueue) actionQueue.Clear();
+            actionQueue.Enqueue(new AttackMoveAction(targetPosition));
+        }
+
+        #endregion
+
+        protected override GameObject FindNearestTarget()
+        {
             Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius);
             float nearestDistance = Mathf.Infinity;
-            Transform nearestTarget = null;
+            GameObject nearestTarget = null;
 
             foreach (var hitCollider in hitColliders)
             {
@@ -85,14 +143,15 @@ namespace MiniJam159.UnitCore
                     if (distanceToTarget < nearestDistance)
                     {
                         nearestDistance = distanceToTarget;
-                        nearestTarget = hitCollider.transform;
+                        nearestTarget = hitCollider.gameObject;
                     }
                 }
             }
 
-            target = nearestTarget;
+            return nearestTarget;
         }
 
+        /*
         void MoveTowardsTarget()
         {
             Vector3 direction = (target.position - transform.position).normalized;
@@ -114,12 +173,7 @@ namespace MiniJam159.UnitCore
                 attackTimer = attackCooldown;
             }
         }
-
-        public virtual void attackAICommand(Transform newTarget)
-        {
-            target = newTarget;
-            currentAIJob = UnitJobType.ATTACK;
-        }
+        */
 
         void OnDrawGizmosSelected()
         {

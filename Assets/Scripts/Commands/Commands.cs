@@ -25,6 +25,7 @@ namespace MiniJam159.Commands
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.MOVE_TARGET;
         }
     }
+
     public class AttackCommand : Command
     {
         public override void initialize()
@@ -37,18 +38,20 @@ namespace MiniJam159.Commands
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.ATTACK_TARGET;
         }
     }
-    public class HoldCommand : Command
+
+    public class StopCommand : Command
     {
         public override void initialize()
         {
-            tooltip = "<b>Hold</b>\nSelected units will stop moving and attack enemies in range";
+            tooltip = "<b>Stop</b>\nSelected units will stop moving and attack enemies in range";
         }
 
         public override void execute()
         {
-            EventManager.instance.holdCommandEvent.Invoke();
+            EventManager.instance.stopCommandEvent.Invoke();
         }
     }
+
     public class HarvestCommand : Command
     {
         public override void initialize()
@@ -61,6 +64,7 @@ namespace MiniJam159.Commands
             if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
         }
     }
+
     public class OpenBuildMenuCommand : Command
     {
         public override void initialize()
@@ -73,6 +77,7 @@ namespace MiniJam159.Commands
             EventManager.instance.openBuildMenuCommandEvent.Invoke();
         }
     }
+
     public class CancelBuildMenuCommand : Command
     {
         public override void initialize()
@@ -85,6 +90,7 @@ namespace MiniJam159.Commands
             EventManager.instance.cancelBuildMenuCommandEvent.Invoke();
         }
     }
+
     public class BuildNestCommand : Command
     {
         public override void initialize()
@@ -99,6 +105,7 @@ namespace MiniJam159.Commands
             EventManager.instance.buildNestCommandEvent.Invoke();
         }
     }
+
     public class BuildWombCommand : Command
     {
         public override void initialize()

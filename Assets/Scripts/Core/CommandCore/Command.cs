@@ -9,7 +9,7 @@ namespace MiniJam159.CommandCore
         NULL = 0,
         MOVE,
         ATTACK,
-        HOLD,
+        STOP,
         HARVEST,
         OPEN_BUILD_MENU,
         CANCEL_BUILD_MENU,

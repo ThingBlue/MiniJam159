@@ -58,38 +58,76 @@ namespace MiniJam159.Units
         {
             base.FixedUpdate();
 
-            jobUpdate();
-
             debugText.text = carriedResources.ToString();
         }
 
-        protected override void jobUpdate()
+        #region Action handling
+
+        protected override void handleActions()
         {
-            switch (currentAIJob)
+            // We remove actions from the queue after completing them
+
+            if (actionQueue.Count == 0) return;
+
+            // Handle current action
+            Action currentAction = actionQueue.Peek();
+            switch (currentAction.type)
             {
-                case UnitJobType.HARVEST_RESOURCE:
-                    handleHarvestResourceJob();
+                case ActionType.HARVEST:
+                    handleHarvestAction(currentAction as HarvestAction);
                     break;
-                case UnitJobType.BUILD:
-                    handleBuildJob();
-                    break;
-                default:
-                    // Current job is a default job, let the base class handle it
-                    base.jobUpdate();
+                case ActionType.BUILD:
+                    handleBuildAction(currentAction as BuildAction);
                     break;
             }
+
+            base.handleActions();
         }
 
+        protected virtual void handleHarvestAction(HarvestAction action)
+        {
+
+        }
+
+        protected virtual void handleBuildAction(BuildAction action)
+        {
+
+        }
+
+        #endregion
+
+        #region Command handling
+
+        public void harvestCommand(bool addToQueue, GameObject targetObject)
+        {
+            if (!addToQueue) actionQueue.Clear();
+            actionQueue.Enqueue(new HarvestAction(targetObject));
+        }
+
+        public void buildStructureCommand(bool addToQueue, GameObject targetObject)
+        {
+            if (!addToQueue) actionQueue.Clear();
+            actionQueue.Enqueue(new BuildAction(targetObject));
+        }
+
+        public void openBuildMenuCommand()
+        {
+            CommandManagerBase.instance.populateCommands(buildMenuCommands);
+        }
+
+        #endregion
+
+        /*
         private void handleHarvestResourceJob()
         {
             // HELP WHAT DO WE DO HERE 
             // AFK AS TEMP SOLUTION
-            if (targetResourceObject == null) currentAIJob = UnitJobType.IDLE;
+            if (targetResourceObject == null) currentAIJob = ActionType.IDLE;
             //if (targetResourceObject == null) ReturnToBase(basePosition);
 
             Resource targetResource = targetResourceObject.GetComponent<Resource>();
             // AFK AS TEMP SOLUTION
-            if (targetResource == null || targetResource.resourceAmount <= 0) currentAIJob = UnitJobType.IDLE;
+            if (targetResource == null || targetResource.resourceAmount <= 0) currentAIJob = ActionType.IDLE;
             //if (targetResource == null || targetResource.resourceAmount <= 0) ReturnToBase(basePosition);
 
             // Pouch not full, harvest resource
@@ -149,7 +187,7 @@ namespace MiniJam159.Units
                 if (depositPointObject == null)
                 {
                     // Return to IDLE
-                    currentAIJob = UnitJobType.IDLE;
+                    currentAIJob = ActionType.IDLE;
                     return;
                 }
 
@@ -195,7 +233,7 @@ namespace MiniJam159.Units
                 if (targetStructure.buildProgress >= targetStructure.maxBuildProgress)
                 {
                     // Reset and return to idle
-                    currentAIJob = UnitJobType.IDLE;
+                    currentAIJob = ActionType.IDLE;
                     buildTimer = 0;
                 }
 
@@ -217,68 +255,12 @@ namespace MiniJam159.Units
                 transform.position = Vector3.MoveTowards(transform.position, targetStructureObject.transform.position, moveSpeed * Time.deltaTime);
             }
         }
+        */
 
         public void setDepositPoint(GameObject depositPointObject, bool lockDepositPoint)
         {
             this.depositPointObject = depositPointObject;
             this.lockDepositPoint = lockDepositPoint;
-        }
-
-        public override void moveAICommand(Vector3 position)
-        {
-            // Reset worker states
-            onCommandReceived();
-
-            base.moveAICommand(position);
-        }
-
-        public override void holdAICommand()
-        {
-            // Reset worker states
-            onCommandReceived();
-
-            base.holdAICommand();
-        }
-
-        public override void attackAICommand(Transform newTarget)
-        {
-            // Reset worker states
-            onCommandReceived();
-
-            base.attackAICommand(newTarget);
-        }
-
-        public void harvestAICommand(GameObject resourceObject)
-        {
-            currentAIJob = UnitJobType.HARVEST_RESOURCE;
-            targetResourceObject = resourceObject;
-        }
-
-        public void buildStructureCommand(GameObject structureObject)
-        {
-            // Reset worker states
-            onCommandReceived();
-
-            // Begin build job
-            currentAIJob = UnitJobType.BUILD;
-            targetStructureObject = structureObject;
-        }
-
-        public void openBuildMenuAICommand()
-        {
-            CommandManagerBase.instance.populateCommands(buildMenuCommands);
-        }
-
-        private void onCommandReceived()
-        {
-            // Reset worker target states
-            targetResourceObject = null;
-            targetStructureObject = null;
-
-            // Reset timers
-            harvestTimer = 0;
-            depositTimer = 0;
-            buildTimer = 0;
         }
 
     }

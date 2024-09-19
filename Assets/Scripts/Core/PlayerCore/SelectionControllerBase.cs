@@ -187,7 +187,7 @@ namespace MiniJam159.PlayerCore
             if (selectedUnit == null) return;
 
             // Populate commands using worker's structure data list
-            MethodInfo method = selectedUnit.GetType().GetMethod("openBuildMenuAICommand");
+            MethodInfo method = selectedUnit.GetType().GetMethod("openBuildMenuCommand");
             if (method != null)
             {
                 // Invoke attack command method in ai using transform of target

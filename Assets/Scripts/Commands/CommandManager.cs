@@ -38,8 +38,8 @@ namespace MiniJam159.Commands
                     case CommandType.ATTACK:
                         newCommand = new AttackCommand();
                         break;
-                    case CommandType.HOLD:
-                        newCommand = new HoldCommand();
+                    case CommandType.STOP:
+                        newCommand = new StopCommand();
                         break;
                     case CommandType.HARVEST:
                         newCommand = new HarvestCommand();

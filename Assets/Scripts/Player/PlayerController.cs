@@ -334,16 +334,16 @@ namespace MiniJam159.Player
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                Unit ai = selectedObject.GetComponent<Unit>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                Unit unit = selectedObject.GetComponent<Unit>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("moveAICommand");
+                MethodInfo method = unit.GetType().GetMethod("moveCommand");
                 if (method != null)
                 {
-                    // Invoke command method in ai using mouse position in world
+                    // Invoke command method in unit using mouse position in world
                     Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
-                    method.Invoke(ai, new object[] { mousePositionInWorld });
+                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), mousePositionInWorld });
                 }
             }
 
@@ -356,16 +356,16 @@ namespace MiniJam159.Player
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                Unit ai = selectedObject.GetComponent<Unit>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                Unit unit = selectedObject.GetComponent<Unit>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("attackMoveAICommand");
+                MethodInfo method = unit.GetType().GetMethod("attackMoveCommand");
                 if (method != null)
                 {
-                    // Invoke command method in ai using mouse position in world
+                    // Invoke command method in unit using mouse position in world
                     Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
-                    method.Invoke(ai, new object[] { mousePositionInWorld });
+                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), mousePositionInWorld });
 
                     Debug.Log("Attack moving");
                 }
@@ -380,15 +380,15 @@ namespace MiniJam159.Player
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                Unit ai = selectedObject.GetComponent<Unit>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                Unit unit = selectedObject.GetComponent<Unit>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("attackAICommand");
+                MethodInfo method = unit.GetType().GetMethod("attackCommand");
                 if (method != null)
                 {
-                    // Invoke attack command method in ai using transform of target
-                    method.Invoke(ai, new object[] { target.transform });
+                    // Invoke attack command method in unit using transform of target
+                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), target });
 
                     Debug.Log("Attacking " + target);
                 }
@@ -403,15 +403,15 @@ namespace MiniJam159.Player
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                Unit ai = selectedObject.GetComponent<Unit>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                Unit unit = selectedObject.GetComponent<Unit>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("harvestAICommand");
+                MethodInfo method = unit.GetType().GetMethod("harvestCommand");
                 if (method != null)
                 {
-                    // Invoke command method in ai using transform of target
-                    method.Invoke(ai, new object[] { target });
+                    // Invoke command method in unit using transform of target
+                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), target });
 
                     Debug.Log("Harvesting " + target);
                 }
@@ -426,15 +426,15 @@ namespace MiniJam159.Player
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                Unit ai = selectedObject.GetComponent<Unit>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                Unit unit = selectedObject.GetComponent<Unit>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("buildStructureCommand");
+                MethodInfo method = unit.GetType().GetMethod("buildStructureCommand");
                 if (method != null)
                 {
-                    // Invoke command method in ai using transform of target
-                    method.Invoke(ai, new object[] { target });
+                    // Invoke command method in unit using transform of target
+                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), target });
 
                     Debug.Log("Building " + target);
                 }

@@ -17,7 +17,7 @@ namespace MiniJam159.UICore
 
         public Sprite moveCommandSprite;
         public Sprite attackCommandSprite;
-        public Sprite holdCommandSprite;
+        public Sprite stopCommandSprite;
         public Sprite harvestCommandSprite;
         public Sprite openBuildMenuCommandSprite;
         public Sprite cancelBuildMenuCommandSprite;
@@ -84,8 +84,8 @@ namespace MiniJam159.UICore
                     case CommandType.ATTACK:
                         newButtonObject.GetComponent<Image>().sprite = attackCommandSprite;
                         break;
-                    case CommandType.HOLD:
-                        newButtonObject.GetComponent<Image>().sprite = holdCommandSprite;
+                    case CommandType.STOP:
+                        newButtonObject.GetComponent<Image>().sprite = stopCommandSprite;
                         break;
                     case CommandType.HARVEST:
                         newButtonObject.GetComponent<Image>().sprite = harvestCommandSprite;

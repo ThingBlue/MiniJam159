@@ -4,48 +4,32 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
+using UnityEngine.UIElements;
+using System.IO;
+using UnityEditor;
 
 namespace MiniJam159.UnitCore
 {
-    public enum UnitJobType
-    {
-        // Common jobs
-        IDLE = 0,
-        MOVE_TO_POSITION,
-        ATTACK,
-
-        // Worker jobs
-        HARVEST_RESOURCE,
-        BUILD
-    }
-
     public abstract class Unit : Entity
     {
         #region Inspector members
 
         public HealthBar healthBar;
+        public List<CommandType> commands = new List<CommandType>();
+
+        public float moveSpeed;
+        public float pathUpdateInterval;
+        public float pathfindingRadius;
 
         #endregion
 
-        public static List<Unit> allAIs = new List<Unit>(); // List of all AI instances
-
-        public UnitJobType currentAIJob = UnitJobType.IDLE;
-        public List<CommandType> commands = new List<CommandType>();
-
         public float health;
 
-        protected Vector3 moveToPosition;
-        protected bool moveIgnoreEnemies;
+        public Queue<Action> actionQueue = new Queue<Action>();
+        public Action currentAction = null;
 
-        //protected float moveIgnoreTargetTimer; // Timer to ignore targets while moving
-        protected const float moveIgnoreTargetDuration = 10f; // Duration to ignore targets while moving
-        protected Transform target { get; set; } // Property to be implemented by subclasses
-
-        private void Awake()
-        {
-            // TEMP
-            allAIs.Add(this);
-        }
+        public Queue<Vector3> path = new Queue<Vector3>();
+        protected float pathUpdateTimer;
 
         protected virtual void Start()
         {
@@ -53,24 +37,32 @@ namespace MiniJam159.UnitCore
             EntityManager.instance.playerUnitObjects.Add(gameObject);
             EntityManager.instance.playerEntityObjects.Add(gameObject);
 
-            currentAIJob = UnitJobType.IDLE;
-            moveIgnoreEnemies = false;
-
             // Start at max health
             health = maxHealth;
 
             // Set health bar values
             healthBar.setMaxHealth(maxHealth);
             healthBar.setHealth(health);
+
+            // Subscribe to events
+            EventManager.instance.stopCommandEvent.AddListener(onStopCommandCallback);
         }
 
         protected virtual void OnDestroy()
         {
-            allAIs.Remove(this);
+            EntityManager.instance.playerUnitObjects.Remove(gameObject);
+        }
+
+        protected virtual void Update()
+        {
+            pathUpdateTimer += Time.deltaTime;
         }
 
         protected virtual void FixedUpdate()
         {
+            // Handle actions
+            if (actionQueue.Count > 0) handleActions();
+
             // Set y position and remove velocity
             transform.position = new Vector3(transform.position.x, 0, transform.position.z);
             GetComponent<Rigidbody>().velocity = Vector3.zero;
@@ -79,64 +71,101 @@ namespace MiniJam159.UnitCore
             transform.Find("Mesh").position = new Vector3(transform.position.x, 0.4f, transform.position.z);
         }
 
-        protected virtual void handleMoveJob(float moveSpeed)
-        {
-            if (!moveIgnoreEnemies)// || moveIgnoreTargetTimer <= 0)
-            {
-                // Check for targets while moving if the ignore timer is not active
-                FindNearestTarget();
+        #region Action handling
 
-                if (target != null)
-                {
-                    currentAIJob = UnitJobType.IDLE;
-                    moveIgnoreEnemies = false;
-                    return; // Stop moving to position if a target is found
-                }
+        protected virtual void handleActions()
+        {
+            // We remove actions from the queue after completing them
+
+            if (actionQueue.Count == 0) return;
+
+            // Handle current action
+            Action currentAction = actionQueue.Peek();
+            switch (currentAction.type)
+            {
+                case ActionType.MOVE:
+                    handleMoveAction(currentAction as MoveAction);
+                    break;
+                case ActionType.IDLE:
+                    break;
+            }
+        }
+
+        protected virtual void endAction()
+        {
+            // Pop current action
+            actionQueue.Dequeue();
+        }
+
+        protected virtual void handleMoveAction(MoveAction action)
+        {
+            // Check if current path is still valid
+            if (pathUpdateTimer > pathUpdateInterval)
+            {
+                path = GridManager.instance.getPathQueue(transform.position, action.targetPosition, pathfindingRadius);
+                pathUpdateTimer = 0f;
+            }
+
+            // Stop action if path ended
+            if (path.Count == 0)
+            {
+                endAction();
+                return;
             }
 
             // Stop moving to position if reached
-            if (Vector3.Distance(transform.position, moveToPosition) <= 0.5f)
+            if (Vector3.Distance(transform.position, path.Peek()) <= 0.1f)
             {
-                currentAIJob = UnitJobType.IDLE;
-                moveIgnoreEnemies = false;
+                // Pop current waypoint
+                path.Dequeue();
             }
-
-            Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, moveToPosition, moveSpeed * Time.deltaTime);
-            transform.position = moveTowardsDestination;
+            else
+            {
+                Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.deltaTime);
+                transform.position = moveTowardsDestination;
+            }
         }
 
-        public void MoveTo(Vector3 position, bool ignoreEnemies)
+        #endregion
+
+        #region Command handling
+
+        public virtual void moveCommand(bool addToQueue, Vector3 targetPosition)
         {
-            moveToPosition = position;
-            currentAIJob = UnitJobType.MOVE_TO_POSITION;
-            target = null; // Reset target
-            moveIgnoreEnemies = ignoreEnemies;
+            if (!addToQueue) actionQueue.Clear();
+            actionQueue.Enqueue(new MoveAction(targetPosition));
         }
 
-        public virtual void moveAICommand(Vector3 position)
+        protected virtual void onStopCommandCallback()
         {
-            MoveTo(position, true);
+            // Remove all actions
+            actionQueue.Clear();
         }
 
-        public virtual void attackMoveAICommand(Vector3 position)
-        {
-            MoveTo(position, false);
-        }
+        #endregion
 
-        public virtual void holdAICommand()
-        {
-            target = null; // Reset target
-            
-            // Stop moving to position if hold command is issued
-            currentAIJob = UnitJobType.IDLE;
-            moveToPosition = transform.position;
-        }
-
-        protected abstract void FindNearestTarget();
+        protected abstract GameObject FindNearestTarget();
 
         public virtual void populateCommands()
         {
             CommandManagerBase.instance.populateCommands(commands);
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (path.Count > 0)
+            {
+                Queue<Vector3> debugPath = new Queue<Vector3>(path);
+
+                Gizmos.color = Color.red;
+                Vector3 previousPosition = transform.position;
+                while (debugPath.Count > 0)
+                {
+                    Vector3 targetPosition = debugPath.Dequeue();
+                    Gizmos.DrawLine(previousPosition, targetPosition);
+                    previousPosition = targetPosition;
+                }
+            }
         }
     }
 

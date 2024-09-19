@@ -28,7 +28,7 @@ namespace MiniJam159.GameCore
         public UnityEvent unpauseEvent;
 
         // Command events
-        public UnityEvent holdCommandEvent;
+        public UnityEvent stopCommandEvent;
         public UnityEvent openBuildMenuCommandEvent;
         public UnityEvent cancelBuildMenuCommandEvent;
 
@@ -50,7 +50,7 @@ namespace MiniJam159.GameCore
             if (unpauseEvent == null) unpauseEvent = new UnityEvent();
 
             // Command events
-            if (holdCommandEvent == null) holdCommandEvent = new UnityEvent();
+            if (stopCommandEvent == null) stopCommandEvent = new UnityEvent();
             if (openBuildMenuCommandEvent == null) openBuildMenuCommandEvent = new UnityEvent();
             if (cancelBuildMenuCommandEvent == null) cancelBuildMenuCommandEvent = new UnityEvent();
 

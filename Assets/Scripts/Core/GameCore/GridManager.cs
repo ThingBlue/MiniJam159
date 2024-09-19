@@ -51,6 +51,25 @@ namespace MiniJam159.GameCore
             }
         }
 
+        public Vector2 getTileFromPosition(Vector2 position)
+        {
+            return new Vector2(Mathf.Floor(position.x), Mathf.Floor(position.y));
+        }
+
+        public Vector2 getTileFromPosition(Vector3 position)
+        {
+            return new Vector2(Mathf.Floor(position.x), Mathf.Floor(position.z));
+        }
+
+        public Vector3 getPositionFromTile(Vector2 tile)
+        {
+            return new Vector3(
+                tile.x + 0.5f,
+                0f,
+                tile.y + 0.5f
+            );
+        }
+
         public bool isTileOccupied(int x, int z)
         {
             if (x < 0 || x >= gridMatrix[0].Count || z < 0 || z >= gridMatrix.Count)
@@ -92,7 +111,16 @@ namespace MiniJam159.GameCore
             }
         }
 
-        public List<Vector2> findPath(Vector2 startTile, Vector2 targetTile)
+        public Queue<Vector3> getPathQueue(Vector3 startPosition, Vector3 targetPosition, float radius)
+        {
+            Vector2 startTile = getTileFromPosition(startPosition);
+            Vector2 targetTile = getTileFromPosition(targetPosition);
+            List<Vector2> fullPath = calculatePath(startTile, targetTile);
+            List<Vector2> simplifiedPath = simplifyPath(fullPath, radius);
+            return pathToQueue(simplifiedPath);
+        }
+
+        public List<Vector2> calculatePath(Vector2 startTile, Vector2 targetTile)
         {
             // Initialize matrices to hold calculation info
             List<List<Vector2>> predecessorMatrix = new List<List<Vector2>>();
@@ -179,14 +207,14 @@ namespace MiniJam159.GameCore
 
         // To simplify the path, we do linecasts from and earlier point to a later point
         // If the cast hits nothing, we can remove all points in between
-        public List<Vector2> simplifyPath(List<Vector2> path)
+        public List<Vector2> simplifyPath(List<Vector2> path, float radius)
         {
             for (int i = 0; i < path.Count - 1; i++)
             {
                 for (int j = path.Count - 1; j > i; j--)
                 {
                     // Do linecast from i to j and check for occupied tiles
-                    List<Vector2> tilesOnLine = getTilesOnLine(path[i], path[j]);
+                    List<Vector2> tilesOnLine = getTilesOnLine(path[i], path[j], radius);
 
                     // At least one occupied tile, we cannot shorten path with current tiles
                     if (isAnyTileOccupied(tilesOnLine)) continue;
@@ -203,21 +231,46 @@ namespace MiniJam159.GameCore
             return path;
         }
 
-        private List<Vector2> getTilesOnLine(Vector2 startTile, Vector2 endTile)
+        private List<Vector2> getTilesOnLine(Vector2 startPosition, Vector2 endPosition, float radius)
         {
-            // Calculate normalized direction vector of line
-            Vector2 direction = (endTile - startTile).normalized;
+            // Only cast 1 line if radius is 0
+            if (radius == 0) return getTilesOnLine(startPosition, endPosition);
+
+            // Calculate direction
+            Vector2 direction = (endPosition - startPosition).normalized;
+
+            // Create one line on either side
+            Vector2 normal = new Vector2(-direction.y, direction.x);
+            Vector2 startPosition1 = startPosition + normal;
+            Vector2 startPosition2 = startPosition - normal;
+            Vector2 endPosition1 = endPosition + normal;
+            Vector2 endPosition2 = endPosition - normal;
+
+            // Get tiles on line for both lines
+            List<Vector2> tilesOnLine1 = getTilesOnLine(startPosition1, endPosition1);
+            List<Vector2> tilesOnLine2 = getTilesOnLine(startPosition2, endPosition2);
+
+            // Merge and remove duplicates
+            List<Vector2> tilesOnLine = tilesOnLine1.Union(tilesOnLine2).ToList();
+
+            return tilesOnLine;
+        }
+
+        private List<Vector2> getTilesOnLine(Vector2 startPosition, Vector2 endPosition)
+        {
+            // Calculate distance and direction
+            float distance = Vector2.Distance(startPosition, endPosition);
+            Vector2 direction = (endPosition - startPosition).normalized;
 
             // Initialize current tile and line start
-            Vector2 linePosition = startTile + new Vector2(0.5f, 0.5f);
-            Vector2 tile = startTile;
+            Vector2 linePosition = startPosition;
+            Vector2 tile = getTileFromPosition(startPosition);
 
             List<Vector2> tilesOnLine = new List<Vector2>();
 
             // Loop until we reach the end tile
-            int i = 0;
-            int maxIterations = Mathf.Max(mapXLength, mapZLength) * 2;
-            while (tile != endTile && i < maxIterations)
+            float currentDistance = 0f;
+            while (currentDistance < distance)
             {
                 tilesOnLine.Add(tile);
 
@@ -244,34 +297,45 @@ namespace MiniJam159.GameCore
                 // Move horizontally
                 if (timeToNextX < timeToNextY)
                 {
+                    if (currentDistance + timeToNextX > distance) break;
+
                     linePosition += direction * timeToNextX;
                     tile.x += Mathf.Sign(direction.x);
+                    currentDistance += timeToNextX;
                 }
                 // Move vertically
                 else if (timeToNextX > timeToNextY)
                 {
+                    if (currentDistance + timeToNextY > distance) break;
+
                     linePosition += direction * timeToNextY;
                     tile.y += Mathf.Sign(direction.y);
+                    currentDistance += timeToNextY;
                 }
                 // Exact diagonal
                 else
                 {
+                    if (currentDistance + timeToNextX > distance) break;
+
                     // Move along both axes
                     linePosition += direction * timeToNextX;
                     tile.x += Mathf.Sign(direction.x);
                     tile.y += Mathf.Sign(direction.y);
+                    currentDistance += timeToNextX;
                 }
-
-                // Failsafe to make sure we don't enter infinite loop on error
-                i++;
-            }
-
-            if (tile != endTile)
-            {
-                Debug.LogError("Error: Reached max iterations on linecast without finding end tile");
             }
 
             return tilesOnLine;
+        }
+
+        public Queue<Vector3> pathToQueue(List<Vector2> path)
+        {
+            Queue<Vector3> pathQueue = new Queue<Vector3>();
+            foreach (Vector2 tile in path)
+            {
+                pathQueue.Enqueue(getPositionFromTile(tile));
+            }
+            return pathQueue;
         }
 
     }
