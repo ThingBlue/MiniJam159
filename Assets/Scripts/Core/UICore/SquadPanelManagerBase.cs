@@ -2,8 +2,6 @@ using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace MiniJam159.UICore

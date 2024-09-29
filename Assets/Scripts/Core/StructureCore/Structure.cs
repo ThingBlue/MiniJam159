@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+
 using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
 
-namespace MiniJam159.Structures
+namespace MiniJam159.StructureCore
 {
     public enum StructureType
     {

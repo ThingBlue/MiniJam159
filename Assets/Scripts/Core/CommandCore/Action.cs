@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MiniJam159.UnitCore
+namespace MiniJam159.CommandCore
 {
     public enum ActionType
     {
@@ -19,7 +19,9 @@ namespace MiniJam159.UnitCore
 
     public class Action
     {
-        public ActionType type;
+        public ActionType actionType;
+
+        public virtual Vector3 getTargetPosition() { return Vector3.zero; }
     }
 
     public class MoveAction : Action
@@ -28,14 +30,16 @@ namespace MiniJam159.UnitCore
 
         public MoveAction()
         {
-            this.type = ActionType.MOVE;
+            this.actionType = ActionType.MOVE;
             this.targetPosition = Vector3.zero;
         }
         public MoveAction(Vector3 targetPosition)
         {
-            this.type = ActionType.MOVE;
+            this.actionType = ActionType.MOVE;
             this.targetPosition = targetPosition;
         }
+
+        public override Vector3 getTargetPosition() { return targetPosition; }
     }
 
     public class AttackAction : Action
@@ -44,14 +48,16 @@ namespace MiniJam159.UnitCore
 
         public AttackAction()
         {
-            this.type = ActionType.ATTACK;
+            this.actionType = ActionType.ATTACK;
             this.targetObject = null;
         }
         public AttackAction(GameObject targetObject)
         {
-            this.type = ActionType.ATTACK;
+            this.actionType = ActionType.ATTACK;
             this.targetObject = targetObject;
         }
+
+        public override Vector3 getTargetPosition() { return targetObject.transform.position; }
     }
 
     public class AttackMoveAction : Action
@@ -60,14 +66,16 @@ namespace MiniJam159.UnitCore
 
         public AttackMoveAction()
         {
-            this.type = ActionType.ATTACK_MOVE;
+            this.actionType = ActionType.ATTACK_MOVE;
             this.targetPosition = Vector3.zero;
         }
         public AttackMoveAction(Vector3 targetPosition)
         {
-            this.type = ActionType.ATTACK_MOVE;
+            this.actionType = ActionType.ATTACK_MOVE;
             this.targetPosition = targetPosition;
         }
+
+        public override Vector3 getTargetPosition() { return targetPosition; }
     }
 
     public class HarvestAction : Action
@@ -76,30 +84,34 @@ namespace MiniJam159.UnitCore
 
         public HarvestAction()
         {
-            this.type = ActionType.HARVEST;
+            this.actionType = ActionType.HARVEST;
             this.targetObject = null;
         }
         public HarvestAction(GameObject targetResourceObject)
         {
-            this.type = ActionType.HARVEST;
+            this.actionType = ActionType.HARVEST;
             this.targetObject = targetResourceObject;
         }
+
+        public override Vector3 getTargetPosition() { return targetObject.transform.position; }
     }
 
     public class BuildAction : Action
     {
-        public GameObject targetStructureObject;
+        public GameObject targetObject;
 
         public BuildAction()
         {
-            this.type = ActionType.BUILD;
-            this.targetStructureObject = null;
+            this.actionType = ActionType.BUILD;
+            this.targetObject = null;
         }
-        public BuildAction(GameObject targetStructureObject)
+        public BuildAction(GameObject targetObject)
         {
-            this.type = ActionType.BUILD;
-            this.targetStructureObject = targetStructureObject;
+            this.actionType = ActionType.BUILD;
+            this.targetObject = targetObject;
         }
+
+        public override Vector3 getTargetPosition() { return targetObject.transform.position; }
 
     }
 

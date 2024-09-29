@@ -1,12 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 
-using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
-using UnityEngine.UIElements;
-using System.IO;
-using UnityEditor;
+using MiniJam159.CommandCore;
 
 namespace MiniJam159.UnitCore
 {
@@ -21,6 +17,16 @@ namespace MiniJam159.UnitCore
         public float pathUpdateInterval;
         public float pathfindingRadius;
 
+        public string targetTag = "Enemy"; // Tag to identify targets
+
+        public int attackDamage = 10; // Damage dealt by each attack
+        public float attackCooldown = 1.0f; // Time between attacks
+        public float detectionRadius = 5.0f; // Radius to detect the nearest target
+        public float attackRange = 2.0f; // Range within which the AI will attack
+
+        public float surroundDistance = 1.5f; // Distance to maintain around the target when surrounding
+        public float coordinationRadius = 5.0f; // Radius within which AIs coordinate their actions
+
         #endregion
 
         public float health;
@@ -30,6 +36,8 @@ namespace MiniJam159.UnitCore
 
         public Queue<Vector3> path = new Queue<Vector3>();
         protected float pathUpdateTimer;
+
+        protected float attackTimer = 0f;
 
         protected virtual void Start()
         {
@@ -55,7 +63,9 @@ namespace MiniJam159.UnitCore
 
         protected virtual void Update()
         {
+            // Increment timers
             pathUpdateTimer += Time.deltaTime;
+            attackTimer += Time.deltaTime;
         }
 
         protected virtual void FixedUpdate()
@@ -79,10 +89,16 @@ namespace MiniJam159.UnitCore
 
             // Handle current action
             Action currentAction = actionQueue.Peek();
-            switch (currentAction.type)
+            switch (currentAction.actionType)
             {
                 case ActionType.MOVE:
                     handleMoveAction(currentAction as MoveAction);
+                    break;
+                case ActionType.ATTACK:
+                    handleAttackAction(currentAction as AttackAction);
+                    break;
+                case ActionType.ATTACK_MOVE:
+                    handleAttackMoveAction(currentAction as AttackMoveAction);
                     break;
                 case ActionType.IDLE:
                     break;
@@ -93,6 +109,9 @@ namespace MiniJam159.UnitCore
 
         protected virtual void endAction()
         {
+            // Remove self from action indicator list
+            ActionIndicatorManagerBase.instance.completeAction(this, actionQueue.Peek());
+
             // Pop current action
             actionQueue.Dequeue();
         }
@@ -126,25 +145,112 @@ namespace MiniJam159.UnitCore
             }
         }
 
+        protected virtual void handleAttackAction(AttackAction action)
+        {
+            // Target within attack range, can attack
+            if (Vector3.Distance(transform.position, action.targetObject.transform.position) <= attackRange)
+            {
+                if (attackTimer >= attackCooldown)
+                {
+                    // Implement health reduction on the target here
+                    Debug.Log("Attacking target");
+
+                    // Reset attack timer
+                    attackTimer = 0;
+                }
+            }
+            // Target outside attack range, move towards target
+            else
+            {
+                // Calculate path
+                if (pathUpdateTimer > pathUpdateInterval || path.Count == 0)
+                {
+                    path = GridManager.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius);
+                    pathUpdateTimer = 0f;
+                }
+
+                if (Vector3.Distance(transform.position, path.Peek()) <= 0.5f)
+                {
+                    // Pop current waypoint
+                    path.Dequeue();
+                }
+                else
+                {
+                    // Move towards current waypoint
+                    Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.deltaTime);
+                    transform.position = moveTowardsDestination;
+                }
+            }
+        }
+
+        protected virtual void handleAttackMoveAction(AttackMoveAction action)
+        {
+
+        }
+
         #endregion
 
         #region Command handling
 
         public virtual void moveCommand(bool addToQueue, Vector3 targetPosition)
         {
-            if (!addToQueue) actionQueue.Clear();
-            actionQueue.Enqueue(new MoveAction(targetPosition));
+            // Clear queue if queue action button not held
+            if (!addToQueue) clearActionQueue();
+
+            // Enqueue new action
+            Action newAction = new MoveAction(targetPosition);
+            actionQueue.Enqueue(newAction);
+
+            // Add new action to indicators
+            ActionIndicatorManagerBase.instance.addAction(this, newAction);
+        }
+
+        public virtual void attackCommand(bool addToQueue, GameObject targetObject)
+        {
+            // Clear queue if queue action button not held
+            if (!addToQueue) clearActionQueue();
+
+            // Enqueue new action
+            Action newAction = new AttackAction(targetObject);
+            actionQueue.Enqueue(newAction);
+
+            // Add new action to indicators
+            ActionIndicatorManagerBase.instance.addAction(this, newAction);
+        }
+
+        public virtual void attackMoveCommand(bool addToQueue, Vector3 targetPosition)
+        {
+            // Clear queue if queue action button not held
+            if (!addToQueue) clearActionQueue();
+
+            // Enqueue new action
+            Action newAction = new AttackMoveAction(targetPosition);
+            actionQueue.Enqueue(newAction);
+
+            // Add new action to indicators
+            ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
         protected virtual void onStopCommandCallback()
         {
-            // Remove all actions
-            actionQueue.Clear();
+            // Remove all actions from queue
+            clearActionQueue();
         }
 
         #endregion
 
         protected abstract GameObject FindNearestTarget();
+
+        protected virtual void clearActionQueue()
+        {
+            // Remove all actions from queue
+            while (actionQueue.Count > 0)
+            {
+                // Update action indicators
+                Action action = actionQueue.Dequeue();
+                ActionIndicatorManagerBase.instance.completeAction(this, action);
+            }
+        }
 
         public virtual void populateCommands()
         {

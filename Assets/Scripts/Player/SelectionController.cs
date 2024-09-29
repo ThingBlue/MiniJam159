@@ -5,10 +5,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using MiniJam159.UnitCore;
+using MiniJam159.StructureCore;
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
-using MiniJam159.Structures;
 using MiniJam159.UICore;
+using MiniJam159.CommandCore;
 
 namespace MiniJam159.Player
 {
@@ -286,11 +287,8 @@ namespace MiniJam159.Player
                 }
             }
 
-            // Sort selection
-            sortSelection();
-
-            // Populate commands after sorting
-            populateCommands();
+            // Sort and do anything that needs to be done after selection finishes
+            postSelection();
         }
 
         public List<Vector2> getMassSelectionBoxPoints()
@@ -353,11 +351,8 @@ namespace MiniJam159.Player
             // Add object back in
             SelectionManager.instance.addSelectedObject(targetObject);
 
-            // Sort
-            sortSelection();
-
-            // Populate commands after sorting
-            populateCommands(SelectionManager.instance.getFocusIndex());
+            // Sort and do anything that needs to be done after selection finishes
+            postSelection();
         }
 
         public override void reselectType(int index)
@@ -389,11 +384,8 @@ namespace MiniJam159.Player
             // Add objects back in
             SelectionManager.instance.setSelectedObjects(reselectedObjects);
 
-            // Sort
-            sortSelection();
-
-            // Populate commands after sorting
-            populateCommands(SelectionManager.instance.getFocusIndex());
+            // Sort and do anything that needs to be done after selection finishes
+            postSelection();
         }
 
         public override void deselectSingle(int index)
@@ -405,11 +397,8 @@ namespace MiniJam159.Player
             SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
             CommandPanelManagerBase.instance.clearCommandButtons();
 
-            // Sort
-            sortSelection();
-
-            // Populate commands after sorting
-            populateCommands(SelectionManager.instance.getFocusIndex());
+            // Sort and do anything that needs to be done after selection finishes
+            postSelection();
         }
 
         public override void deselectType(int index)
@@ -430,48 +419,8 @@ namespace MiniJam159.Player
             SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
             CommandPanelManagerBase.instance.clearCommandButtons();
 
-            // Sort
-            sortSelection();
-
-            // Populate commands after sorting
-            populateCommands(SelectionManager.instance.getFocusIndex());
-        }
-
-        public override void sortSelection()
-        {
-            SelectionManager.instance.selectedObjects.Sort(new EntityGameObjectComparer());
-
-            // Clear focus if nothing is selected
-            if (SelectionManager.instance.selectedObjects.Count == 0) SelectionManager.instance.focusSortPriority = 0;
-            // Set focus to first entity is there is none
-            if (SelectionManager.instance.selectedObjects.Count > 0 && SelectionManager.instance.getFocusIndex() == -1)
-            {
-                SelectionManager.instance.focusSortPriority = SelectionManager.instance.selectedObjects[0].GetComponent<Entity>().sortPriority;
-            }
-
-            // Create display boxes
-            SelectionDisplayManagerBase.instance.showSelectionDisplayBoxes();
-        }
-
-        public override void populateCommands(int focusIndex = 0)
-        {
-            if (SelectionManager.instance.selectedObjects.Count < focusIndex + 1) return;
-            if (focusIndex == -1) return;
-
-            // Populate command menu using the first object in list
-            GameObject selectedObject = SelectionManager.instance.selectedObjects[focusIndex];
-            if (selectedObject == null) return;
-
-            if (selectedObject.layer == LayerMask.NameToLayer("Unit"))
-            {
-                Unit newUnit = selectedObject.GetComponent<Unit>();
-                newUnit.populateCommands();
-            }
-            else if (selectedObject.layer == LayerMask.NameToLayer("Structure"))
-            {
-                Structure newStructure = selectedObject.GetComponent<Structure>();
-                newStructure.populateCommands();
-            }
+            // Sort and do anything that needs to be done after selection finishes
+            postSelection();
         }
 
         public override void createSquadFromCurrentSelection()
@@ -501,11 +450,59 @@ namespace MiniJam159.Player
             // Add objects back in from squad
             if (squad != null) SelectionManager.instance.setSelectedObjects(squad.entities);
 
+            // Sort and do anything that needs to be done after selection finishes
+            postSelection();
+        }
+
+        private void postSelection()
+        {
             // Sort
             sortSelection();
 
             // Populate commands after sorting
-            populateCommands(SelectionManager.instance.getFocusIndex());
+            populateCommands();
+
+            // Action indicators may be out of date, refresh
+            ActionIndicatorManagerBase.instance.refreshActionIndicators();
+        }
+
+        public override void sortSelection()
+        {
+            SelectionManager.instance.selectedObjects.Sort(new EntityGameObjectComparer());
+
+            // Clear focus if nothing is selected
+            if (SelectionManager.instance.selectedObjects.Count == 0) SelectionManager.instance.focusSortPriority = 0;
+            // Set focus to first entity is there is none
+            if (SelectionManager.instance.selectedObjects.Count > 0 && SelectionManager.instance.getFocusIndex() == -1)
+            {
+                SelectionManager.instance.focusSortPriority = SelectionManager.instance.selectedObjects[0].GetComponent<Entity>().sortPriority;
+            }
+
+            // Create display boxes
+            SelectionDisplayManagerBase.instance.showSelectionDisplayBoxes();
+        }
+
+        public override void populateCommands()
+        {
+            int focusIndex = SelectionManager.instance.getFocusIndex();
+
+            if (focusIndex == -1) focusIndex = 0;
+            if (SelectionManager.instance.selectedObjects.Count < focusIndex + 1) return;
+
+            // Populate command menu using the first object in list
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[focusIndex];
+            if (selectedObject == null) return;
+
+            if (selectedObject.layer == LayerMask.NameToLayer("Unit"))
+            {
+                Unit newUnit = selectedObject.GetComponent<Unit>();
+                newUnit.populateCommands();
+            }
+            else if (selectedObject.layer == LayerMask.NameToLayer("Structure"))
+            {
+                Structure newStructure = selectedObject.GetComponent<Structure>();
+                newStructure.populateCommands();
+            }
         }
 
         protected override void onOpenBuildMenuCommandCallback()
@@ -530,7 +527,7 @@ namespace MiniJam159.Player
 
         protected override void onCancelBuildMenuCommandCallback()
         {
-            populateCommands(SelectionManager.instance.getFocusIndex());
+            populateCommands();
         }
 
         protected void OnDrawGizmos()

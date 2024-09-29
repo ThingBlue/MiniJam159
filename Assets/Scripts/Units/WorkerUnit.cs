@@ -69,7 +69,7 @@ namespace MiniJam159.Units
 
             // Handle current action
             Action currentAction = actionQueue.Peek();
-            switch (currentAction.type)
+            switch (currentAction.actionType)
             {
                 case ActionType.HARVEST:
                     handleHarvestAction(currentAction as HarvestAction);
@@ -101,14 +101,28 @@ namespace MiniJam159.Units
 
         public void harvestCommand(bool addToQueue, GameObject targetObject)
         {
-            if (!addToQueue) actionQueue.Clear();
-            actionQueue.Enqueue(new HarvestAction(targetObject));
+            // Clear queue if queue action button not held
+            if (!addToQueue) clearActionQueue();
+
+            // Enqueue new action
+            Action newAction = new HarvestAction(targetObject);
+            actionQueue.Enqueue(newAction);
+
+            // Add new action to indicators
+            ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
         public void buildStructureCommand(bool addToQueue, GameObject targetObject)
         {
-            if (!addToQueue) actionQueue.Clear();
-            actionQueue.Enqueue(new BuildAction(targetObject));
+            // Clear queue if queue action button not held
+            if (!addToQueue) clearActionQueue();
+
+            // Enqueue new action
+            Action newAction = new BuildAction(targetObject);
+            actionQueue.Enqueue(newAction);
+
+            // Add new action to indicators
+            ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
         public void openBuildMenuCommand()

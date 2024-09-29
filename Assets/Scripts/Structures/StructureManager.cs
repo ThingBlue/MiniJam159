@@ -1,11 +1,12 @@
-using MiniJam159.GameCore;
-using MiniJam159.PlayerCore;
-using MiniJam159.Structures;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MiniJam159
+using MiniJam159.GameCore;
+using MiniJam159.PlayerCore;
+using MiniJam159.StructureCore;
+
+namespace MiniJam159.Structures
 {
     public class StructureManager : MonoBehaviour
     {

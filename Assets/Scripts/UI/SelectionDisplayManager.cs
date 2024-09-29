@@ -206,7 +206,7 @@ namespace MiniJam159.UI
             else if (SelectionManager.instance.getSortPriorityWithIndex(index) != SelectionManager.instance.focusSortPriority)
             {
                 SelectionManager.instance.focusSortPriority = SelectionManager.instance.getSortPriorityWithIndex(index);
-                SelectionControllerBase.instance.populateCommands(index);
+                SelectionControllerBase.instance.populateCommands();
 
                 // Update display boxes
                 updateSelectionDisplayBoxes(false);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using MiniJam159.GameCore;
-using UnityEngine.UIElements;
+using MiniJam159.CommandCore;
 
 namespace MiniJam159.UnitCore
 {
@@ -11,33 +11,14 @@ namespace MiniJam159.UnitCore
     {
         #region Inspector members
 
-        public string targetTag = "Enemy"; // Tag to identify targets
-
-        public int attackDamage = 10; // Damage dealt by each attack
-        public float attackCooldown = 1.0f; // Time between attacks
-        public float detectionRadius = 15.0f; // Radius to detect the nearest target
-        public float attackRange = 2.0f; // Range within which the AI will attack
-        
-        public float surroundDistance = 1.5f; // Distance to maintain around the target when surrounding
-        public float coordinationRadius = 5.0f; // Radius within which AIs coordinate their actions
-
         #endregion
 
-        protected float attackTimer;
         protected bool isLeader;
 
         protected override void Start()
         {
             base.Start();
-            attackTimer = 0f;
             isLeader = false;
-        }
-
-        protected override void Update()
-        {
-            attackTimer += Time.deltaTime;
-
-            base.Update();
         }
 
         #region Action handling
@@ -48,14 +29,8 @@ namespace MiniJam159.UnitCore
 
             // Handle current action
             Action currentAction = actionQueue.Peek();
-            switch (currentAction.type)
+            switch (currentAction.actionType)
             {
-                case ActionType.ATTACK:
-                    handleAttackAction(currentAction as AttackAction);
-                    break;
-                case ActionType.ATTACK_MOVE:
-                    handleAttackMoveAction(currentAction as AttackMoveAction);
-                    break;
                 default:
                     base.handleActions();
                     break;
@@ -64,64 +39,19 @@ namespace MiniJam159.UnitCore
             // We remove actions from the queue after completing them
         }
 
-        protected virtual void handleAttackAction(AttackAction action)
+        protected override void handleAttackAction(AttackAction action)
         {
-            // Target within attack range, can attack
-            if (Vector3.Distance(transform.position, action.targetObject.transform.position) <= attackRange)
-            {
-                if (attackTimer >= attackCooldown)
-                {
-                    // Implement health reduction on the target here
-                    Debug.Log("Attacking target");
-
-                    // Reset attack timer
-                    attackTimer = 0;
-                }
-            }
-            // Target outside attack range, move towards target
-            else
-            {
-                // Calculate path
-                if (pathUpdateTimer > pathUpdateInterval || path.Count == 0)
-                {
-                    path = GridManager.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius);
-                    pathUpdateTimer = 0f;
-                }
-
-                if (Vector3.Distance(transform.position, path.Peek()) <= 0.5f)
-                {
-                    // Pop current waypoint
-                    path.Dequeue();
-                }
-                else
-                {
-                    // Move towards current waypoint
-                    Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.deltaTime);
-                    transform.position = moveTowardsDestination;
-                }
-            }
+            base.handleAttackAction(action);
         }
 
-        protected virtual void handleAttackMoveAction(AttackMoveAction action)
+        protected override void handleAttackMoveAction(AttackMoveAction action)
         {
-
+            base.handleAttackMoveAction(action);
         }
 
         #endregion
 
         #region Command handling
-
-        public virtual void attackCommand(bool addToQueue, GameObject targetObject)
-        {
-            if (!addToQueue) actionQueue.Clear();
-            actionQueue.Enqueue(new AttackAction(targetObject));
-        }
-
-        public virtual void attackMoveCommand(bool addToQueue, Vector3 targetPosition)
-        {
-            if (!addToQueue) actionQueue.Clear();
-            actionQueue.Enqueue(new AttackMoveAction(targetPosition));
-        }
 
         #endregion
 

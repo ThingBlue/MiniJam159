@@ -155,9 +155,9 @@ namespace MiniJam159.PlayerCore
             // See SelectionController::sortSelection()
         }
 
-        public virtual void populateCommands(int focusIndex = 0)
+        public virtual void populateCommands()
         {
-            // See SelectionController::populateCommands(int focusIndex = 0)
+            // See SelectionController::populateCommands()
         }
 
         public virtual void createSquadFromCurrentSelection()
@@ -197,7 +197,7 @@ namespace MiniJam159.PlayerCore
 
         protected virtual void onCancelBuildMenuCommandCallback()
         {
-            populateCommands(SelectionManager.instance.getFocusIndex());
+            populateCommands();
         }
 
     }
