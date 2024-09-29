@@ -18,7 +18,11 @@ namespace MiniJam159.Commands
         {
             // Keep a list of existing indicators so that we don't have to instantiate too many new ones
             List<ActionIndicatorInfo> existingActionIndicators = new List<ActionIndicatorInfo>(actionIndicators);
-            foreach (ActionIndicatorInfo actionIndicator in existingActionIndicators) actionIndicator.actionEntities.Clear();
+            foreach (ActionIndicatorInfo actionIndicator in existingActionIndicators)
+            {
+                actionIndicator.actionEntities.Clear();
+                destroyLines(actionIndicator);
+            }
 
             actionIndicators.Clear();
 
@@ -43,6 +47,10 @@ namespace MiniJam159.Commands
                             if (actionIndicator.targetPosition == targetPosition && actionIndicator.actionType == actionType)
                             {
                                 actionIndicator.actionEntities.Add(unit);
+
+                                // Create line for unit
+                                actionIndicator.lineObjects.Add(createLine(unit, unit.actionQueue.ElementAt(i), actionIndicator.actionIndicatorObject.transform));
+
                                 indicatorFound = true;
                                 break;
                             }
@@ -57,6 +65,10 @@ namespace MiniJam159.Commands
                                 actionIndicators.Add(actionIndicator);
                                 existingActionIndicators.Remove(actionIndicator);
                                 actionIndicator.actionEntities.Add(unit);
+
+                                // Create line for unit
+                                actionIndicator.lineObjects.Add(createLine(unit, unit.actionQueue.ElementAt(i), actionIndicator.actionIndicatorObject.transform));
+
                                 indicatorFound = true;
                                 break;
                             }
@@ -66,6 +78,9 @@ namespace MiniJam159.Commands
                         // No indicators with matching parameters exists, create new indicator
                         ActionIndicatorInfo newActionIndicatorInfo = createActionIndicator(actionType, targetPosition);
                         newActionIndicatorInfo.actionEntities.Add(unit);
+
+                        // Create line for unit
+                        newActionIndicatorInfo.lineObjects.Add(createLine(unit, unit.actionQueue.ElementAt(i), newActionIndicatorInfo.actionIndicatorObject.transform));
                     }
                 }
                 else if (structure)
@@ -93,6 +108,11 @@ namespace MiniJam159.Commands
                 if (actionIndicator.targetPosition == targetPosition && actionIndicator.actionType == actionType)
                 {
                     actionIndicator.actionEntities.Add(entity);
+
+                    // Create line for unit
+                    Unit unit = entity as Unit;
+                    if (unit != null) actionIndicator.lineObjects.Add(createLine(unit, action, actionIndicator.actionIndicatorObject.transform));
+
                     indicatorFound = true;
                     break;
                 }
@@ -102,6 +122,12 @@ namespace MiniJam159.Commands
             // No indicators with matching parameters exists, create new indicator
             ActionIndicatorInfo newActionIndicatorInfo = createActionIndicator(actionType, targetPosition);
             newActionIndicatorInfo.actionEntities.Add(entity);
+
+            // Create line for unit
+            {
+                Unit unit = entity as Unit;
+                if (unit != null) newActionIndicatorInfo.lineObjects.Add(createLine(unit, action, newActionIndicatorInfo.actionIndicatorObject.transform));
+            }
         }
 
         // Called upon action completed by unit
@@ -117,7 +143,14 @@ namespace MiniJam159.Commands
                     continue;
                 }
 
-                actionIndicators[i].actionEntities.Remove(entity);
+                // Destroy line and remove entity
+                {
+                    int entityIndex = actionIndicators[i].actionEntities.IndexOf(entity);
+                    Destroy(actionIndicators[i].lineObjects[entityIndex]);
+                    actionIndicators[i].lineObjects.RemoveAt(entityIndex);
+                    actionIndicators[i].actionEntities.RemoveAt(entityIndex);
+                }
+
                 if (actionIndicators[i].actionEntities.Count == 0)
                 {
                     // If current entity is the last entity that was executing provided action, destroy the indicator
@@ -125,7 +158,61 @@ namespace MiniJam159.Commands
                     actionIndicators.RemoveAt(i);
                     i--;
                 }
+
+                // If entity has more actions queued, find the lines matching those actions and set new start transform to entity's transform
+                Unit unit = entity as Unit;
+                if (unit != null && unit.actionQueue.Count > 0)
+                {
+                    Action nextAction = unit.actionQueue.Peek();
+                    foreach (ActionIndicatorInfo actionIndicator in actionIndicators)
+                    {
+                        if (actionIndicator.targetPosition == nextAction.getTargetPosition() && actionIndicator.actionType == nextAction.actionType)
+                        {
+                            // Find line matching entity
+                            int entityIndex = actionIndicator.actionEntities.IndexOf(entity);
+                            actionIndicator.lineObjects[entityIndex].GetComponent<ActionIndicatorLine>().startTransform = entity.transform;
+                        }
+                    }
+                }
             }
+        }
+
+        protected virtual GameObject createLine(Unit unit, Action action, Transform actionIndicatorTransform)
+        {
+            // Get index of action in unit's action queue
+            int actionIndex = -1;
+            for (int i = 0; i < unit.actionQueue.Count; i++)
+            {
+                if (unit.actionQueue.ElementAt(i) == action)
+                {
+                    actionIndex = i;
+                    break;
+                }
+            }
+            if (actionIndex == -1) return null;
+
+            // Get start and end transforms
+            Transform startTransform = unit.transform; // Default to unit transform
+            Transform endTransform = actionIndicatorTransform;
+            if (actionIndex != 0)
+            {
+                // Find transform of previous action indicator if action is queued
+                Action previousAction = unit.actionQueue.ElementAt(actionIndex - 1);
+                foreach (ActionIndicatorInfo actionIndicator in actionIndicators)
+                {
+                    if (actionIndicator.targetPosition == previousAction.getTargetPosition() && actionIndicator.actionType == previousAction.actionType)
+                    {
+                        startTransform = actionIndicator.actionIndicatorObject.transform;
+                        break;
+                    }
+                }
+            }
+
+            GameObject newLineObject = Instantiate(actionIndicatorLinePrefab, actionIndicatorParentTransform);
+            newLineObject.GetComponent<ActionIndicatorLine>().startTransform = startTransform;
+            newLineObject.GetComponent<ActionIndicatorLine>().endTransform = endTransform;
+
+            return newLineObject;
         }
 
     }

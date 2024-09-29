@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
+using System.Linq;
 
 namespace MiniJam159.UnitCore
 {
@@ -109,11 +110,11 @@ namespace MiniJam159.UnitCore
 
         protected virtual void endAction()
         {
-            // Remove self from action indicator list
-            ActionIndicatorManagerBase.instance.completeAction(this, actionQueue.Peek());
-
             // Pop current action
-            actionQueue.Dequeue();
+            Action completedAction = actionQueue.Dequeue();
+
+            // Remove self from action indicator list
+            ActionIndicatorManagerBase.instance.completeAction(this, completedAction);
         }
 
         protected virtual void handleMoveAction(MoveAction action)
@@ -255,6 +256,15 @@ namespace MiniJam159.UnitCore
         public virtual void populateCommands()
         {
             CommandManagerBase.instance.populateCommands(commands);
+        }
+
+        public virtual int getActionIndex(Action action)
+        {
+            for (int i = 0; i < actionQueue.Count; i++)
+            {
+                if (actionQueue.ElementAt(i) == action) return i;
+            }
+            return -1;
         }
 
         private void OnDrawGizmos()

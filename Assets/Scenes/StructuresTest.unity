@@ -1524,10 +1524,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49bc49796a3d6cb49a20233231677018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionIndicatorParentTransform: {fileID: 541899473}
   moveActionIndicatorPrefab: {fileID: 8167167929073742156, guid: b34819483e2cbfc4ea34dd56bf2449f1, type: 3}
   attackActionIndicatorPrefab: {fileID: 0}
   interactActionIndicatorPrefab: {fileID: 0}
-  actionIndicatorParentTransform: {fileID: 541899473}
+  rallyPointIndicatorPrefab: {fileID: 0}
+  actionIndicatorLinePrefab: {fileID: 2911418083754529655, guid: 697333b33f2d8c644adbe7afdcbc7531, type: 3}
 --- !u!4 &541899473
 Transform:
   m_ObjectHideFlags: 0

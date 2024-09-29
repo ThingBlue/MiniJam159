@@ -9,25 +9,15 @@ namespace MiniJam159.CommandCore
     public class ActionIndicatorInfo
     {
         public GameObject actionIndicatorObject;
-        public List<Entity> actionEntities;
         public ActionType actionType;
         public Vector3 targetPosition;
+        public List<Entity> actionEntities = new List<Entity>();
+        public List<GameObject> lineObjects = new List<GameObject>();
 
-        public ActionIndicatorInfo()
-        {
-            actionEntities = new List<Entity>();
-        }
+        public ActionIndicatorInfo() { }
         public ActionIndicatorInfo(GameObject actionIndicatorObject, ActionType actionType, Vector3 targetPosition)
         {
             this.actionIndicatorObject = actionIndicatorObject;
-            actionEntities = new List<Entity>();
-            this.actionType = actionType;
-            this.targetPosition = targetPosition;
-        }
-        public ActionIndicatorInfo(GameObject actionIndicatorObject, Entity initialEntity, ActionType actionType, Vector3 targetPosition)
-        {
-            this.actionIndicatorObject = actionIndicatorObject;
-            actionEntities = new List<Entity> { initialEntity };
             this.actionType = actionType;
             this.targetPosition = targetPosition;
         }
@@ -37,13 +27,15 @@ namespace MiniJam159.CommandCore
     {
         #region Inspector members
 
+        public Transform actionIndicatorParentTransform;
+
         public GameObject moveActionIndicatorPrefab;
         public GameObject attackActionIndicatorPrefab;
         public GameObject interactActionIndicatorPrefab;
 
         public GameObject rallyPointIndicatorPrefab;
 
-        public Transform actionIndicatorParentTransform;
+        public GameObject actionIndicatorLinePrefab;
 
         #endregion
 
@@ -109,6 +101,12 @@ namespace MiniJam159.CommandCore
             actionIndicators.Add(newActionIndicatorInfo);
 
             return newActionIndicatorInfo;
+        }
+
+        protected virtual void destroyLines(ActionIndicatorInfo actionIndicator)
+        {
+            foreach (GameObject lineObject in actionIndicator.lineObjects) Destroy(lineObject);
+            actionIndicator.lineObjects.Clear();
         }
     }
 }
