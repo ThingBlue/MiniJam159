@@ -15,4 +15,6 @@ MonoBehaviour:
   keyBinds:
   - name: DebugPathfinding
     keys: 70000000
+  - name: DebugClosestUnoccupiedTile
+    keys: 75000000
   doubleClickMaxDelay: 0.5

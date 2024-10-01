@@ -111,6 +111,73 @@ namespace MiniJam159.GameCore
             }
         }
 
+        // Wrapper function for calculateClosestUnoccupiedTile that takes a Vector3 and returns a Vector3
+        public Vector3 getClosestUnoccupiedTilePosition(Vector3 startPosition)
+        {
+            Vector2 startTile = getTileFromPosition(startPosition);
+            Vector2 result = calculateClosestUnoccupiedTile(startTile);
+
+            // Return (-1, -1, -1) if no valid tiles found
+            if (result == -Vector2.one) return -Vector3.one;
+
+            return new Vector3(result.x, 0, result.y);
+        }
+
+        public Vector2 calculateClosestUnoccupiedTile(Vector2 startTile)
+        {
+            // Helper function for checking tile validity
+            void addTileToQueue(Vector2 tile, Queue<Vector2> queue, List<List<bool>> visitedMatrix)
+            {
+                // Convert from float to int
+                int xPosition = (int)tile.x;
+                int zPosition = (int)tile.y;
+
+                // Check if out of bounds
+                if (xPosition < 0 || xPosition >= mapXLength) return;
+                if (zPosition < 0 || zPosition >= mapZLength) return;
+
+                // Check if tile has already been visited
+                if (visitedMatrix[zPosition][xPosition] == true) return;
+
+                // Mark as visited
+                visitedMatrix[zPosition][xPosition] = true;
+
+                // Add to queue
+                queue.Enqueue(tile);
+            }
+
+            // Matrix to keep track of visited tiles
+            List<List<bool>> visitedMatrix = new List<List<bool>>();
+            for (int y = 0; y < gridMatrix.Count; y++)
+            {
+                List<bool> visitedRow = new List<bool>();
+                for (int x = 0; x < gridMatrix[y].Count; x++) visitedRow.Add(false);
+                visitedMatrix.Add(visitedRow);
+            }
+
+            // Initialize queue with start tile enqueued
+            Queue<Vector2> queue = new Queue<Vector2>();
+            queue.Enqueue(startTile);
+
+            // At worst case, loop until all tiles have been checked
+            while (queue.Count > 0)
+            {
+                Vector2 tile = queue.Dequeue();
+
+                // Check if current tile is free
+                if (!isTileOccupied((int)tile.x, (int)tile.y)) return tile;
+
+                // Enqueue all unvisited neighbours
+                addTileToQueue(new Vector2(tile.x, tile.y + 1), queue, visitedMatrix); // Above
+                addTileToQueue(new Vector2(tile.x, tile.y - 1), queue, visitedMatrix); // Below
+                addTileToQueue(new Vector2(tile.x - 1, tile.y), queue, visitedMatrix); // Left
+                addTileToQueue(new Vector2(tile.x + 1, tile.y), queue, visitedMatrix); // Right
+            }
+
+            // If no free tiles found, return (-1, -1)
+            return -Vector2.one;
+        }
+
         public Queue<Vector3> getPathQueue(Vector3 startPosition, Vector3 targetPosition, float radius)
         {
             Vector2 startTile = getTileFromPosition(startPosition);
@@ -122,6 +189,38 @@ namespace MiniJam159.GameCore
 
         public List<Vector2> calculatePath(Vector2 startTile, Vector2 targetTile)
         {
+            // Helper function for checking tile validity
+            void addTileToQueue(Vector2 tile, MinPriorityQueue<Vector2> queue, List<List<float>> costMatrix, List<List<Vector2>> predecessorMatrix, Vector2 predecessorTile, Vector2 targetTile)
+            {
+                // Convert from float to int
+                int xPosition = (int)tile.x;
+                int zPosition = (int)tile.y;
+
+                // Check if out of bounds
+                if (xPosition < 0 || xPosition >= mapXLength) return;
+                if (zPosition < 0 || zPosition >= mapZLength) return;
+
+                // Check if tile is occupied
+                if (isTileOccupied(xPosition, zPosition)) return;
+
+                float predecessorCost = costMatrix[(int)predecessorTile.y][(int)predecessorTile.x];
+
+                // Make sure we don't already have a better path to this tile
+                if (costMatrix[zPosition][xPosition] == -1 ||
+                    costMatrix[zPosition][xPosition] > predecessorCost + 1)
+                {
+                    // Calculate heuristic for this tile
+                    float heuristic = Vector2.Distance(tile, targetTile);
+
+                    // Add to matrices
+                    costMatrix[zPosition][xPosition] = predecessorCost + 1;
+                    predecessorMatrix[zPosition][xPosition] = predecessorTile;
+
+                    // Add to queue
+                    queue.add(predecessorCost + 1 + heuristic, tile);
+                }
+            }
+
             // Initialize matrices to hold calculation info
             List<List<Vector2>> predecessorMatrix = new List<List<Vector2>>();
             List<List<float>> costMatrix = new List<List<float>>();
@@ -139,7 +238,7 @@ namespace MiniJam159.GameCore
             }
 
             // Initialize priority queue and matrices with start tile
-            PriorityQueue<Vector2> queue = new PriorityQueue<Vector2>();
+            MinPriorityQueue<Vector2> queue = new MinPriorityQueue<Vector2>();
             queue.add(0, startTile);
             costMatrix[(int)startTile.y][(int)startTile.x] = 0;
 
@@ -172,37 +271,6 @@ namespace MiniJam159.GameCore
             path.Reverse();
 
             return path;
-        }
-
-        private void addTileToQueue(Vector2 tile, PriorityQueue<Vector2> queue, List<List<float>> costMatrix, List<List<Vector2>> predecessorMatrix, Vector2 predecessorTile, Vector2 targetTile)
-        {
-            // Convert from float to int
-            int xPosition = (int)tile.x;
-            int zPosition = (int)tile.y;
-
-            // Check if out of bounds
-            if (xPosition < 0 || xPosition >= mapXLength) return;
-            if (zPosition < 0 || zPosition >= mapZLength) return;
-
-            // Check if tile is occupied
-            if (isTileOccupied(xPosition, zPosition)) return;
-
-            float predecessorCost = costMatrix[(int)predecessorTile.y][(int)predecessorTile.x];
-
-            // Make sure we don't already have a better path to this tile
-            if (costMatrix[zPosition][xPosition] == -1 ||
-                costMatrix[zPosition][xPosition] > predecessorCost + 1)
-            {
-                // Calculate heuristic for this tile
-                float heuristic = Vector2.Distance(tile, targetTile);
-
-                // Add to matrices
-                costMatrix[zPosition][xPosition] = predecessorCost + 1;
-                predecessorMatrix[zPosition][xPosition] = predecessorTile;
-
-                // Add to queue
-                queue.add(predecessorCost + 1 + heuristic, tile);
-            }
         }
 
         // To simplify the path, we do linecasts from and earlier point to a later point

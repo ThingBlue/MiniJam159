@@ -144,7 +144,7 @@ namespace MiniJam159.Player
                     if (attackTarget == null || attackTarget.tag != enemyTag)
                     {
                         // No target, execute attack move instead
-                        executeAttackMove();
+                        executeAttackMove(InputManager.instance.getMousePositionInWorld());
                         break;
                     }
                     if (!EventSystem.current.IsPointerOverGameObject()) executeAttackTarget(attackTarget);
@@ -171,7 +171,7 @@ namespace MiniJam159.Player
                     // Check for cancel
                     if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
 
-                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMove();
+                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMoveCommand(InputManager.instance.getMousePositionInWorld());
                     break;
 
                 case PlayerMode.MASS_SELECT:
@@ -268,7 +268,7 @@ namespace MiniJam159.Player
                         // Harvest is hovering over unfinished building
                         else if (targetStructure != null && targetStructure.buildProgress < targetStructure.maxBuildProgress) executeBuildTarget(target);
                         // Move if none of the above
-                        else executeMove();
+                        else executeMoveCommand(InputManager.instance.getMousePositionInWorld());
                     }
                     break;
             }
@@ -331,8 +331,16 @@ namespace MiniJam159.Player
             SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes(false);
         }
 
-        public void executeMove()
+        public void executeMoveCommand(Vector3 targetPosition)
         {
+            // Make sure target is not out of bounds
+            if (targetPosition.x < 0 || targetPosition.x > GridManager.instance.mapXLength ||
+                targetPosition.z < 0 || targetPosition.z > GridManager.instance.mapZLength)
+            {
+                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                return;
+            }
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
@@ -344,8 +352,7 @@ namespace MiniJam159.Player
                 if (method != null)
                 {
                     // Invoke command method in unit using mouse position in world
-                    Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
-                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), mousePositionInWorld });
+                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), targetPosition });
                 }
             }
 
@@ -353,8 +360,16 @@ namespace MiniJam159.Player
             PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeAttackMove()
+        public void executeAttackMove(Vector3 targetPosition)
         {
+            // Make sure target is not out of bounds
+            if (targetPosition.x < 0 || targetPosition.x > GridManager.instance.mapXLength ||
+                targetPosition.z < 0 || targetPosition.z > GridManager.instance.mapZLength)
+            {
+                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                return;
+            }
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
@@ -366,8 +381,7 @@ namespace MiniJam159.Player
                 if (method != null)
                 {
                     // Invoke command method in unit using mouse position in world
-                    Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
-                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), mousePositionInWorld });
+                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), targetPosition });
 
                     Debug.Log("Attack moving");
                 }

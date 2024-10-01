@@ -18,6 +18,9 @@ namespace MiniJam159.Debugging
 
         private List<Vector2> debugPath = new List<Vector2>();
 
+        private Vector3 closestUnoccupiedTileStartPosition = Vector3.zero;
+        private Vector3 closestUnoccupiedTilePosition = Vector3.zero;
+
         // Singleton
         public static PathfindingDebugger instance;
 
@@ -38,11 +41,18 @@ namespace MiniJam159.Debugging
                 Debug.Log("Path count: " + debugPath.Count);
                 foreach (Vector2 tile in debugPath) Debug.Log(tile);
             }
+            if (InputManager.instance.getKeyDown("DebugClosestUnoccupiedTile"))
+            {
+                closestUnoccupiedTileStartPosition = InputManager.instance.getMousePositionInWorld();
+                closestUnoccupiedTilePosition = GridManager.instance.getClosestUnoccupiedTilePosition(closestUnoccupiedTileStartPosition);
+                Debug.Log("Mouse position: " + closestUnoccupiedTileStartPosition + ", closest unoccupied tile position: " + closestUnoccupiedTilePosition);
+            }
 
         }
 
         private void OnDrawGizmos()
         {
+            // Draw path
             if (debugPath.Count > 0)
             {
                 Gizmos.color = Color.red;
@@ -61,6 +71,12 @@ namespace MiniJam159.Debugging
                     Gizmos.DrawLine(position1, position2);
                 }
             }
+
+            // Draw closest unoccupied tile
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(closestUnoccupiedTileStartPosition, 0.5f);
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(closestUnoccupiedTilePosition, 0.5f);
         }
 
     }
