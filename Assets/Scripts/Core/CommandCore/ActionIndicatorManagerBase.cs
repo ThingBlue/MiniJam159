@@ -89,7 +89,6 @@ namespace MiniJam159.CommandCore
                 case ActionType.BUILD:
                     newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
                     break;
-                case ActionType.IDLE:
                 default:
                     break;
             }

@@ -18,8 +18,8 @@ TagManager:
   - 
   - 
   - Unit
+  - UnitHardCollider
   - Structure
-  - 
   - 
   - 
   - 
@@ -48,4 +48,7 @@ TagManager:
     locked: 0
   - name: Grid
     uniqueID: 1148672561
+    locked: 0
+  - name: Health Bars
+    uniqueID: 1752974335
     locked: 0

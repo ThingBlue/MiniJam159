@@ -9,6 +9,8 @@ namespace MiniJam159.Debugging
     {
         #region Inspector members
 
+        public bool debugDrawUnitPaths;
+
         public Vector2 pathfindingStartPosition = Vector2.zero;
         public Vector2 pathfindingEndPosition = Vector2.zero;
 

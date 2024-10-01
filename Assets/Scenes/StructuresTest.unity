@@ -1574,6 +1574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f6687791b239244ebc4e30939f9bf16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugDrawUnitPaths: 0
   pathfindingStartPosition: {x: 0, y: 0}
   pathfindingEndPosition: {x: 10, y: 10}
 --- !u!4 &628414039
@@ -1777,7 +1778,7 @@ MonoBehaviour:
     m_Bits: 1024
   structureLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 4096
   massSelectBoxTransform: {fileID: 401467587}
   massSelectDelay: 0.2
   massSelectMouseMoveDistance: 50
@@ -4133,7 +4134,7 @@ MonoBehaviour:
     m_Bits: 1024
   structureLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 4096
   resourceLayer:
     serializedVersion: 2
     m_Bits: 33554432

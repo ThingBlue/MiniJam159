@@ -253,11 +253,11 @@ namespace MiniJam159.Player
                         // Raycast at mouse position to check what the player is hovering over
                         GameObject target = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer | resourceLayer);
                         Entity targetEntity = null;
-                        Unit targetUnit = null;
+                        UnitBase targetUnit = null;
                         Structure targetStructure = null;
                         Resource targetResource = null;
                         if (target) targetEntity = target.GetComponent<Entity>();
-                        if (target) targetUnit = target.GetComponent<Unit>();
+                        if (target) targetUnit = target.GetComponent<UnitBase>();
                         if (target) targetStructure = target.GetComponent<Structure>();
                         if (target) targetResource = target.GetComponent<Resource>();
 
@@ -337,7 +337,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a unit component
-                Unit unit = selectedObject.GetComponent<Unit>();
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
                 MethodInfo method = unit.GetType().GetMethod("moveCommand");
@@ -359,7 +359,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a unit component
-                Unit unit = selectedObject.GetComponent<Unit>();
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
                 MethodInfo method = unit.GetType().GetMethod("attackMoveCommand");
@@ -383,7 +383,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a unit component
-                Unit unit = selectedObject.GetComponent<Unit>();
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
                 MethodInfo method = unit.GetType().GetMethod("attackCommand");
@@ -406,7 +406,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a unit component
-                Unit unit = selectedObject.GetComponent<Unit>();
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
                 MethodInfo method = unit.GetType().GetMethod("harvestCommand");
@@ -429,7 +429,7 @@ namespace MiniJam159.Player
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
                 // Check that object has a unit component
-                Unit unit = selectedObject.GetComponent<Unit>();
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
                 MethodInfo method = unit.GetType().GetMethod("buildStructureCommand");

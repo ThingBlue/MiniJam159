@@ -1,65 +1,23 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-using MiniJam159.GameCore;
+using MiniJam159.UnitCore;
 using MiniJam159.CommandCore;
+using MiniJam159.GameCore;
 using System.Linq;
+using MiniJam159.StructureCore;
 
-namespace MiniJam159.UnitCore
+namespace MiniJam159.Units
 {
-    public abstract class Unit : Entity
+    public class Unit : UnitBase
     {
-        #region Inspector members
-
-        public HealthBar healthBar;
-        public List<CommandType> commands = new List<CommandType>();
-
-        public float moveSpeed;
-        public float pathUpdateInterval;
-        public float pathfindingRadius;
-
-        public string targetTag = "Enemy"; // Tag to identify targets
-
-        public int attackDamage = 10; // Damage dealt by each attack
-        public float attackCooldown = 1.0f; // Time between attacks
-        public float detectionRadius = 5.0f; // Radius to detect the nearest target
-        public float attackRange = 2.0f; // Range within which the AI will attack
-
-        public float surroundDistance = 1.5f; // Distance to maintain around the target when surrounding
-        public float coordinationRadius = 5.0f; // Radius within which AIs coordinate their actions
-
-        #endregion
-
-        public float health;
-
-        public Queue<Action> actionQueue = new Queue<Action>();
-        public Action currentAction = null;
-
-        public Queue<Vector3> path = new Queue<Vector3>();
-        protected float pathUpdateTimer;
-
-        protected float attackTimer = 0f;
-
-        protected virtual void Start()
+        protected override void Start()
         {
-            // TEMP
-            EntityManager.instance.playerUnitObjects.Add(gameObject);
-            EntityManager.instance.playerEntityObjects.Add(gameObject);
-
-            // Start at max health
-            health = maxHealth;
-
-            // Set health bar values
-            healthBar.setMaxHealth(maxHealth);
-            healthBar.setHealth(health);
-
             // Subscribe to events
             EventManager.instance.stopCommandEvent.AddListener(onStopCommandCallback);
-        }
 
-        protected virtual void OnDestroy()
-        {
-            EntityManager.instance.playerUnitObjects.Remove(gameObject);
+            base.Start();
         }
 
         protected virtual void Update()
@@ -69,22 +27,24 @@ namespace MiniJam159.UnitCore
             attackTimer += Time.deltaTime;
         }
 
-        protected virtual void FixedUpdate()
+        protected override void FixedUpdate()
         {
-            // Handle actions
+            // Handle actions (and movement)
             if (actionQueue.Count > 0) handleActions();
 
-            // Set y position and remove velocity
-            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
-            GetComponent<Rigidbody>().velocity = Vector3.zero;
+            // Handle collisions
+            handleCollisions();
 
-            // Set mesh position
-            transform.Find("Mesh").position = new Vector3(transform.position.x, 0.4f, transform.position.z);
+            // Do movement and reset
+            transform.position += movement;
+            movement = Vector3.zero;
+
+            base.FixedUpdate();
         }
 
         #region Action handling
 
-        protected virtual void handleActions()
+        protected override void handleActions()
         {
             if (actionQueue.Count == 0) return;
 
@@ -106,6 +66,15 @@ namespace MiniJam159.UnitCore
             }
 
             // We remove actions from the queue after completing them
+        }
+
+        public virtual int getActionIndex(Action action)
+        {
+            for (int i = 0; i < actionQueue.Count; i++)
+            {
+                if (actionQueue.ElementAt(i) == action) return i;
+            }
+            return -1;
         }
 
         protected virtual void endAction()
@@ -142,7 +111,8 @@ namespace MiniJam159.UnitCore
             else
             {
                 Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.fixedDeltaTime);
-                transform.position = moveTowardsDestination;
+                movement += moveTowardsDestination - transform.position;
+                //transform.position = moveTowardsDestination;
             }
         }
 
@@ -179,7 +149,8 @@ namespace MiniJam159.UnitCore
                 {
                     // Move towards current waypoint
                     Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.deltaTime);
-                    transform.position = moveTowardsDestination;
+                    movement += moveTowardsDestination - transform.position;
+                    //transform.position = moveTowardsDestination;
                 }
             }
         }
@@ -240,36 +211,76 @@ namespace MiniJam159.UnitCore
 
         #endregion
 
-        protected abstract GameObject FindNearestTarget();
-
-        protected virtual void clearActionQueue()
+        protected override void handleCollisions()
         {
-            // Remove all actions from queue
-            while (actionQueue.Count > 0)
+            List<Collider> structureColliders = new List<Collider>();
+            foreach (Collider collider in collisions)
             {
-                // Update action indicators
-                Action action = actionQueue.Dequeue();
-                ActionIndicatorManagerBase.instance.completeAction(this, action);
+                UnitBase unit = collider.GetComponent<UnitBase>();
+                Structure structure = collider.GetComponent<Structure>();
+
+                // Save structure colliders for processing after everything else
+                if (structure != null)
+                {
+                    structureColliders.Add(collider);
+                    continue;
+                }
+
+                if (unit != null)
+                {
+                    // Don't apply forces from other idle units if self is not idle
+                    if (actionQueue.Count != 0 && unit.actionQueue.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    // Collision with soft collider, add force to self
+                    CapsuleCollider selfCapsuleCollider = GetComponent<CapsuleCollider>();
+                    CapsuleCollider otherCapsuleCollider = collider as CapsuleCollider;
+                    if (selfCapsuleCollider == null || otherCapsuleCollider == null)
+                    {
+                        Debug.LogError("Collision between non-capsule colliders");
+                        continue;
+                    }
+
+                    // Distance to push = Desired distance (Sum of radii) - Actual distance between midpoints
+                    float radiiSum = selfCapsuleCollider.radius + otherCapsuleCollider.radius;
+                    float midpointDistance = Vector3.Distance(transform.position, collider.transform.position);
+                    float distance = radiiSum - midpointDistance;
+
+                    // Calculate force to apply to self
+                    Vector3 direction = (transform.position - collider.transform.position).normalized;
+                    movement += direction * distance * 0.1f;
+                }
             }
-        }
-
-        public virtual void populateCommands()
-        {
-            CommandManagerBase.instance.populateCommands(commands);
-        }
-
-        public virtual int getActionIndex(Action action)
-        {
-            for (int i = 0; i < actionQueue.Count; i++)
+            /*
+            // Process structure colliders
+            foreach (Collider collider in structureColliders)
             {
-                if (actionQueue.ElementAt(i) == action) return i;
+                // Collision with hard collider, immediately push self out
+                CapsuleCollider selfCapsuleCollider = GetComponent<CapsuleCollider>();
+                CapsuleCollider otherCapsuleCollider = collider as CapsuleCollider;
+                if (selfCapsuleCollider == null || otherCapsuleCollider == null)
+                {
+                    Debug.LogError("Collision between non-capsule colliders");
+                    continue;
+                }
+
+                // Distance to push = Desired distance (Sum of radii) - Actual distance between midpoints
+                float radiiSum = selfCapsuleCollider.radius + otherCapsuleCollider.radius;
+                float midpointDistance = Vector3.Distance(transform.position, collider.transform.position);
+                float distance = radiiSum - midpointDistance;
+
+                // Calculate force to apply to self
+                Vector3 direction = (transform.position - collider.transform.position).normalized;
+                movement += direction * distance * 0.5f;
             }
-            return -1;
+            */
         }
 
         private void OnDrawGizmos()
         {
-            if (path.Count > 0)
+            if (path.Count > 0 && false)
             {
                 Queue<Vector3> debugPath = new Queue<Vector3>(path);
 
@@ -283,6 +294,6 @@ namespace MiniJam159.UnitCore
                 }
             }
         }
-    }
 
+    }
 }

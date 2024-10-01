@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1192815717467851610}
   - component: {fileID: 1192815717467851621}
   - component: {fileID: 378836103198072951}
-  m_Layer: 11
+  m_Layer: 12
   m_Name: BlockedTiles
   m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
@@ -108,8 +108,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1192815717685616486}
   - component: {fileID: 4903812382357214784}
+  - component: {fileID: 8724851188102702734}
   - component: {fileID: 4903812382357214785}
-  m_Layer: 11
+  m_Layer: 12
   m_Name: NestStructurePrefab
   m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
@@ -156,6 +157,20 @@ MonoBehaviour:
   maxBuildProgress: 2000
   health: 1
   buildProgress: 0
+--- !u!136 &8724851188102702734
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1192815717685616482}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 2
+  m_Height: 8
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!65 &4903812382357214785
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -165,7 +180,7 @@ BoxCollider:
   m_GameObject: {fileID: 1192815717685616482}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 4, y: 2, z: 4}
   m_Center: {x: 0, y: 1, z: 0}
@@ -180,7 +195,7 @@ GameObject:
   - component: {fileID: 8438798780804148328}
   - component: {fileID: 7078809161022449387}
   - component: {fileID: 7575017326265340983}
-  m_Layer: 11
+  m_Layer: 12
   m_Name: Mesh
   m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
@@ -209,7 +224,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3114213952801678835}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &7575017326265340983
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -263,6 +278,10 @@ PrefabInstance:
     - target: {fileID: 528110933893733787, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3439140525046331935, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1752974335
       objectReference: {fileID: 0}
     - target: {fileID: 3815671466613445445, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
       propertyPath: m_Name

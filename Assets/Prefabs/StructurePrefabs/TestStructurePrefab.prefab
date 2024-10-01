@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5914292673917186737}
   - component: {fileID: 473903977527802775}
   - component: {fileID: 6703472453650311164}
-  m_Layer: 11
+  m_Layer: 12
   m_Name: TestStructurePrefab
   m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
@@ -83,7 +83,7 @@ GameObject:
   - component: {fileID: 5914292674001413773}
   - component: {fileID: 5914292674001413810}
   - component: {fileID: 5179024281511054752}
-  m_Layer: 11
+  m_Layer: 12
   m_Name: BlockedTiles
   m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
@@ -180,7 +180,7 @@ GameObject:
   - component: {fileID: 3999988729601360319}
   - component: {fileID: 2351592743322913596}
   - component: {fileID: 3134976303323265504}
-  m_Layer: 11
+  m_Layer: 12
   m_Name: Mesh
   m_TagString: PlayerControlled
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7613787474467162148}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &3134976303323265504
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -263,6 +263,10 @@ PrefabInstance:
     - target: {fileID: 528110933893733787, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3439140525046331935, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1752974335
       objectReference: {fileID: 0}
     - target: {fileID: 3815671466613445445, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
       propertyPath: m_Name

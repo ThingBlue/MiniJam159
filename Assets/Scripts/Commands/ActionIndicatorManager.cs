@@ -29,7 +29,7 @@ namespace MiniJam159.Commands
             // Loop through new selection
             foreach (GameObject entityObject in SelectionManager.instance.selectedObjects)
             {
-                Unit unit = entityObject.GetComponent<Unit>();
+                UnitBase unit = entityObject.GetComponent<UnitBase>();
                 Structure structure = entityObject.GetComponent<Structure>();
 
                 if (unit)
@@ -110,7 +110,7 @@ namespace MiniJam159.Commands
                     actionIndicator.actionEntities.Add(entity);
 
                     // Create line for unit
-                    Unit unit = entity as Unit;
+                    UnitBase unit = entity as UnitBase;
                     if (unit != null) actionIndicator.lineObjects.Add(createLine(unit, action, actionIndicator.actionIndicatorObject.transform));
 
                     indicatorFound = true;
@@ -125,7 +125,7 @@ namespace MiniJam159.Commands
 
             // Create line for unit
             {
-                Unit unit = entity as Unit;
+                UnitBase unit = entity as UnitBase;
                 if (unit != null) newActionIndicatorInfo.lineObjects.Add(createLine(unit, action, newActionIndicatorInfo.actionIndicatorObject.transform));
             }
         }
@@ -160,7 +160,7 @@ namespace MiniJam159.Commands
                 }
 
                 // If entity has more actions queued, find the lines matching those actions and set new start transform to entity's transform
-                Unit unit = entity as Unit;
+                UnitBase unit = entity as UnitBase;
                 if (unit != null && unit.actionQueue.Count > 0)
                 {
                     Action nextAction = unit.actionQueue.Peek();
@@ -177,7 +177,7 @@ namespace MiniJam159.Commands
             }
         }
 
-        protected virtual GameObject createLine(Unit unit, Action action, Transform actionIndicatorTransform)
+        protected virtual GameObject createLine(UnitBase unit, Action action, Transform actionIndicatorTransform)
         {
             // Get index of action in unit's action queue
             int actionIndex = -1;

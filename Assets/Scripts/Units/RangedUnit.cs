@@ -3,7 +3,7 @@ using UnityEngine;
 using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
 
-namespace MiniJam159.UnitCore
+namespace MiniJam159.Units
 {
     public class RangedUnit : Unit
     {
@@ -50,6 +50,7 @@ namespace MiniJam159.UnitCore
 
         #endregion
 
+        /*
         protected override GameObject FindNearestTarget()
         {
             Collider[] hitColliders = Physics.OverlapSphere(transform.position, detectionRadius);
@@ -71,6 +72,7 @@ namespace MiniJam159.UnitCore
 
             return nearestTarget;
         }
+        */
 
         /*
         void MoveTowardsTarget()

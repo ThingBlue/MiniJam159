@@ -32,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9018097853522243624}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &774998028278408965
 MeshFilter:
@@ -138,7 +138,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4707790473072055222}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &3246201464789769867
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -182,6 +182,52 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &5070111410333541335
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5535642659054923111}
+  - component: {fileID: 7595303093646889506}
+  m_Layer: 11
+  m_Name: HardCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5535642659054923111
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5070111410333541335}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9018097853522243624}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &7595303093646889506
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5070111410333541335}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.4
+  m_Height: 1.6
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.4, z: 0}
 --- !u!1 &9018097853522243631
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,10 +257,11 @@ Transform:
   m_GameObject: {fileID: 9018097853522243631}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9115229287837767188}
+  - {fileID: 5535642659054923111}
   - {fileID: 7390341802126829762}
   - {fileID: 5219316303037808832}
   m_Father: {fileID: 0}
@@ -240,7 +287,6 @@ MonoBehaviour:
   moveSpeed: 3
   pathUpdateInterval: 0
   pathfindingRadius: 0.5
-  health: 0
   targetTag: Enemy
   attackDamage: 10
   attackCooldown: 1
@@ -248,6 +294,8 @@ MonoBehaviour:
   attackRange: 2
   surroundDistance: 1.5
   coordinationRadius: 5
+  health: 0
+  collisions: []
 --- !u!136 &5600978479329750819
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -256,7 +304,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9018097853522243631}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.4
   m_Height: 0.8
@@ -271,7 +319,7 @@ BoxCollider:
   m_GameObject: {fileID: 9018097853522243631}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.8, y: 0.8, z: 0.8}
   m_Center: {x: 0, y: 0.4, z: 0}
@@ -302,6 +350,10 @@ PrefabInstance:
       propertyPath: m_PresetInfoIsWorld
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3439140525046331935, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1752974335
+      objectReference: {fileID: 0}
     - target: {fileID: 3815671466613445445, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
       propertyPath: m_Name
       value: HealthBarCanvas
@@ -316,7 +368,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4938891945104992329, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4938891945104992329, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
       propertyPath: m_AnchorMax.x

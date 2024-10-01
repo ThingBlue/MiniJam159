@@ -183,7 +183,7 @@ namespace MiniJam159.PlayerCore
             GameObject selectedObject = SelectionManager.instance.selectedObjects[SelectionManager.instance.getFocusIndex()];
             if (selectedObject == null) return;
 
-            Unit selectedUnit = selectedObject.GetComponent<Unit>();
+            UnitBase selectedUnit = selectedObject.GetComponent<UnitBase>();
             if (selectedUnit == null) return;
 
             // Populate commands using worker's structure data list
