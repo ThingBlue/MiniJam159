@@ -80,11 +80,21 @@ namespace MiniJam159.GameCore
             return gridMatrix[z][x] != TileType.EMPTY;
         }
 
+        public bool isTileOccupied(Vector2 tile)
+        {
+            if (tile.x < 0 || tile.x >= mapXLength || tile.y < 0 || tile.y >= mapZLength)
+            {
+                throw new System.Exception("Invalid tile position");
+            }
+
+            return gridMatrix[(int)tile.y][(int)tile.x] != TileType.EMPTY;
+        }
+
         public bool isAnyTileOccupied(List<Vector2> tiles)
         {
             foreach (Vector2 tile in tiles)
             {
-                if (isTileOccupied((int)tile.x, (int)tile.y)) return true;
+                if (isTileOccupied(tile)) return true;
             }
             return false;
         }
@@ -112,10 +122,11 @@ namespace MiniJam159.GameCore
         }
 
         // Wrapper function for calculateClosestUnoccupiedTile that takes a Vector3 and returns a Vector3
-        public Vector3 getClosestUnoccupiedTilePosition(Vector3 startPosition)
+        public Vector3 getClosestFreeTilePosition(Vector3 startPosition, Vector3 targetPosition)
         {
             Vector2 startTile = getTileFromPosition(startPosition);
-            Vector2 result = calculateClosestUnoccupiedTile(startTile);
+            Vector2 targetTile = getTileFromPosition(targetPosition);
+            Vector2 result = calculateClosestFreeTile(startTile, targetTile);
 
             // Return (-1, -1, -1) if no valid tiles found
             if (result == -Vector2.one) return -Vector3.one;
@@ -123,7 +134,86 @@ namespace MiniJam159.GameCore
             return new Vector3(result.x, 0, result.y);
         }
 
-        public Vector2 calculateClosestUnoccupiedTile(Vector2 startTile)
+        // Find closest tile to startTile, prioritizing direction of targetTile
+        // startTile = Mouse position, targetTile = Entity position
+        public Vector2 calculateClosestFreeTile(Vector2 startTile, Vector2 targetTile)
+        {
+            // Helper function for checking tile validity
+            void addTileToQueue(Vector2 tile, MinPriorityQueue<Vector2> queue, List<List<float>> costMatrix, Vector2 predecessorTile, Vector2 targetTile)
+            {
+                // Convert from float to int
+                int xPosition = (int)tile.x;
+                int zPosition = (int)tile.y;
+
+                // Check if out of bounds
+                if (xPosition < 0 || xPosition >= mapXLength) return;
+                if (zPosition < 0 || zPosition >= mapZLength) return;
+
+                float predecessorCost = costMatrix[(int)predecessorTile.y][(int)predecessorTile.x];
+
+                // Make sure we don't already have a better path to this tile
+                if (costMatrix[zPosition][xPosition] == -1 || costMatrix[zPosition][xPosition] > predecessorCost + 1)
+                {
+                    // Calculate heuristic for this tile
+                    float heuristic = Vector2.Distance(tile, targetTile);
+
+                    // Moving through an occupied tile costs twice as much as moving through a regular tile
+                    // Makes the search prefer free tiles over occupied ones
+                    float cost = 1;
+                    if (isTileOccupied(tile)) cost = 2;
+
+                    // Add to queue and cost matrix with new cost + heuristic
+                    costMatrix[zPosition][xPosition] = predecessorCost + cost;
+                    queue.add(predecessorCost + cost + heuristic, tile);
+                }
+            }
+
+            // Initialize matrices to hold calculation info
+            List<List<float>> costMatrix = new List<List<float>>();
+            for (int y = 0; y < gridMatrix.Count; y++)
+            {
+                List<float> costRow = new List<float>();
+                for (int x = 0; x < gridMatrix[y].Count; x++) costRow.Add(-1);
+                costMatrix.Add(costRow);
+            }
+
+            // Initialize priority queue and matrices with start tile
+            MinPriorityQueue<Vector2> queue = new MinPriorityQueue<Vector2>();
+            queue.add(0, startTile);
+            costMatrix[(int)startTile.y][(int)startTile.x] = 0;
+
+            // Loop until free tile found or all tiles exhausted
+            while (queue.count() != 0)
+            {
+                Vector2 tile = queue.pop();
+
+                // Check if current tile is free
+                if (!isTileOccupied(tile)) return tile;
+
+                // Add neighbours to queue (Only add if cost is less)
+                addTileToQueue(new Vector2(tile.x, tile.y + 1), queue, costMatrix, tile, targetTile); // Above
+                addTileToQueue(new Vector2(tile.x, tile.y - 1), queue, costMatrix, tile, targetTile); // Below
+                addTileToQueue(new Vector2(tile.x - 1, tile.y), queue, costMatrix, tile, targetTile); // Left
+                addTileToQueue(new Vector2(tile.x + 1, tile.y), queue, costMatrix, tile, targetTile); // Right
+            }
+
+            // Return (-1, -1) if no free tiles found
+            return -Vector2.one;
+        }
+
+        // Wrapper function for calculateClosestUnoccupiedTile that takes a Vector3 and returns a Vector3
+        public Vector3 getClosestFreeTilePosition(Vector3 startPosition)
+        {
+            Vector2 startTile = getTileFromPosition(startPosition);
+            Vector2 result = calculateClosestFreeTile(startTile);
+
+            // Return (-1, -1, -1) if no valid tiles found
+            if (result == -Vector2.one) return -Vector3.one;
+
+            return new Vector3(result.x, 0, result.y);
+        }
+
+        public Vector2 calculateClosestFreeTile(Vector2 startTile)
         {
             // Helper function for checking tile validity
             void addTileToQueue(Vector2 tile, Queue<Vector2> queue, List<List<bool>> visitedMatrix)
@@ -165,7 +255,7 @@ namespace MiniJam159.GameCore
                 Vector2 tile = queue.Dequeue();
 
                 // Check if current tile is free
-                if (!isTileOccupied((int)tile.x, (int)tile.y)) return tile;
+                if (!isTileOccupied(tile)) return tile;
 
                 // Enqueue all unvisited neighbours
                 addTileToQueue(new Vector2(tile.x, tile.y + 1), queue, visitedMatrix); // Above
@@ -201,7 +291,7 @@ namespace MiniJam159.GameCore
                 if (zPosition < 0 || zPosition >= mapZLength) return;
 
                 // Check if tile is occupied
-                if (isTileOccupied(xPosition, zPosition)) return;
+                if (isTileOccupied(tile)) return;
 
                 float predecessorCost = costMatrix[(int)predecessorTile.y][(int)predecessorTile.x];
 
@@ -249,9 +339,6 @@ namespace MiniJam159.GameCore
 
                 // Check if target reached
                 if (tile == targetTile) break;
-
-                // Convert from float to int
-                float cost = costMatrix[(int)tile.y][(int)tile.x];
 
                 // Add neighbours to queue (Only add if cost is less)
                 addTileToQueue(new Vector2(tile.x, tile.y + 1), queue, costMatrix, predecessorMatrix, tile, targetTile); // Above
@@ -342,7 +429,7 @@ namespace MiniJam159.GameCore
             float currentDistance = 0f;
             while (currentDistance < distance)
             {
-                if (isTileOccupied((int)tile.x, (int)tile.y)) return true;
+                if (isTileOccupied(tile)) return true;
 
                 // Calculate the next axes along the line
                 float nextX = tile.x;

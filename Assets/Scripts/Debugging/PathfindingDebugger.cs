@@ -14,12 +14,14 @@ namespace MiniJam159.Debugging
         public Vector2 pathfindingStartPosition = Vector2.zero;
         public Vector2 pathfindingEndPosition = Vector2.zero;
 
+        public Vector3 closestUnoccupiedTileStartPosition = Vector3.zero;
+
         #endregion
 
         private List<Vector2> debugPath = new List<Vector2>();
 
-        private Vector3 closestUnoccupiedTileStartPosition = Vector3.zero;
-        private Vector3 closestUnoccupiedTilePosition = Vector3.zero;
+        private Vector3 closestUnoccupiedTileTargetPosition = Vector3.zero;
+        private Vector3 closestUnoccupiedTileResultPosition = Vector3.zero;
 
         // Singleton
         public static PathfindingDebugger instance;
@@ -44,8 +46,8 @@ namespace MiniJam159.Debugging
             if (InputManager.instance.getKeyDown("DebugClosestUnoccupiedTile"))
             {
                 closestUnoccupiedTileStartPosition = InputManager.instance.getMousePositionInWorld();
-                closestUnoccupiedTilePosition = GridManager.instance.getClosestUnoccupiedTilePosition(closestUnoccupiedTileStartPosition);
-                Debug.Log("Mouse position: " + closestUnoccupiedTileStartPosition + ", closest unoccupied tile position: " + closestUnoccupiedTilePosition);
+                closestUnoccupiedTileResultPosition = GridManager.instance.getClosestFreeTilePosition(closestUnoccupiedTileStartPosition, closestUnoccupiedTileTargetPosition);
+                Debug.Log("Mouse position: " + closestUnoccupiedTileStartPosition + ", closest unoccupied tile position: " + closestUnoccupiedTileResultPosition);
             }
 
         }
@@ -73,10 +75,12 @@ namespace MiniJam159.Debugging
             }
 
             // Draw closest unoccupied tile
-            Gizmos.color = Color.red;
+            Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(closestUnoccupiedTileStartPosition, 0.5f);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(closestUnoccupiedTileTargetPosition, 0.5f);
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(closestUnoccupiedTilePosition, 0.5f);
+            Gizmos.DrawWireSphere(closestUnoccupiedTileResultPosition, 0.5f);
         }
 
     }
