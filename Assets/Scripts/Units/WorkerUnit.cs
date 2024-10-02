@@ -61,7 +61,7 @@ namespace MiniJam159.Units
             debugText.text = carriedResources.ToString();
         }
 
-        #region Action handling
+        #region Action handlers
 
         protected override void handleActions()
         {
@@ -97,9 +97,9 @@ namespace MiniJam159.Units
 
         #endregion
 
-        #region Command handling
+        #region Command handlers
 
-        public void harvestCommand(bool addToQueue, GameObject targetObject)
+        public override void harvestCommand(bool addToQueue, GameObject targetObject)
         {
             // Clear queue if queue action button not held
             if (!addToQueue) clearActionQueue();
@@ -112,7 +112,7 @@ namespace MiniJam159.Units
             ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
-        public void buildStructureCommand(bool addToQueue, GameObject targetObject)
+        public override void buildStructureCommand(bool addToQueue, GameObject targetObject)
         {
             // Clear queue if queue action button not held
             if (!addToQueue) clearActionQueue();
@@ -125,7 +125,7 @@ namespace MiniJam159.Units
             ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
-        public void openBuildMenuCommand()
+        public override void openBuildMenuCommand()
         {
             CommandManagerBase.instance.populateCommands(buildMenuCommands);
         }

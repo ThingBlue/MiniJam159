@@ -12,12 +12,55 @@ namespace MiniJam159.Units
 {
     public class Unit : UnitBase
     {
-        protected override void Start()
-        {
-            // Subscribe to events
-            EventManager.instance.stopCommandEvent.AddListener(onStopCommandCallback);
+        #region Inspector members
 
-            base.Start();
+        public HealthBar healthBar;
+
+        public float moveSpeed;
+        public float pathUpdateInterval;
+        public float pathfindingRadius;
+
+        public string targetTag = "Enemy"; // Tag to identify targets
+
+        public int attackDamage = 10; // Damage dealt by each attack
+        public float attackCooldown = 1.0f; // Time between attacks
+        public float detectionRadius = 5.0f; // Radius to detect the nearest target
+        public float attackRange = 2.0f; // Range within which the AI will attack
+
+        public float surroundDistance = 1.5f; // Distance to maintain around the target when surrounding
+        public float coordinationRadius = 5.0f; // Radius within which AIs coordinate their actions
+
+        #endregion
+
+        public float health;
+        protected float attackTimer = 0f;
+
+        // Pathfinding
+        public Queue<Vector3> path = new Queue<Vector3>();
+        protected float pathUpdateTimer;
+
+        // Collisions
+        public List<Collider> collisions = new List<Collider>();
+
+        protected Vector3 movement = Vector3.zero;
+
+        protected virtual void Start()
+        {
+            // TEMP
+            EntityManager.instance.playerUnitObjects.Add(gameObject);
+            EntityManager.instance.playerEntityObjects.Add(gameObject);
+
+            // Start at max health
+            health = maxHealth;
+
+            // Set health bar values
+            healthBar.setMaxHealth(maxHealth);
+            healthBar.setHealth(health);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            EntityManager.instance.playerUnitObjects.Remove(gameObject);
         }
 
         protected virtual void Update()
@@ -27,7 +70,7 @@ namespace MiniJam159.Units
             attackTimer += Time.deltaTime;
         }
 
-        protected override void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             // Handle actions (and movement)
             if (actionQueue.Count > 0) handleActions();
@@ -39,12 +82,17 @@ namespace MiniJam159.Units
             transform.position += movement;
             movement = Vector3.zero;
 
-            base.FixedUpdate();
+            // Set y position and remove velocity
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+            // Set mesh position
+            transform.Find("Mesh").position = new Vector3(transform.position.x, 0.4f, transform.position.z);
         }
 
-        #region Action handling
+        #region Action handlers
 
-        protected override void handleActions()
+        protected virtual void handleActions()
         {
             if (actionQueue.Count == 0) return;
 
@@ -84,6 +132,17 @@ namespace MiniJam159.Units
 
             // Remove self from action indicator list
             ActionIndicatorManagerBase.instance.completeAction(this, completedAction);
+        }
+
+        protected virtual void clearActionQueue()
+        {
+            // Remove all actions from queue
+            while (actionQueue.Count > 0)
+            {
+                // Update action indicators
+                Action action = actionQueue.Dequeue();
+                ActionIndicatorManagerBase.instance.completeAction(this, action);
+            }
         }
 
         protected virtual void handleMoveAction(MoveAction action)
@@ -162,12 +221,27 @@ namespace MiniJam159.Units
 
         #endregion
 
-        #region Command handling
+        #region Command handlers
 
-        public virtual void moveCommand(bool addToQueue, Vector3 targetPosition)
+        public override void stopCommand()
+        {
+            // Remove all actions from queue
+            clearActionQueue();
+        }
+
+        public override void moveCommand(bool addToQueue, Vector3 targetPosition)
         {
             // Clear queue if queue action button not held
             if (!addToQueue) clearActionQueue();
+
+            // Check if target position is occupied
+            if (GridManager.instance.isTileOccupied(GridManager.instance.getTileFromPosition(targetPosition)))
+            {
+                // Find closest free position to move to
+                targetPosition = GridManager.instance.getClosestFreeTilePosition(targetPosition, transform.position);
+            }
+
+            // Check if target position is accessible
 
             // Enqueue new action
             Action newAction = new MoveAction(targetPosition);
@@ -177,7 +251,7 @@ namespace MiniJam159.Units
             ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
-        public virtual void attackCommand(bool addToQueue, GameObject targetObject)
+        public override void attackCommand(bool addToQueue, GameObject targetObject)
         {
             // Clear queue if queue action button not held
             if (!addToQueue) clearActionQueue();
@@ -190,7 +264,7 @@ namespace MiniJam159.Units
             ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
-        public virtual void attackMoveCommand(bool addToQueue, Vector3 targetPosition)
+        public override void attackMoveCommand(bool addToQueue, Vector3 targetPosition)
         {
             // Clear queue if queue action button not held
             if (!addToQueue) clearActionQueue();
@@ -203,15 +277,9 @@ namespace MiniJam159.Units
             ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
-        protected virtual void onStopCommandCallback()
-        {
-            // Remove all actions from queue
-            clearActionQueue();
-        }
-
         #endregion
 
-        protected override void handleCollisions()
+        protected virtual void handleCollisions()
         {
             List<Collider> structureColliders = new List<Collider>();
             foreach (Collider collider in collisions)
@@ -276,6 +344,16 @@ namespace MiniJam159.Units
                 movement += direction * distance * 0.5f;
             }
             */
+        }
+
+        protected virtual void OnTriggerEnter(Collider other)
+        {
+            collisions.Add(other);
+        }
+
+        protected virtual void OnTriggerExit(Collider other)
+        {
+            collisions.Remove(other);
         }
 
         private void OnDrawGizmos()

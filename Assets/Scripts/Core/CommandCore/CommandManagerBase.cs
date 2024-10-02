@@ -7,7 +7,7 @@ namespace MiniJam159.CommandCore
 {
     public class CommandManagerBase : MonoBehaviour
     {
-        public List<Command> activeCommands;
+        public List<Command> activeCommands = new List<Command>();
 
         // Singleton
         public static CommandManagerBase instance;
@@ -19,23 +19,14 @@ namespace MiniJam159.CommandCore
             else Destroy(this);
         }
 
-        protected void Start()
+        public virtual void executeCommand(int index)
         {
-            activeCommands = new List<Command>();
+            // See CommandManager::executeCommand(int index)
         }
 
-        public void executeCommand(int index)
+        public virtual void clearCommands()
         {
-            Debug.Log("Executing command: " + activeCommands[index]);
-            if (activeCommands[index] == null) return;
-
-            activeCommands[index].execute();
-        }
-
-        public void clearCommands()
-        {
-            activeCommands.Clear();
-            for (int i = 0; i < 12; i++) activeCommands.Add(null);
+            // See CommandManager::clearCommands()
         }
 
         public virtual void populateCommands(List<CommandType> newCommandTypes)

@@ -15,9 +15,85 @@ namespace MiniJam159.Player
 {
     public class SelectionController : SelectionControllerBase
     {
+        #region Inspector members
+
+        public LayerMask unitLayer;
+        public LayerMask structureLayer;
+
+        public RectTransform massSelectBoxTransform;
+        public float selectionRaycastDistance;
+
+        public bool drawMassSelectBoxCastGizmo;
+
+        #endregion
+
+        public GameObject hoveredObject;
+
+        protected virtual void Update()
+        {
+            // DEBUG
+            if (InputManager.instance.getKeyDown("CreateSquad")) createSquadFromCurrentSelection();
+
+        }
+
+        public override void updateMouseHover()
+        {
+            // Raycast from mouse and grab first hit
+            LayerMask raycastMask = unitLayer | structureLayer;
+            GameObject hitObject = InputManager.instance.mouseRaycastObject(raycastMask);
+
+            // Handle outline of previous hovered object
+            if (hoveredObject != null && hitObject != hoveredObject)
+            {
+                // Reset outline of previous object
+                if (SelectionManager.instance.selectedObjects.Contains(hoveredObject))
+                {
+                    // Set outline back to selected
+                    hoveredObject.GetComponent<Entity>().setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.selectedOutlineColor);
+                }
+                else
+                {
+                    // Clear outline from previous hovered object
+                    hoveredObject.GetComponent<Entity>().clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                }
+            }
+
+            // Handle outline of new hovered object
+            if (hitObject != null)// && hitObject != hoveredObject)
+            {
+                Entity hitEntity = hitObject.GetComponent<Entity>();
+                if (hitEntity == null) Debug.Log("hitEntity is null for object " + hitObject);
+
+                // Add outline to new hovered object
+                if (InputManager.instance.getKey("Deselect"))
+                {
+                    // Only apply deselect outline if object is selected
+                    if (SelectionManager.instance.selectedObjects.Contains(hitObject))
+                    {
+                        // Deselect
+                        hitEntity.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.deselectOutlineColor);
+                    }
+                    // Deselecting but current object is not selected
+                    else
+                    {
+                        // Clear outline
+                        hitEntity.clearOutline(SelectionManager.instance.selectedOutlineMaterial);
+                    }
+                }
+                else
+                {
+                    // Regular hover
+                    hitEntity.setOutline(SelectionManager.instance.selectedOutlineMaterial, SelectionManager.instance.hoveredOutlineColor);
+                }
+            }
+
+            // Set hovered object
+            hoveredObject = hitObject;
+        }
+
         public override void updateMassSelectBox()
         {
-            bool massSelecting = (PlayerModeManager.instance.playerMode == PlayerMode.MASS_SELECT);
+            bool massSelecting = (PlayerControllerBase.instance.playerMode == PlayerMode.MASS_SELECT);
             massSelectBoxTransform.gameObject.GetComponent<Image>().enabled = massSelecting;
             if (!massSelecting) return;
 
@@ -239,7 +315,7 @@ namespace MiniJam159.Player
             executeSelect(newSelection);
 
             // Reset mass select
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            PlayerControllerBase.instance.playerMode = PlayerMode.NORMAL;
         }
 
         // Takes a list of new selected objects and adds them to selection manager
@@ -433,7 +509,7 @@ namespace MiniJam159.Player
             GameObject newSquadDisplayBox = SquadPanelManagerBase.instance.createSquadDisplayBox(newSquad);
         }
 
-        public override void addToSquad()
+        public virtual void addToSquad()
         {
 
         }
@@ -503,31 +579,6 @@ namespace MiniJam159.Player
                 Structure newStructure = selectedObject.GetComponent<Structure>();
                 newStructure.populateCommands();
             }
-        }
-
-        protected override void onOpenBuildMenuCommandCallback()
-        {
-            // First selected unit must be a worker
-            if (SelectionManager.instance.selectedObjects.Count == 0) return;
-
-            GameObject selectedObject = SelectionManager.instance.selectedObjects[SelectionManager.instance.getFocusIndex()];
-            if (selectedObject == null) return;
-
-            UnitBase selectedUnit = selectedObject.GetComponent<UnitBase>();
-            if (selectedUnit == null) return;
-
-            // Populate commands using worker's structure data list
-            MethodInfo method = selectedUnit.GetType().GetMethod("openBuildMenuCommand");
-            if (method != null)
-            {
-                // Invoke attack command method in ai using transform of target
-                method.Invoke(selectedUnit, new object[] { });
-            }
-        }
-
-        protected override void onCancelBuildMenuCommandCallback()
-        {
-            populateCommands();
         }
 
         protected void OnDrawGizmos()

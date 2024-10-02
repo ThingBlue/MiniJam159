@@ -270,8 +270,12 @@ namespace MiniJam159.GameCore
 
         public Queue<Vector3> getPathQueue(Vector3 startPosition, Vector3 targetPosition, float radius)
         {
+            // Find tile positions from given positions
             Vector2 startTile = getTileFromPosition(startPosition);
             Vector2 targetTile = getTileFromPosition(targetPosition);
+            //if (isTileOccupied(targetTile)) targetTile = calculateClosestFreeTile(targetTile, startTile);
+
+            // Calculate path
             List<Vector2> fullPath = calculatePath(startTile, targetTile);
             List<Vector2> simplifiedPath = simplifyPath(fullPath, radius);
             return pathToQueue(simplifiedPath);

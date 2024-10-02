@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,10 +12,11 @@ using MiniJam159.StructureCore;
 using MiniJam159.CommandCore;
 using MiniJam159.Resources;
 using MiniJam159.UICore;
+using static UnityEngine.GraphicsBuffer;
 
 namespace MiniJam159.Player
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : PlayerControllerBase
     {
         #region Inspector members
 
@@ -51,16 +51,6 @@ namespace MiniJam159.Player
 
         private float massSelectStartTimer;
 
-        // Singleton
-        public static PlayerController instance;
-
-        private void Awake()
-        {
-            // Singleton
-            if (instance == null) instance = this;
-            else Destroy(this);
-        }
-
         private void Update()
         {
             // Mouse
@@ -74,7 +64,7 @@ namespace MiniJam159.Player
             mouseScroll += Input.GetAxis("Mouse ScrollWheel");
 
             // Keyboard
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
+            if (playerMode == PlayerMode.NORMAL)
             {
                 if (InputManager.instance.getKeyDown("QCommand")) CommandManagerBase.instance.executeCommand(0);
                 if (InputManager.instance.getKeyDown("WCommand")) CommandManagerBase.instance.executeCommand(1);
@@ -117,7 +107,7 @@ namespace MiniJam159.Player
             CameraController.instance.zoomCamera(mouseScroll);
 
             // Handle input based on state
-            switch (PlayerModeManager.instance.playerMode)
+            switch (playerMode)
             {
                 case PlayerMode.STRUCTURE_PLACEMENT:
                     if (mouse0Down)
@@ -126,7 +116,7 @@ namespace MiniJam159.Player
                         GameObject newStructureObject = StructureManager.instance.finishPlacement();
 
                         // Send selected workers to build structure
-                        if (newStructureObject) executeBuildTarget(newStructureObject);
+                        if (newStructureObject) executeBuildCommand(newStructureObject);
 
                         ignoreNextMouse0Up = true;
                     }
@@ -135,7 +125,7 @@ namespace MiniJam159.Player
 
                 case PlayerMode.ATTACK_TARGET:
                     // Check for cancel
-                    if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                    if (cancelCommandKeyDown) playerMode = PlayerMode.NORMAL;
 
                     // Wait for player input
                     if (!mouse0Down) break;
@@ -144,15 +134,15 @@ namespace MiniJam159.Player
                     if (attackTarget == null || attackTarget.tag != enemyTag)
                     {
                         // No target, execute attack move instead
-                        executeAttackMove(InputManager.instance.getMousePositionInWorld());
+                        executeAttackMoveCommand(InputManager.instance.getMousePositionInWorld());
                         break;
                     }
-                    if (!EventSystem.current.IsPointerOverGameObject()) executeAttackTarget(attackTarget);
+                    if (!EventSystem.current.IsPointerOverGameObject()) executeAttackCommand(attackTarget);
                     break;
 
                 case PlayerMode.HARVEST_TARGET:
                     // Check for cancel
-                    if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                    if (cancelCommandKeyDown) playerMode = PlayerMode.NORMAL;
 
                     // Wait for player input
                     if (!mouse0Down) break;
@@ -161,15 +151,15 @@ namespace MiniJam159.Player
                     if (resourceTarget == null)
                     {
                         // No target, cancel attack command
-                        PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                        playerMode = PlayerMode.NORMAL;
                         return;
                     }
-                    if (!EventSystem.current.IsPointerOverGameObject()) executeHarvestTarget(resourceTarget);
+                    if (!EventSystem.current.IsPointerOverGameObject()) executeHarvestCommand(resourceTarget);
                     break;
 
                 case PlayerMode.MOVE_TARGET:
                     // Check for cancel
-                    if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                    if (cancelCommandKeyDown) playerMode = PlayerMode.NORMAL;
 
                     if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMoveCommand(InputManager.instance.getMousePositionInWorld());
                     break;
@@ -178,7 +168,7 @@ namespace MiniJam159.Player
                     // Check for cancel
                     if (cancelCommandKeyDown || mouse1Down)
                     {
-                        PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                        playerMode = PlayerMode.NORMAL;
                         canSelect = false;
                     }
 
@@ -227,7 +217,7 @@ namespace MiniJam159.Player
                             Vector3.Distance(SelectionControllerBase.instance.massSelectStartPosition, Input.mousePosition) > SelectionController.instance.massSelectMouseMoveDistance)
                         {
                             // Start mass select
-                            PlayerModeManager.instance.playerMode = PlayerMode.MASS_SELECT;
+                            playerMode = PlayerMode.MASS_SELECT;
                         }
                     }
                     else
@@ -262,11 +252,11 @@ namespace MiniJam159.Player
                         if (target) targetResource = target.GetComponent<Resource>();
 
                         // Attack if hovering over enemy unit or structure
-                        if (targetEntity != null && target.tag == enemyTag) executeAttackTarget(target);
+                        if (targetEntity != null && target.tag == enemyTag) executeAttackCommand(target);
                         // Harvest is hovering over resource
-                        else if (targetResource != null) executeHarvestTarget(target);
+                        else if (targetResource != null) executeHarvestCommand(target);
                         // Harvest is hovering over unfinished building
-                        else if (targetStructure != null && targetStructure.buildProgress < targetStructure.maxBuildProgress) executeBuildTarget(target);
+                        else if (targetStructure != null && targetStructure.buildProgress < targetStructure.maxBuildProgress) executeBuildCommand(target);
                         // Move if none of the above
                         else executeMoveCommand(InputManager.instance.getMousePositionInWorld());
                     }
@@ -274,7 +264,7 @@ namespace MiniJam159.Player
             }
 
             // Don't allow start of mass select when occupied
-            if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL && PlayerModeManager.instance.playerMode != PlayerMode.MASS_SELECT)
+            if (playerMode != PlayerMode.NORMAL && playerMode != PlayerMode.MASS_SELECT)
             {
                 SelectionControllerBase.instance.massSelectStartPosition = Input.mousePosition;
                 canSelect = false;
@@ -331,13 +321,31 @@ namespace MiniJam159.Player
             SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes(false);
         }
 
-        public void executeMoveCommand(Vector3 targetPosition)
+        #region Command executors
+
+        public override void executeStopCommand()
+        {
+            // Invoke command on all selected units
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                // Check that object has a unit component
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
+                if (unit == null) continue;
+
+                unit.stopCommand();
+            }
+
+            // Finish command
+            playerMode = PlayerMode.NORMAL;
+        }
+
+        public override void executeMoveCommand(Vector3 targetPosition)
         {
             // Make sure target is not out of bounds
             if (targetPosition.x < 0 || targetPosition.x > GridManager.instance.mapXLength ||
                 targetPosition.z < 0 || targetPosition.z > GridManager.instance.mapZLength)
             {
-                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                playerMode = PlayerMode.NORMAL;
                 return;
             }
 
@@ -348,25 +356,21 @@ namespace MiniJam159.Player
                 UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
-                MethodInfo method = unit.GetType().GetMethod("moveCommand");
-                if (method != null)
-                {
-                    // Invoke command method in unit using mouse position in world
-                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), targetPosition });
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.moveCommand(addToQueue, targetPosition);
             }
 
             // Finish command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeAttackMove(Vector3 targetPosition)
+        public override void executeAttackMoveCommand(Vector3 targetPosition)
         {
             // Make sure target is not out of bounds
             if (targetPosition.x < 0 || targetPosition.x > GridManager.instance.mapXLength ||
                 targetPosition.z < 0 || targetPosition.z > GridManager.instance.mapZLength)
             {
-                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                playerMode = PlayerMode.NORMAL;
                 return;
             }
 
@@ -377,21 +381,15 @@ namespace MiniJam159.Player
                 UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
-                MethodInfo method = unit.GetType().GetMethod("attackMoveCommand");
-                if (method != null)
-                {
-                    // Invoke command method in unit using mouse position in world
-                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), targetPosition });
-
-                    Debug.Log("Attack moving");
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.attackMoveCommand(addToQueue, targetPosition);
             }
 
             // Finish command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeAttackTarget(GameObject target)
+        public override void executeAttackCommand(GameObject target)
         {
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
@@ -400,21 +398,15 @@ namespace MiniJam159.Player
                 UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
-                MethodInfo method = unit.GetType().GetMethod("attackCommand");
-                if (method != null)
-                {
-                    // Invoke attack command method in unit using transform of target
-                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), target });
-
-                    Debug.Log("Attacking " + target);
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.attackCommand(addToQueue, target);
             }
 
             // Finish attack command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeHarvestTarget(GameObject target)
+        public override void executeHarvestCommand(GameObject target)
         {
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
@@ -423,21 +415,15 @@ namespace MiniJam159.Player
                 UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
-                MethodInfo method = unit.GetType().GetMethod("harvestCommand");
-                if (method != null)
-                {
-                    // Invoke command method in unit using transform of target
-                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), target });
-
-                    Debug.Log("Harvesting " + target);
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.harvestCommand(addToQueue, target);
             }
 
             // Finish attack command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeBuildTarget(GameObject target)
+        public override void executeBuildCommand(GameObject target)
         {
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
@@ -446,18 +432,33 @@ namespace MiniJam159.Player
                 UnitBase unit = selectedObject.GetComponent<UnitBase>();
                 if (unit == null) continue;
 
-                MethodInfo method = unit.GetType().GetMethod("buildStructureCommand");
-                if (method != null)
-                {
-                    // Invoke command method in unit using transform of target
-                    method.Invoke(unit, new object[] { InputManager.instance.getKey("QueueCommand"), target });
-
-                    Debug.Log("Building " + target);
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.buildStructureCommand(addToQueue, target);
             }
 
             // Finish attack command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
+
+        public override void executeOpenBuildMenuCommand()
+        {
+            // First selected unit must be a worker
+            if (SelectionManager.instance.selectedObjects.Count == 0) return;
+
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[SelectionManager.instance.getFocusIndex()];
+            if (selectedObject == null) return;
+
+            UnitBase unit = selectedObject.GetComponent<UnitBase>();
+            if (unit == null) return;
+
+            unit.openBuildMenuCommand();
+        }
+
+        public override void executeCancelBuildMenuCommand()
+        {
+            SelectionControllerBase.instance.populateCommands();
+        }
+
+        #endregion
     }
 }

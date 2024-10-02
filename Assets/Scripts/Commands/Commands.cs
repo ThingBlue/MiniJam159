@@ -22,7 +22,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.MOVE_TARGET;
+            if (PlayerControllerBase.instance.playerMode == PlayerMode.NORMAL) PlayerControllerBase.instance.playerMode = PlayerMode.MOVE_TARGET;
         }
     }
 
@@ -35,7 +35,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.ATTACK_TARGET;
+            if (PlayerControllerBase.instance.playerMode == PlayerMode.NORMAL) PlayerControllerBase.instance.playerMode = PlayerMode.ATTACK_TARGET;
         }
     }
 
@@ -48,7 +48,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            EventManager.instance.stopCommandEvent.Invoke();
+            PlayerControllerBase.instance.executeStopCommand();
         }
     }
 
@@ -61,7 +61,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL) PlayerModeManager.instance.playerMode = PlayerMode.HARVEST_TARGET;
+            if (PlayerControllerBase.instance.playerMode == PlayerMode.NORMAL) PlayerControllerBase.instance.playerMode = PlayerMode.HARVEST_TARGET;
         }
     }
 
@@ -74,7 +74,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            EventManager.instance.openBuildMenuCommandEvent.Invoke();
+            PlayerControllerBase.instance.executeOpenBuildMenuCommand();
         }
     }
 
@@ -87,7 +87,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            EventManager.instance.cancelBuildMenuCommandEvent.Invoke();
+            PlayerControllerBase.instance.executeCancelBuildMenuCommand();
         }
     }
 
@@ -100,7 +100,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL) return;
+            if (PlayerControllerBase.instance.playerMode != PlayerMode.NORMAL) return;
 
             EventManager.instance.buildNestCommandEvent.Invoke();
         }
@@ -115,7 +115,7 @@ namespace MiniJam159.Commands
 
         public override void execute()
         {
-            if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL) return;
+            if (PlayerControllerBase.instance.playerMode != PlayerMode.NORMAL) return;
 
             EventManager.instance.buildWombCommandEvent.Invoke();
         }

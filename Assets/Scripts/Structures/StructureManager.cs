@@ -54,7 +54,7 @@ namespace MiniJam159.Structures
 
         private void FixedUpdate()
         {
-            bool inPlacementMode = (PlayerModeManager.instance.playerMode == PlayerMode.STRUCTURE_PLACEMENT);
+            bool inPlacementMode = (PlayerControllerBase.instance.playerMode == PlayerMode.STRUCTURE_PLACEMENT);
             // Toggle grid guides
             if (previousInPlacementMode != inPlacementMode)
             {
@@ -115,7 +115,7 @@ namespace MiniJam159.Structures
             placementStructureSize = structurePrefab.GetComponent<Structure>().size;
 
             // Begin placement
-            PlayerModeManager.instance.playerMode = PlayerMode.STRUCTURE_PLACEMENT;
+            PlayerControllerBase.instance.playerMode = PlayerMode.STRUCTURE_PLACEMENT;
         }
 
         public GameObject finishPlacement()
@@ -142,7 +142,7 @@ namespace MiniJam159.Structures
             if (!isPlacementBlocked(startPosition))
             {
                 // Complete placement
-                PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                PlayerControllerBase.instance.playerMode = PlayerMode.NORMAL;
                 GridManager.instance.occupyTiles(startPosition, placementStructureSize, TileType.BUILDING);
 
                 // Instantiate strucutre
@@ -185,7 +185,7 @@ namespace MiniJam159.Structures
 
         public void cancelPlacement()
         {
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            PlayerControllerBase.instance.playerMode = PlayerMode.NORMAL;
         }
 
         private bool isPlacementBlocked(Vector3 startPosition)

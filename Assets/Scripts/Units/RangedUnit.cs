@@ -14,7 +14,7 @@ namespace MiniJam159.Units
         #endregion
 
 
-        #region Action handling
+        #region Action handlers
 
         protected override void handleActions()
         {
@@ -46,7 +46,7 @@ namespace MiniJam159.Units
 
         #endregion
 
-        #region Command handling
+        #region Command handlers
 
         #endregion
 

@@ -9,6 +9,20 @@ namespace MiniJam159.Commands
 {
     public class CommandManager : CommandManagerBase
     {
+        public override void executeCommand(int index)
+        {
+            Debug.Log("Executing command: " + activeCommands[index]);
+            if (activeCommands[index] == null) return;
+
+            activeCommands[index].execute();
+        }
+
+        public override void clearCommands()
+        {
+            activeCommands.Clear();
+            for (int i = 0; i < 12; i++) activeCommands.Add(null);
+        }
+
         public override void populateCommands(List<CommandType> newCommandTypes)
         {
             activeCommands.Clear();

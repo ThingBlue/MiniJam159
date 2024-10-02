@@ -13,6 +13,55 @@ namespace MiniJam159.Commands
 {
     public class ActionIndicatorManager : ActionIndicatorManagerBase
     {
+        #region Inspector members
+
+        public Transform actionIndicatorParentTransform;
+
+        public GameObject moveActionIndicatorPrefab;
+        public GameObject attackActionIndicatorPrefab;
+        public GameObject interactActionIndicatorPrefab;
+
+        public GameObject rallyPointIndicatorPrefab;
+
+        public GameObject actionIndicatorLinePrefab;
+
+        #endregion
+
+        public List<ActionIndicatorInfo> actionIndicators = new List<ActionIndicatorInfo>();
+
+        protected virtual ActionIndicatorInfo createActionIndicator(ActionType actionType, Vector3 targetPosition)
+        {
+            GameObject newActionIndicator = null;
+            switch (actionType)
+            {
+                case ActionType.MOVE:
+                    newActionIndicator = Instantiate(moveActionIndicatorPrefab, actionIndicatorParentTransform);
+                    break;
+                case ActionType.ATTACK:
+                    newActionIndicator = Instantiate(attackActionIndicatorPrefab, actionIndicatorParentTransform);
+                    break;
+                case ActionType.ATTACK_MOVE:
+                    newActionIndicator = Instantiate(attackActionIndicatorPrefab, actionIndicatorParentTransform);
+                    break;
+                case ActionType.HARVEST:
+                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
+                    break;
+                case ActionType.BUILD:
+                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
+                    break;
+                default:
+                    break;
+            }
+            if (newActionIndicator == null) return null;
+            newActionIndicator.transform.position = targetPosition;
+
+            // Add new info to list
+            ActionIndicatorInfo newActionIndicatorInfo = new ActionIndicatorInfo(newActionIndicator, actionType, targetPosition);
+            actionIndicators.Add(newActionIndicatorInfo);
+
+            return newActionIndicatorInfo;
+        }
+
         // Called upon new selection
         public override void refreshActionIndicators()
         {
@@ -213,6 +262,12 @@ namespace MiniJam159.Commands
             newLineObject.GetComponent<ActionIndicatorLine>().endTransform = endTransform;
 
             return newLineObject;
+        }
+
+        protected virtual void destroyLines(ActionIndicatorInfo actionIndicator)
+        {
+            foreach (GameObject lineObject in actionIndicator.lineObjects) Destroy(lineObject);
+            actionIndicator.lineObjects.Clear();
         }
 
     }
