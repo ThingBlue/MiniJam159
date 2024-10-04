@@ -7,10 +7,8 @@ namespace MiniJam159.CommandCore
     public enum CommandType
     {
         NULL = 0,
-        MOVE,
-        ATTACK,
         STOP,
-        HARVEST,
+
         OPEN_BUILD_MENU,
         CANCEL_BUILD_MENU,
 
@@ -22,8 +20,6 @@ namespace MiniJam159.CommandCore
     {
         public CommandType commandType;
         public string tooltip = "DEFAULT COMMAND TOOLTIP";
-
-        public virtual void initialize() { }
 
         public virtual void execute()
         {

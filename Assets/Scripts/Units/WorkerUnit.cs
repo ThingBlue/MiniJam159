@@ -112,7 +112,7 @@ namespace MiniJam159.Units
             ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
-        public override void buildStructureCommand(bool addToQueue, GameObject targetObject)
+        public override void buildCommand(bool addToQueue, GameObject targetObject)
         {
             // Clear queue if queue action button not held
             if (!addToQueue) clearActionQueue();

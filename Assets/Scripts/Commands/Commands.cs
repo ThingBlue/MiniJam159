@@ -10,25 +10,37 @@ using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.Structures;
+using MiniJam159.UnitCore;
 
 namespace MiniJam159.Commands
 {
-    public class MoveCommand : Command
+    public class StopCommand : Command
     {
-        public override void initialize()
+        public StopCommand()
         {
-            tooltip = "<b>Move</b>\nMoves the selected units to target location";
+            tooltip = "<b>Stop</b>\nSelected units will stop moving and attack enemies in range";
         }
 
         public override void execute()
         {
-            if (PlayerControllerBase.instance.playerMode == PlayerMode.NORMAL) PlayerControllerBase.instance.playerMode = PlayerMode.MOVE_TARGET;
+            // Invoke command on all selected units
+            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
+            {
+                // Check that object has a unit component
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
+                if (unit == null) continue;
+
+                unit.stopCommand();
+            }
+
+            // Finish command
+            PlayerControllerBase.instance.playerMode = PlayerMode.NORMAL;
         }
     }
 
     public class AttackCommand : Command
     {
-        public override void initialize()
+        public AttackCommand()
         {
             tooltip = "<b>Attack</b>\nAttacks target enemy unit";
         }
@@ -39,61 +51,44 @@ namespace MiniJam159.Commands
         }
     }
 
-    public class StopCommand : Command
-    {
-        public override void initialize()
-        {
-            tooltip = "<b>Stop</b>\nSelected units will stop moving and attack enemies in range";
-        }
-
-        public override void execute()
-        {
-            PlayerControllerBase.instance.executeStopCommand();
-        }
-    }
-
-    public class HarvestCommand : Command
-    {
-        public override void initialize()
-        {
-            tooltip = "<b>Harvest</b>\nHarvests the target resource";
-        }
-
-        public override void execute()
-        {
-            if (PlayerControllerBase.instance.playerMode == PlayerMode.NORMAL) PlayerControllerBase.instance.playerMode = PlayerMode.HARVEST_TARGET;
-        }
-    }
-
     public class OpenBuildMenuCommand : Command
     {
-        public override void initialize()
+        public OpenBuildMenuCommand()
         {
             tooltip = "<b>Build</b>\nOpens the build menu";
         }
 
         public override void execute()
         {
-            PlayerControllerBase.instance.executeOpenBuildMenuCommand();
+            // First selected unit must be a worker
+            if (SelectionManager.instance.selectedObjects.Count == 0) return;
+
+            GameObject selectedObject = SelectionManager.instance.selectedObjects[SelectionManager.instance.getFocusIndex()];
+            if (selectedObject == null) return;
+
+            UnitBase unit = selectedObject.GetComponent<UnitBase>();
+            if (unit == null) return;
+
+            unit.openBuildMenuCommand();
         }
     }
 
     public class CancelBuildMenuCommand : Command
     {
-        public override void initialize()
+        public CancelBuildMenuCommand()
         {
             tooltip = "<b>Cancel</b>\nCloses the build menu";
         }
 
         public override void execute()
         {
-            PlayerControllerBase.instance.executeCancelBuildMenuCommand();
+            SelectionControllerBase.instance.populateCommands();
         }
     }
 
     public class BuildNestCommand : Command
     {
-        public override void initialize()
+        public BuildNestCommand()
         {
             tooltip = "<b>Nest</b>\nThe core of the colony.";
         }
@@ -108,9 +103,9 @@ namespace MiniJam159.Commands
 
     public class BuildWombCommand : Command
     {
-        public override void initialize()
+        public BuildWombCommand()
         {
-            tooltip = "<b>Nest</b>\nThe core of the colony.";
+            tooltip = "<b>Womb</b>\nCreates basic melee units.";
         }
 
         public override void execute()

@@ -14,7 +14,8 @@ namespace MiniJam159.CommandCore
 
         // Worker jobs
         HARVEST,
-        BUILD
+        BUILD,
+        PLACE_STRUCTURE
     }
 
     public class Action

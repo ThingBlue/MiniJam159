@@ -27,10 +27,12 @@ namespace MiniJam159.UnitCore
         public virtual void moveCommand(bool addToQueue, Vector3 targetPosition) { }
         public virtual void attackCommand(bool addToQueue, GameObject targetObject) { }
         public virtual void attackMoveCommand(bool addToQueue, Vector3 targetPosition) { }
+        public virtual void interactCommand(bool addToQueue, GameObject targetObject) { }
 
         // Worker
         public virtual void harvestCommand(bool addToQueue, GameObject targetObject) { }
-        public virtual void buildStructureCommand(bool addToQueue, GameObject targetObject) { }
+        public virtual void buildCommand(bool addToQueue, GameObject targetObject) { }
+        public virtual void placeStructureCommand(bool addToQueue) { }
         public virtual void openBuildMenuCommand() { }
 
         #endregion

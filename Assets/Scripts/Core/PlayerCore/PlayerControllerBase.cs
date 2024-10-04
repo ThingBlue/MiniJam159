@@ -11,9 +11,7 @@ namespace MiniJam159.PlayerCore
         NORMAL = 0,
         MASS_SELECT,
         STRUCTURE_PLACEMENT,
-        MOVE_TARGET,
-        ATTACK_TARGET,
-        HARVEST_TARGET
+        ATTACK_TARGET
     }
 
     public class PlayerControllerBase : MonoBehaviour

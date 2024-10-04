@@ -174,22 +174,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (3)
@@ -354,15 +338,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   unpauseEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  stopCommandEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  openBuildMenuCommandEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  cancelBuildMenuCommandEvent:
     m_PersistentCalls:
       m_Calls: []
   buildNestCommandEvent:
@@ -1902,22 +1877,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (4)
@@ -2612,22 +2571,6 @@ PrefabInstance:
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
@@ -3337,22 +3280,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (1)
@@ -3685,22 +3612,6 @@ PrefabInstance:
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
@@ -4311,22 +4222,6 @@ PrefabInstance:
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name

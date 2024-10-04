@@ -78,18 +78,10 @@ namespace MiniJam159.UICore
                 // Attach command texture to new button
                 switch (activeCommand.commandType)
                 {
-                    case CommandType.MOVE:
-                        newButtonObject.GetComponent<Image>().sprite = moveCommandSprite;
-                        break;
-                    case CommandType.ATTACK:
-                        newButtonObject.GetComponent<Image>().sprite = attackCommandSprite;
-                        break;
                     case CommandType.STOP:
                         newButtonObject.GetComponent<Image>().sprite = stopCommandSprite;
                         break;
-                    case CommandType.HARVEST:
-                        newButtonObject.GetComponent<Image>().sprite = harvestCommandSprite;
-                        break;
+
                     case CommandType.OPEN_BUILD_MENU:
                         newButtonObject.GetComponent<Image>().sprite = openBuildMenuCommandSprite;
                         break;

@@ -46,18 +46,10 @@ namespace MiniJam159.Commands
                 // Attach command script and texture to new button
                 switch (newCommandTypes[i])
                 {
-                    case CommandType.MOVE:
-                        newCommand = new MoveCommand();
-                        break;
-                    case CommandType.ATTACK:
-                        newCommand = new AttackCommand();
-                        break;
                     case CommandType.STOP:
                         newCommand = new StopCommand();
                         break;
-                    case CommandType.HARVEST:
-                        newCommand = new HarvestCommand();
-                        break;
+
                     case CommandType.OPEN_BUILD_MENU:
                         newCommand = new OpenBuildMenuCommand();
                         break;
@@ -72,7 +64,6 @@ namespace MiniJam159.Commands
                         newCommand = new BuildWombCommand();
                         break;
                 }
-                newCommand.initialize();
                 newCommand.commandType = newCommandTypes[i];
                 activeCommands.Add(newCommand);
             }

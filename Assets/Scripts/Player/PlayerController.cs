@@ -109,18 +109,24 @@ namespace MiniJam159.Player
             // Handle input based on state
             switch (playerMode)
             {
-                case PlayerMode.STRUCTURE_PLACEMENT:
-                    if (mouse0Down)
+                case PlayerMode.MASS_SELECT:
+                    // Check for cancel
+                    if (cancelCommandKeyDown || mouse1Down)
                     {
-                        // Create structure
-                        GameObject newStructureObject = StructureManager.instance.finishPlacement();
-
-                        // Send selected workers to build structure
-                        if (newStructureObject) executeBuildCommand(newStructureObject);
-
-                        ignoreNextMouse0Up = true;
+                        playerMode = PlayerMode.NORMAL;
+                        canSelect = false;
                     }
-                    if (cancelCommandKeyDown || mouse1Down) StructureManager.instance.cancelPlacement();
+
+                    SelectionControllerBase.instance.updateMassSelectBox();
+
+                    if (mouse0Up)
+                    {
+                        // Clear commands
+                        CommandManagerBase.instance.clearCommands();
+
+                        // Execute mass select
+                        SelectionControllerBase.instance.executeMassSelect();
+                    }
                     break;
 
                 case PlayerMode.ATTACK_TARGET:
@@ -140,48 +146,18 @@ namespace MiniJam159.Player
                     if (!EventSystem.current.IsPointerOverGameObject()) executeAttackCommand(attackTarget);
                     break;
 
-                case PlayerMode.HARVEST_TARGET:
-                    // Check for cancel
-                    if (cancelCommandKeyDown) playerMode = PlayerMode.NORMAL;
-
-                    // Wait for player input
-                    if (!mouse0Down) break;
-
-                    GameObject resourceTarget = InputManager.instance.mouseRaycastObject(resourceLayer);
-                    if (resourceTarget == null)
+                case PlayerMode.STRUCTURE_PLACEMENT:
+                    if (mouse0Down)
                     {
-                        // No target, cancel attack command
-                        playerMode = PlayerMode.NORMAL;
-                        return;
+                        // Create structure
+                        GameObject newStructureObject = StructureManager.instance.finishPlacement();
+
+                        // Send selected workers to build structure
+                        if (newStructureObject) executeBuildCommand(newStructureObject);
+
+                        ignoreNextMouse0Up = true;
                     }
-                    if (!EventSystem.current.IsPointerOverGameObject()) executeHarvestCommand(resourceTarget);
-                    break;
-
-                case PlayerMode.MOVE_TARGET:
-                    // Check for cancel
-                    if (cancelCommandKeyDown) playerMode = PlayerMode.NORMAL;
-
-                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMoveCommand(InputManager.instance.getMousePositionInWorld());
-                    break;
-
-                case PlayerMode.MASS_SELECT:
-                    // Check for cancel
-                    if (cancelCommandKeyDown || mouse1Down)
-                    {
-                        playerMode = PlayerMode.NORMAL;
-                        canSelect = false;
-                    }
-
-                    SelectionControllerBase.instance.updateMassSelectBox();
-
-                    if (mouse0Up)
-                    {
-                        // Clear commands
-                        CommandManagerBase.instance.clearCommands();
-
-                        // Execute mass select
-                        SelectionControllerBase.instance.executeMassSelect();
-                    }
+                    if (cancelCommandKeyDown || mouse1Down) StructureManager.instance.cancelPlacement();
                     break;
 
                 case PlayerMode.NORMAL:
@@ -237,27 +213,14 @@ namespace MiniJam159.Player
                         SelectionControllerBase.instance.executeSingleSelect();
                     }
 
-                    // Movement commands
+                    // Right click commands
                     if (mouse1Down && !EventSystem.current.IsPointerOverGameObject())
                     {
                         // Raycast at mouse position to check what the player is hovering over
-                        GameObject target = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer | resourceLayer);
-                        Entity targetEntity = null;
-                        UnitBase targetUnit = null;
-                        Structure targetStructure = null;
-                        Resource targetResource = null;
-                        if (target) targetEntity = target.GetComponent<Entity>();
-                        if (target) targetUnit = target.GetComponent<UnitBase>();
-                        if (target) targetStructure = target.GetComponent<Structure>();
-                        if (target) targetResource = target.GetComponent<Resource>();
+                        GameObject targetObject = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer | resourceLayer);
 
-                        // Attack if hovering over enemy unit or structure
-                        if (targetEntity != null && target.tag == enemyTag) executeAttackCommand(target);
-                        // Harvest is hovering over resource
-                        else if (targetResource != null) executeHarvestCommand(target);
-                        // Harvest is hovering over unfinished building
-                        else if (targetStructure != null && targetStructure.buildProgress < targetStructure.maxBuildProgress) executeBuildCommand(target);
-                        // Move if none of the above
+                        if (targetObject != null) interactWithObject(targetObject);
+                        // Default to move if no object hit
                         else executeMoveCommand(InputManager.instance.getMousePositionInWorld());
                     }
                     break;
@@ -321,23 +284,27 @@ namespace MiniJam159.Player
             SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes(false);
         }
 
-        #region Command executors
-
-        public override void executeStopCommand()
+        public void interactWithObject(GameObject targetObject)
         {
-            // Invoke command on all selected units
-            foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
-            {
-                // Check that object has a unit component
-                UnitBase unit = selectedObject.GetComponent<UnitBase>();
-                if (unit == null) continue;
+            if (targetObject == null) return;
 
-                unit.stopCommand();
-            }
+            // Check what the object is
+            Entity targetEntity = targetObject.GetComponent<Entity>();
+            UnitBase targetUnit = targetObject.GetComponent<UnitBase>();
+            Structure targetStructure = targetObject.GetComponent<Structure>();
+            Resource targetResource = targetObject.GetComponent<Resource>();
 
-            // Finish command
-            playerMode = PlayerMode.NORMAL;
+            // Attack if hovering over enemy unit or structure
+            if (targetEntity != null && targetObject.tag == enemyTag) executeAttackCommand(targetObject);
+            // Harvest is hovering over resource
+            else if (targetResource != null) executeHarvestCommand(targetObject);
+            // Harvest is hovering over unfinished building
+            else if (targetStructure != null && targetStructure.buildProgress < targetStructure.maxBuildProgress) executeBuildCommand(targetObject);
+            // Move if none of the above
+            else executeMoveCommand(InputManager.instance.getMousePositionInWorld());
         }
+
+        #region Command executors
 
         public override void executeMoveCommand(Vector3 targetPosition)
         {
@@ -433,30 +400,11 @@ namespace MiniJam159.Player
                 if (unit == null) continue;
 
                 bool addToQueue = InputManager.instance.getKey("QueueCommand");
-                unit.buildStructureCommand(addToQueue, target);
+                unit.buildCommand(addToQueue, target);
             }
 
             // Finish attack command
             playerMode = PlayerMode.NORMAL;
-        }
-
-        public override void executeOpenBuildMenuCommand()
-        {
-            // First selected unit must be a worker
-            if (SelectionManager.instance.selectedObjects.Count == 0) return;
-
-            GameObject selectedObject = SelectionManager.instance.selectedObjects[SelectionManager.instance.getFocusIndex()];
-            if (selectedObject == null) return;
-
-            UnitBase unit = selectedObject.GetComponent<UnitBase>();
-            if (unit == null) return;
-
-            unit.openBuildMenuCommand();
-        }
-
-        public override void executeCancelBuildMenuCommand()
-        {
-            SelectionControllerBase.instance.populateCommands();
         }
 
         #endregion
