@@ -1,8 +1,9 @@
-using MiniJam159.GameCore;
-using MiniJam159.UnitCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+using MiniJam159.GameCore;
+using MiniJam159.UnitCore;
 
 namespace MiniJam159.PlayerCore
 {

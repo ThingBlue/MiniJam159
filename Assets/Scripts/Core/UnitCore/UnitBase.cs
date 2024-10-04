@@ -32,7 +32,7 @@ namespace MiniJam159.UnitCore
         // Worker
         public virtual void harvestCommand(bool addToQueue, GameObject targetObject) { }
         public virtual void buildCommand(bool addToQueue, GameObject targetObject) { }
-        public virtual void placeStructureCommand(bool addToQueue) { }
+        public virtual void placeStructureCommand(bool addToQueue, GameObject newStructureObject) { }
         public virtual void openBuildMenuCommand() { }
 
         #endregion

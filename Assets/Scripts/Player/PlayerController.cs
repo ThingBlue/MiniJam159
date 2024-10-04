@@ -6,13 +6,11 @@ using UnityEngine.UI;
 
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
-using MiniJam159.Structures;
 using MiniJam159.UnitCore;
 using MiniJam159.StructureCore;
 using MiniJam159.CommandCore;
 using MiniJam159.Resources;
 using MiniJam159.UICore;
-using static UnityEngine.GraphicsBuffer;
 
 namespace MiniJam159.Player
 {
@@ -149,15 +147,16 @@ namespace MiniJam159.Player
                 case PlayerMode.STRUCTURE_PLACEMENT:
                     if (mouse0Down)
                     {
-                        // Create structure
-                        GameObject newStructureObject = StructureManager.instance.finishPlacement();
+                        // Get data for new structure
+                        StructurePlacementData newStructurePlacementData = StructureManagerBase.instance.confirmPlacement();
+                        GameObject newStructureObject = StructureManagerBase.instance.createStructure(newStructurePlacementData);
 
                         // Send selected workers to build structure
                         if (newStructureObject) executeBuildCommand(newStructureObject);
 
                         ignoreNextMouse0Up = true;
                     }
-                    if (cancelCommandKeyDown || mouse1Down) StructureManager.instance.cancelPlacement();
+                    if (cancelCommandKeyDown || mouse1Down) StructureManagerBase.instance.cancelPlacement();
                     break;
 
                 case PlayerMode.NORMAL:
