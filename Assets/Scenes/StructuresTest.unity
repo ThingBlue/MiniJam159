@@ -581,13 +581,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 177129412}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52a2de94c9c01df45b5f3c03627830ba, type: 3}
+  m_Script: {fileID: 11500000, guid: 64e8f8bdb86dea94cbbcd550b62bbb0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  squadPanelObject: {fileID: 177129412}
-  unbindBox: {fileID: 502852886}
-  deleteBox: {fileID: 1129032647}
-  squadDisplayBoxPrefab: {fileID: 5349138052447107023, guid: de953bc84b9a51c489846bf9f3e65b57, type: 3}
   squadSlotBoxes:
   - {fileID: 1582354887}
   - {fileID: 517479284}
@@ -597,7 +593,11 @@ MonoBehaviour:
   - {fileID: 1211941434}
   - {fileID: 154440642}
   - {fileID: 1081918107}
-  squadDeleteBox: {fileID: 1081918107}
+  squadDisplayBoxes: []
+  squadPanelObject: {fileID: 177129412}
+  unbindBox: {fileID: 502852886}
+  deleteBox: {fileID: 1129032647}
+  squadDisplayBoxPrefab: {fileID: 5349138052447107023, guid: de953bc84b9a51c489846bf9f3e65b57, type: 3}
   squadDisplayBoxSize: {x: 64, y: 128}
   firstBoxPosition: {x: -656, y: 144}
   squadDisplayBoxRowCount: 2
@@ -605,7 +605,6 @@ MonoBehaviour:
   panelSmoothTime: 0.05
   showPosition: 0
   hidePosition: 720
-  squadDisplayBoxes: []
 --- !u!1 &193226390
 GameObject:
   m_ObjectHideFlags: 0
@@ -907,6 +906,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bee0c5ed7cfccc4abea317eb5ff7ae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  depositPointStructures: []
   placementGuide: {fileID: 1046527040}
   gridTilesRenderer: {fileID: 1834896601}
   placementGuideRenderer: {fileID: 1046527041}
@@ -917,7 +917,6 @@ MonoBehaviour:
   wombStructurePrefab: {fileID: 5914292673917186741, guid: bedf7ccd2febc0540bcff6dfb1c3d7c6, type: 3}
   testStructurePrefab: {fileID: 5914292673917186741, guid: bedf7ccd2febc0540bcff6dfb1c3d7c6, type: 3}
   depositPointStructureTypes: 01000000
-  depositPointStructures: []
 --- !u!4 &308521648
 Transform:
   m_ObjectHideFlags: 0

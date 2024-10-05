@@ -12,6 +12,46 @@ namespace MiniJam159.UI
 {
     public class SelectionDisplayManager : SelectionDisplayManagerBase
     {
+        #region Inspector members
+
+        public GameObject selectionDisplayPanelObject;
+
+        public GameObject displayBoxPrefab;
+        public float displayCenterHeight;
+        public float displayBoxDefaultSize;
+        public float displayBoxHoveredSize;
+
+        #endregion
+
+        protected void Start()
+        {
+            // Hide display panel at the start
+            selectionDisplayPanelObject.SetActive(false);
+        }
+
+        protected virtual void Update()
+        {
+            /*
+            // Calculate display panel background size and position
+            RectTransform displayPanelTransform = selectionDisplayPanel.GetComponent<RectTransform>();
+
+            float minimapPanelWidth = minimapPanel.GetComponent<RectTransform>().sizeDelta.x;
+            float commandPanelWidth = commandPanel.GetComponent<RectTransform>().sizeDelta.x;
+
+            float newWidth = Screen.width - minimapPanelWidth - commandPanelWidth;
+            float newPosition = minimapPanelWidth + ((Screen.width - commandPanelWidth) - minimapPanelWidth) / 2f - (Screen.width / 2f);
+            displayPanelTransform.localPosition = new Vector3(newPosition, displayPanelTransform.localPosition.y, 0f);
+            displayPanelTransform.sizeDelta = new Vector2(newWidth, displayPanelTransform.sizeDelta.y);
+            */
+
+            // Check if an update is required for display boxes
+            if (InputManager.instance.getKeyDown("TypeSelect") || InputManager.instance.getKeyDown("Deselect") ||
+                InputManager.instance.getKeyUp("TypeSelect") || InputManager.instance.getKeyUp("Deselect"))
+            {
+                updateSelectionDisplayBoxes();
+            }
+        }
+
         public override void showSelectionDisplayBoxes()
         {
             List<GameObject> selectedObjects = SelectionManager.instance.selectedObjects;
@@ -185,6 +225,19 @@ namespace MiniJam159.UI
                 }
             }
 
+        }
+
+        public override void clearSelectionDisplayBoxes()
+        {
+            foreach (List<GameObject> row in selectionDisplayBoxes)
+            {
+                foreach (GameObject displayBox in row)
+                {
+                    Destroy(displayBox);
+                }
+                row.Clear();
+            }
+            selectionDisplayBoxes.Clear();
         }
 
         public override void onSelectionDisplayBoxClicked(int index)

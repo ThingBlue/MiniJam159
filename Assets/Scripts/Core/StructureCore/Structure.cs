@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
+using MiniJam159.Common;
+using MiniJam159.CommandCore;
 
 namespace MiniJam159.StructureCore
 {
-    public enum StructureType
-    {
-        NULL = 0,
-        NEST,
-        WOMB
-    }
-
     public class Structure : Entity
     {
         #region Inspector members

@@ -6,8 +6,9 @@ using UnityEngine.UI;
 using MiniJam159.GameCore;
 using UnityEngine.EventSystems;
 using MiniJam159.PlayerCore;
+using MiniJam159.UICore;
 
-namespace MiniJam159.UICore
+namespace MiniJam159.UI
 {
     public class SquadDisplayBox : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
     {

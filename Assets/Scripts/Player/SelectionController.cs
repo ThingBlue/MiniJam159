@@ -319,7 +319,7 @@ namespace MiniJam159.Player
         }
 
         // Takes a list of new selected objects and adds them to selection manager
-        public override void executeSelect(List<GameObject> newSelection)
+        protected virtual void executeSelect(List<GameObject> newSelection)
         {
             // Clear UI
             SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();

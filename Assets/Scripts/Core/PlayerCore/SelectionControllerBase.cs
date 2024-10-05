@@ -18,7 +18,7 @@ namespace MiniJam159.PlayerCore
 
         #endregion
 
-        public Vector3 massSelectStartPosition;
+        public Vector3 massSelectStartPosition = Vector3.zero;
 
         // Singleton
         public static SelectionControllerBase instance;
@@ -28,75 +28,28 @@ namespace MiniJam159.PlayerCore
             // Singleton
             if (instance == null) instance = this;
             else Destroy(this);
-
-            massSelectStartPosition = Vector3.zero;
         }
 
-        public virtual void updateMouseHover()
-        {
-            // See SelectionController::updateMouseHover()
-        }
+        // See SelectionController for implementations
 
-        public virtual void updateMassSelectBox()
-        {
-            // See SelectionController::updateMassSelectBox()
-        }
+        // Default selections
+        public virtual void updateMouseHover() { }
+        public virtual void updateMassSelectBox() { }
+        public virtual void executeSingleSelect() { }
+        public virtual void executeMassSelect() { }
 
-        public virtual void executeSingleSelect()
-        {
-            // See SelectionController::executeSingleSelect()
-        }
+        // Reselects/deselects
+        public virtual void reselectSingle(int index) { }
+        public virtual void reselectType(int index) { }
+        public virtual void deselectSingle(int index) { }
+        public virtual void deselectType(int index) { }
 
-        public virtual void executeMassSelect()
-        {
-            // See SelectionController::executeMassSelect()
-        }
+        // Squads
+        public virtual void createSquadFromCurrentSelection() { }
+        public virtual void retrieveSquad(Squad squad) { }
 
-        // Takes a list of new selected objects and adds them to selection manager
-        public virtual void executeSelect(List<GameObject> newSelection)
-        {
-            // See SelectionController::executeSelect(List<GameObject> newSelection)
-        }
-
-        public virtual void reselectSingle(int index)
-        {
-            // See SelectionController::reselectSingle(int index)
-        }
-
-        public virtual void reselectType(int index)
-        {
-            // See SelectionController::reselectType(int index)
-        }
-
-        public virtual void deselectSingle(int index)
-        {
-            // See SelectionController::deselectSingle(int index)
-        }
-
-        public virtual void deselectType(int index)
-        {
-            // See SelectionController::deselectType(int index)
-        }
-
-        public virtual void sortSelection()
-        {
-            // See SelectionController::sortSelection()
-        }
-
-        public virtual void populateCommands()
-        {
-            // See SelectionController::populateCommands()
-        }
-
-        public virtual void createSquadFromCurrentSelection()
-        {
-            // See SelectionController::createSquadFromCurrentSelection()
-        }
-
-        public virtual void retrieveSquad(Squad squad)
-        {
-            // See SelectionController::replaceSelectionWithSquad(Squad squad)
-        }
-
+        // Utilities
+        public virtual void sortSelection() { }
+        public virtual void populateCommands() { }
     }
 }

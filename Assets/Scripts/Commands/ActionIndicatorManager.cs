@@ -27,9 +27,9 @@ namespace MiniJam159.Commands
 
         #endregion
 
-        public List<ActionIndicatorInfo> actionIndicators = new List<ActionIndicatorInfo>();
+        public List<ActionIndicatorData> actionIndicators = new List<ActionIndicatorData>();
 
-        protected virtual ActionIndicatorInfo createActionIndicator(ActionType actionType, Vector3 targetPosition)
+        protected virtual ActionIndicatorData createActionIndicator(ActionType actionType, Vector3 targetPosition)
         {
             GameObject newActionIndicator = null;
             switch (actionType)
@@ -55,19 +55,19 @@ namespace MiniJam159.Commands
             if (newActionIndicator == null) return null;
             newActionIndicator.transform.position = targetPosition;
 
-            // Add new info to list
-            ActionIndicatorInfo newActionIndicatorInfo = new ActionIndicatorInfo(newActionIndicator, actionType, targetPosition);
-            actionIndicators.Add(newActionIndicatorInfo);
+            // Add new data to list
+            ActionIndicatorData newActionIndicatorData = new ActionIndicatorData(newActionIndicator, actionType, targetPosition);
+            actionIndicators.Add(newActionIndicatorData);
 
-            return newActionIndicatorInfo;
+            return newActionIndicatorData;
         }
 
         // Called upon new selection
         public override void refreshActionIndicators()
         {
             // Keep a list of existing indicators so that we don't have to instantiate too many new ones
-            List<ActionIndicatorInfo> existingActionIndicators = new List<ActionIndicatorInfo>(actionIndicators);
-            foreach (ActionIndicatorInfo actionIndicator in existingActionIndicators)
+            List<ActionIndicatorData> existingActionIndicators = new List<ActionIndicatorData>(actionIndicators);
+            foreach (ActionIndicatorData actionIndicator in existingActionIndicators)
             {
                 actionIndicator.actionEntities.Clear();
                 destroyLines(actionIndicator);
@@ -91,7 +91,7 @@ namespace MiniJam159.Commands
 
                         // Check to see if an indicator with these parameters already exists
                         bool indicatorFound = false;
-                        foreach (ActionIndicatorInfo actionIndicator in actionIndicators)
+                        foreach (ActionIndicatorData actionIndicator in actionIndicators)
                         {
                             if (actionIndicator.targetPosition == targetPosition && actionIndicator.actionType == actionType)
                             {
@@ -107,7 +107,7 @@ namespace MiniJam159.Commands
                         if (indicatorFound) continue;
 
                         // Check to see if an indicator with these parameters was in the previous selection
-                        foreach (ActionIndicatorInfo actionIndicator in existingActionIndicators)
+                        foreach (ActionIndicatorData actionIndicator in existingActionIndicators)
                         {
                             if (actionIndicator.targetPosition == targetPosition && actionIndicator.actionType == actionType)
                             {
@@ -125,11 +125,11 @@ namespace MiniJam159.Commands
                         if (indicatorFound) continue;
 
                         // No indicators with matching parameters exists, create new indicator
-                        ActionIndicatorInfo newActionIndicatorInfo = createActionIndicator(actionType, targetPosition);
-                        newActionIndicatorInfo.actionEntities.Add(unit);
+                        ActionIndicatorData newActionIndicatorData = createActionIndicator(actionType, targetPosition);
+                        newActionIndicatorData.actionEntities.Add(unit);
 
                         // Create line for unit
-                        newActionIndicatorInfo.lineObjects.Add(createLine(unit, unit.actionQueue.ElementAt(i), newActionIndicatorInfo.actionIndicatorObject.transform));
+                        newActionIndicatorData.lineObjects.Add(createLine(unit, unit.actionQueue.ElementAt(i), newActionIndicatorData.actionIndicatorObject.transform));
                     }
                 }
                 else if (structure)
@@ -139,7 +139,7 @@ namespace MiniJam159.Commands
             }
 
             // Destroy leftover existing indicators
-            foreach (ActionIndicatorInfo actionIndicator in existingActionIndicators) Destroy(actionIndicator.actionIndicatorObject);
+            foreach (ActionIndicatorData actionIndicator in existingActionIndicators) Destroy(actionIndicator.actionIndicatorObject);
             existingActionIndicators.Clear();
         }
 
@@ -152,7 +152,7 @@ namespace MiniJam159.Commands
 
             // Check to see if an indicator with these parameters already exists
             bool indicatorFound = false;
-            foreach (ActionIndicatorInfo actionIndicator in actionIndicators)
+            foreach (ActionIndicatorData actionIndicator in actionIndicators)
             {
                 if (actionIndicator.targetPosition == targetPosition && actionIndicator.actionType == actionType)
                 {
@@ -169,13 +169,13 @@ namespace MiniJam159.Commands
             if (indicatorFound) return;
 
             // No indicators with matching parameters exists, create new indicator
-            ActionIndicatorInfo newActionIndicatorInfo = createActionIndicator(actionType, targetPosition);
-            newActionIndicatorInfo.actionEntities.Add(entity);
+            ActionIndicatorData newActionIndicatorData = createActionIndicator(actionType, targetPosition);
+            newActionIndicatorData.actionEntities.Add(entity);
 
             // Create line for unit
             {
                 UnitBase unit = entity as UnitBase;
-                if (unit != null) newActionIndicatorInfo.lineObjects.Add(createLine(unit, action, newActionIndicatorInfo.actionIndicatorObject.transform));
+                if (unit != null) newActionIndicatorData.lineObjects.Add(createLine(unit, action, newActionIndicatorData.actionIndicatorObject.transform));
             }
         }
 
@@ -213,7 +213,7 @@ namespace MiniJam159.Commands
                 if (unit != null && unit.actionQueue.Count > 0)
                 {
                     Action nextAction = unit.actionQueue.Peek();
-                    foreach (ActionIndicatorInfo actionIndicator in actionIndicators)
+                    foreach (ActionIndicatorData actionIndicator in actionIndicators)
                     {
                         if (actionIndicator.targetPosition == nextAction.getTargetPosition() && actionIndicator.actionType == nextAction.actionType)
                         {
@@ -247,7 +247,7 @@ namespace MiniJam159.Commands
             {
                 // Find transform of previous action indicator if action is queued
                 Action previousAction = unit.actionQueue.ElementAt(actionIndex - 1);
-                foreach (ActionIndicatorInfo actionIndicator in actionIndicators)
+                foreach (ActionIndicatorData actionIndicator in actionIndicators)
                 {
                     if (actionIndicator.targetPosition == previousAction.getTargetPosition() && actionIndicator.actionType == previousAction.actionType)
                     {
@@ -264,7 +264,7 @@ namespace MiniJam159.Commands
             return newLineObject;
         }
 
-        protected virtual void destroyLines(ActionIndicatorInfo actionIndicator)
+        protected virtual void destroyLines(ActionIndicatorData actionIndicator)
         {
             foreach (GameObject lineObject in actionIndicator.lineObjects) Destroy(lineObject);
             actionIndicator.lineObjects.Clear();

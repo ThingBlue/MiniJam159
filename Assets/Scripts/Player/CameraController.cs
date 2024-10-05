@@ -1,12 +1,13 @@
-using MiniJam159.GameCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
-namespace MiniJam159.PlayerCore
+using MiniJam159.GameCore;
+using MiniJam159.PlayerCore;
+
+namespace MiniJam159.Player
 {
-    public class CameraController : MonoBehaviour
+    public class CameraController : CameraControllerBase
     {
         #region Inspector members
 
@@ -27,25 +28,20 @@ namespace MiniJam159.PlayerCore
 
         #endregion
 
-        private Vector3 targetPosition;
-        private Vector3 panVelocity;
+        protected Vector3 targetPosition;
+        protected Vector3 panVelocity;
 
-        private float defaultZoom;
+        protected float defaultZoom;
 
-        // Singleton
-        public static CameraController instance;
-
-        private void Awake()
+        protected override void Awake()
         {
-            // Singleton
-            if (instance == null) instance = this;
-            else Destroy(this);
+            base.Awake();
 
             targetPosition = transform.position;
             defaultZoom = transform.position.y;
         }
 
-        private void LateUpdate()
+        protected void LateUpdate()
         {
             // Move towards target position
             transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref panVelocity, panSmoothTime);
@@ -58,7 +54,7 @@ namespace MiniJam159.PlayerCore
             );
         }
 
-        public void panCamera(Vector3 direction)
+        public override void panCamera(Vector3 direction)
         {
             if (disablePan) return;
 
@@ -87,7 +83,7 @@ namespace MiniJam159.PlayerCore
             */
         }
 
-        public void zoomCamera(float mouseScroll)
+        public override void zoomCamera(float mouseScroll)
         {
             // Find direction of movement baesd on mouse position in world
             Vector3 zoomDirection = (InputManager.instance.getMousePositionInWorld() - transform.position).normalized;
@@ -114,7 +110,7 @@ namespace MiniJam159.PlayerCore
             );
         }
 
-        public void setScaledMapPosition(Vector2 scaledPosition)
+        public override void setScaledMapPosition(Vector2 scaledPosition)
         {
             // Calculate Z offset due to camera angle
             float zOffset = getCameraCenterPositionInWorld().z - transform.position.z;
@@ -127,7 +123,7 @@ namespace MiniJam159.PlayerCore
             );
         }
 
-        public Vector3 getCameraCenterPositionInWorld()
+        public override Vector3 getCameraCenterPositionInWorld()
         {
             // Create plane at zero
             Plane plane = new Plane(Vector3.up, Vector3.zero);
@@ -140,7 +136,7 @@ namespace MiniJam159.PlayerCore
             return Vector3.zero; // Should never execute
         }
 
-        public List<Vector3> getCameraViewCornerPoints()
+        public override List<Vector3> getCameraViewCornerPoints()
         {
             // Create plane at zero
             Plane plane = new Plane(Vector3.up, Vector3.zero);
@@ -161,7 +157,7 @@ namespace MiniJam159.PlayerCore
             return cameraViewCornerPoints;
         }
 
-        public List<Vector2> getScaledCameraViewCornerPoints()
+        public override List<Vector2> getScaledCameraViewCornerPoints()
         {
             List<Vector3> cameraViewCornerPoints = getCameraViewCornerPoints();
 

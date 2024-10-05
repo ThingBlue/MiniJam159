@@ -5,6 +5,7 @@ using UnityEngine;
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.StructureCore;
+using MiniJam159.Common;
 
 namespace MiniJam159.Structures
 {

@@ -2,6 +2,7 @@
     "name": "MiniJam159.Units",
     "rootNamespace": "",
     "references": [
+        "GUID:a1562cfa892a11f4cac55a1e013ae203",
         "GUID:0f3c0a8212f3aa04ab219718b9a57984",
         "GUID:4d11028396cb5ee4b95cd3a6952d535b",
         "GUID:69e7709a215e3994fbfc46cf45d28bc4",

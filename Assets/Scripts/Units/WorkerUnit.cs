@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
+using MiniJam159.Common;
 using MiniJam159.UnitCore;
 using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
@@ -123,6 +124,11 @@ namespace MiniJam159.Units
 
             // Add new action to indicators
             ActionIndicatorManagerBase.instance.addAction(this, newAction);
+        }
+
+        public virtual void placeStructureCommand(bool addToQueue, StructurePlacementData placementData)
+        {
+            
         }
 
         public override void openBuildMenuCommand()

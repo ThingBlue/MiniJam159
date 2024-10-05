@@ -6,7 +6,7 @@ using MiniJam159.GameCore;
 
 namespace MiniJam159.CommandCore
 {
-    public class ActionIndicatorInfo
+    public class ActionIndicatorData
     {
         public GameObject actionIndicatorObject;
         public ActionType actionType;
@@ -14,8 +14,8 @@ namespace MiniJam159.CommandCore
         public List<Entity> actionEntities = new List<Entity>();
         public List<GameObject> lineObjects = new List<GameObject>();
 
-        public ActionIndicatorInfo() { }
-        public ActionIndicatorInfo(GameObject actionIndicatorObject, ActionType actionType, Vector3 targetPosition)
+        public ActionIndicatorData() { }
+        public ActionIndicatorData(GameObject actionIndicatorObject, ActionType actionType, Vector3 targetPosition)
         {
             this.actionIndicatorObject = actionIndicatorObject;
             this.actionType = actionType;

@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace MiniJam159.UICore
+using MiniJam159.UICore;
+
+namespace MiniJam159.UI
 {
     public class SelectionDisplayButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
