@@ -258,15 +258,15 @@ namespace MiniJam159.Game
             return pathToQueue(simplifiedPath);
         }
 
-        public override Queue<Vector3> getPathQueueToStructure(Vector3 startPosition, Vector3 targetPosition, float radius, Vector2 structureStartPosition, Vector2 structureSize)
+        public override Queue<Vector3> getPathQueueToStructure(Vector3 startPosition, Vector3 targetPosition, float radius, Vector3 structureStartPosition, Vector3 structureSize)
         {
             // Find tile positions from given positions
             Vector2 startTile = getTileFromPosition(startPosition);
             Vector2 targetTile = getTileFromPosition(targetPosition);
-            //if (isTileOccupied(targetTile)) targetTile = calculateClosestFreeTile(targetTile, startTile);
+            Vector2 structureStartTile = getTileFromPosition(structureStartPosition);
 
             // Calculate path
-            List<Vector2> fullPath = calculatePathToStructure(startTile, targetTile, structureStartPosition, structureSize);
+            List<Vector2> fullPath = calculatePathToStructure(startTile, targetTile, structureStartTile, new Vector2(structureSize.x, structureSize.z));
             List<Vector2> simplifiedPath = simplifyPath(fullPath, radius);
             return pathToQueue(simplifiedPath);
         }
@@ -357,10 +357,10 @@ namespace MiniJam159.Game
         public override List<Vector2> calculatePathToStructure(Vector2 startTile, Vector2 targetTile, Vector2 structureStartTile, Vector2 structureSize)
         {
             // Helper function to replace isTileOccupied
-            bool isTileWithinStructure(Vector2 tile, Vector2 structureTargetTile, Vector2 structureSize)
+            bool isTileWithinStructure(Vector2 tile)
             {
-                if (tile.x >= structureTargetTile.x && tile.x < structureTargetTile.x + structureSize.x &&
-                    tile.y >= structureTargetTile.y && tile.y < structureTargetTile.y + structureSize.y)
+                if (tile.x >= structureStartTile.x && tile.x < structureStartTile.x + structureSize.x &&
+                    tile.y >= structureStartTile.y && tile.y < structureStartTile.y + structureSize.y)
                 {
                     return true;
                 }
@@ -379,7 +379,7 @@ namespace MiniJam159.Game
                 if (zPosition < 0 || zPosition >= mapZLength) return;
 
                 // Check if tile is occupied
-                if (isTileOccupied(tile)) return;
+                if (isTileOccupied(tile) && !isTileWithinStructure(tile)) return;
 
                 float predecessorCost = costMatrix[(int)predecessorTile.y][(int)predecessorTile.x];
 
@@ -421,12 +421,17 @@ namespace MiniJam159.Game
             costMatrix[(int)startTile.y][(int)startTile.x] = 0;
 
             // Loop until target found or all tiles exhausted
+            Vector2 finishTile = -Vector2.one;
             while (queue.count() != 0)
             {
                 Vector2 tile = queue.pop();
 
                 // Check if target structure reached
-                if (isTileWithinStructure(tile, structureStartTile, structureSize)) break;
+                if (isTileWithinStructure(tile))
+                {
+                    finishTile = predecessorMatrix[(int)tile.y][(int)tile.x];
+                    break;
+                }
 
                 // Add neighbours to queue (Only add if cost is less)
                 addTileToQueue(new Vector2(tile.x, tile.y + 1), queue, costMatrix, predecessorMatrix, tile, targetTile); // Above
@@ -435,9 +440,12 @@ namespace MiniJam159.Game
                 addTileToQueue(new Vector2(tile.x + 1, tile.y), queue, costMatrix, predecessorMatrix, tile, targetTile); // Right
             }
 
+            // If no tile was found, default to empty list
+            if (finishTile == -Vector2.one) return new List<Vector2>();
+
             // Retrace path from target back to start
             List<Vector2> path = new List<Vector2>();
-            Vector2 retraceTile = targetTile;
+            Vector2 retraceTile = finishTile;
             while (retraceTile != new Vector2(-1, -1))
             {
                 path.Add(retraceTile);

@@ -48,7 +48,7 @@ namespace MiniJam159.GameCore
         public virtual Vector3 getClosestFreeTilePosition(Vector3 startPosition) { return Vector3.zero; }
 
         public virtual Queue<Vector3> getPathQueue(Vector3 startPosition, Vector3 targetPosition, float radius) { return new Queue<Vector3>(); }
-        public virtual Queue<Vector3> getPathQueueToStructure(Vector3 startPosition, Vector3 targetPosition, float radius, Vector2 structureStartPosition, Vector2 structureSize) { return new Queue<Vector3>(); }
+        public virtual Queue<Vector3> getPathQueueToStructure(Vector3 startPosition, Vector3 targetPosition, float radius, Vector3 structureStartPosition, Vector3 structureSize) { return new Queue<Vector3>(); }
         public virtual List<Vector2> calculatePath(Vector2 startTile, Vector2 targetTile) { return new List<Vector2>(); }
         public virtual List<Vector2> calculatePathToStructure(Vector2 startTile, Vector2 targetTile, Vector2 structureStartTile, Vector2 structureSize) { return new List<Vector2>(); }
         public virtual List<Vector2> simplifyPath(List<Vector2> path, float radius) { return new List<Vector2>(); }

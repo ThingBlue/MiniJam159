@@ -121,6 +121,36 @@ namespace MiniJam159.Units
             return (path.Count == 0);
         }
 
+        protected virtual bool handlePathfindingToStructure(Structure structure)
+        {
+            // Check if current path is still valid
+            if (pathUpdateTimer > pathUpdateInterval)
+            {
+                path = GridManagerBase.instance.getPathQueueToStructure(transform.position, structure.transform.position, pathfindingRadius, structure.startPosition, structure.size);
+                pathUpdateTimer = 0f;
+            }
+
+            // Return true if path ended
+            if (path.Count == 0) return true;
+
+            // Stop moving to waypoint if reached
+            if (Vector3.Distance(transform.position, path.Peek()) <= 0.1f)
+            {
+                // Pop current waypoint
+                path.Dequeue();
+            }
+            else
+            {
+                // Move towards current waypoint
+                Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.fixedDeltaTime);
+                movement += moveTowardsDestination - transform.position;
+            }
+
+            // Return true if path ended
+            // Return false while path is still ongoing
+            return (path.Count == 0);
+        }
+
         #region Action handlers
 
         protected virtual void handleActions()

@@ -10,6 +10,7 @@ using MiniJam159.Resources;
 using MiniJam159.Structures;
 
 using TMPro;
+using MiniJam159.StructureCore;
 
 namespace MiniJam159.Units
 {
@@ -93,7 +94,12 @@ namespace MiniJam159.Units
 
         protected virtual void handleBuildAction(BuildAction action)
         {
+            if (action == null || action.targetObject == null || action.targetObject.GetComponent<Structure>() == null) return;
 
+            bool movementResult = handlePathfindingToStructure(action.targetObject.GetComponent<Structure>());
+
+            // Stop action if path ended
+            if (movementResult) endAction();
         }
 
         #endregion
