@@ -9,6 +9,7 @@ using MiniJam159.CommandCore;
 using MiniJam159.UnitCore;
 using MiniJam159.StructureCore;
 using static UnityEngine.EventSystems.EventTrigger;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace MiniJam159.Commands
 {
@@ -30,8 +31,13 @@ namespace MiniJam159.Commands
 
         public List<ActionIndicatorData> actionIndicators = new List<ActionIndicatorData>();
 
-        protected override ActionIndicatorData createMoveActionIndicator(ActionType actionType, Vector3 targetPosition)
+        protected override ActionIndicatorData createActionIndicator(Action action)
         {
+            // Get indicator properties from action
+            Vector3 targetPosition = action.getTargetPosition();
+            ActionType actionType = action.actionType;
+
+            // No indicators with matching parameters exists, create new indicator
             GameObject newActionIndicator = null;
             switch (actionType)
             {
@@ -39,69 +45,10 @@ namespace MiniJam159.Commands
                     newActionIndicator = Instantiate(moveActionIndicatorPrefab, actionIndicatorParentTransform);
                     break;
                 case ActionType.ATTACK_MOVE:
-                    newActionIndicator = Instantiate(attackActionIndicatorPrefab, actionIndicatorParentTransform);
-                    break;
-                default:
-                    break;
-            }
-            if (newActionIndicator == null) return null;
-            newActionIndicator.transform.position = targetPosition;
-
-            // Add new data to list
-            ActionIndicatorData newActionIndicatorData = new ActionIndicatorData(newActionIndicator, actionType, targetPosition);
-            actionIndicators.Add(newActionIndicatorData);
-
-            return newActionIndicatorData;
-        }
-
-        protected override ActionIndicatorData createInteractActionIndicator(ActionType actionType, GameObject targetObject, float radius)
-        {
-            GameObject newActionIndicator = null;
-            switch (actionType)
-            {
-                case ActionType.HARVEST:
-                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
-                    break;
-                case ActionType.BUILD:
-                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
-                    break;
-                default:
-                    break;
-            }
-            if (newActionIndicator == null) return null;
-            newActionIndicator.transform.position = targetObject.transform.position;
-
-            // Set properties of interact indicator script
-            InteractActionIndicator newInteractActionIndicator = newActionIndicator.GetComponent<InteractActionIndicator>();
-            newInteractActionIndicator.targetPosition = targetObject.transform.position;
-            newInteractActionIndicator.radius = radius;
-
-            // Add new data to list
-            ActionIndicatorData newActionIndicatorData = new ActionIndicatorData(newActionIndicator, actionType, targetObject, radius);
-            newActionIndicatorData.targetPosition = targetObject.transform.position;
-            actionIndicators.Add(newActionIndicatorData);
-
-            return newActionIndicatorData;
-        }
-
-        // Wrapper function for all types of action indicators
-        protected override ActionIndicatorData createActionIndicator(Entity entity, Action action)
-        {
-            // Get indicator properties from action
-            Vector3 targetPosition = action.getTargetPosition();
-            ActionType actionType = action.actionType;
-
-            // No indicators with matching parameters exists, create new indicator
-            ActionIndicatorData newActionIndicatorData = null;
-            switch (actionType)
-            {
-                case ActionType.MOVE:
-                    newActionIndicatorData = createMoveActionIndicator(actionType, targetPosition);
-                    break;
-                case ActionType.ATTACK_MOVE:
-                    newActionIndicatorData = createMoveActionIndicator(actionType, targetPosition);
+                    newActionIndicator = Instantiate(moveActionIndicatorPrefab, actionIndicatorParentTransform);
                     break;
                 case ActionType.HARVEST:
+                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
                     //newActionIndicatorData = createInteractActionIndicator(actionType, targetPosition, (action as HarvestAction).targetObject, radius);
                     break;
                 case ActionType.BUILD:
@@ -109,17 +56,28 @@ namespace MiniJam159.Commands
                     Structure targetStructure = targetObject.GetComponent<Structure>();
                     if (targetStructure == null) break;
 
+                    // Calculate radius of interact indicator
                     float radius = Mathf.Max(targetStructure.size.x, targetStructure.size.z) / 2f;
 
-                    newActionIndicatorData = createInteractActionIndicator(actionType, (action as BuildAction).targetObject, radius);
+                    // Create interact indicator object
+                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
+
+                    // Set properties of interact indicator script
+                    InteractActionIndicator newInteractActionIndicator = newActionIndicator.GetComponent<InteractActionIndicator>();
+                    newInteractActionIndicator.targetPosition = targetObject.transform.position;
+                    newInteractActionIndicator.radius = radius;
                     break;
                 default:
                     break;
             }
-            if (newActionIndicatorData == null) return null;
+            if (newActionIndicator == null) return null;
 
-            // Add calling entity to action entities list
-            newActionIndicatorData.actionEntities.Add(entity);
+            // Set position of indicator object
+            newActionIndicator.transform.position = action.getTargetPosition();
+
+            // Create ActionIndicatorData from new indicator object and calling entity
+            ActionIndicatorData newActionIndicatorData = new ActionIndicatorData(newActionIndicator, action);
+            actionIndicators.Add(newActionIndicatorData);
 
             return newActionIndicatorData;
         }
@@ -148,19 +106,19 @@ namespace MiniJam159.Commands
                     for (int i = 0; i < unit.actionQueue.Count; i++)
                     {
                         // Get indicator properties from action
-                        Vector3 targetPosition = unit.actionQueue.ElementAt(i).getTargetPosition();
-                        ActionType actionType = unit.actionQueue.ElementAt(i).actionType;
+                        Action action = unit.actionQueue.ElementAt(i);
 
                         // Check to see if an indicator with these parameters already exists
                         bool indicatorFound = false;
                         foreach (ActionIndicatorData actionIndicator in actionIndicators)
                         {
-                            if (actionIndicator.targetPosition == targetPosition && actionIndicator.actionType == actionType)
+                            if (actionIndicator.action == action)
                             {
+                                // Add unit to existing indicator
                                 actionIndicator.actionEntities.Add(unit);
 
                                 // Create line for unit
-                                actionIndicator.lineObjects.Add(createLine(unit, unit.actionQueue.ElementAt(i), actionIndicator.actionIndicatorObject.transform));
+                                actionIndicator.lineObjects.Add(createLine(unit.actionQueue.ElementAt(i), unit, actionIndicator.actionIndicatorObject.transform));
 
                                 indicatorFound = true;
                                 break;
@@ -171,14 +129,17 @@ namespace MiniJam159.Commands
                         // Check to see if an indicator with these parameters was in the previous selection
                         foreach (ActionIndicatorData actionIndicator in existingActionIndicators)
                         {
-                            if (actionIndicator.targetPosition == targetPosition && actionIndicator.actionType == actionType)
+                            if (actionIndicator.action == action)
                             {
+                                // Add unit to already existing indicator
                                 actionIndicators.Add(actionIndicator);
-                                existingActionIndicators.Remove(actionIndicator);
                                 actionIndicator.actionEntities.Add(unit);
 
+                                // Mark this indicator as reused, make sure that this indicator doesn't get cleaned up after
+                                existingActionIndicators.Remove(actionIndicator);
+
                                 // Create line for unit
-                                actionIndicator.lineObjects.Add(createLine(unit, unit.actionQueue.ElementAt(i), actionIndicator.actionIndicatorObject.transform));
+                                actionIndicator.lineObjects.Add(createLine(unit.actionQueue.ElementAt(i), unit, actionIndicator.actionIndicatorObject.transform));
 
                                 indicatorFound = true;
                                 break;
@@ -187,11 +148,11 @@ namespace MiniJam159.Commands
                         if (indicatorFound) continue;
 
                         // No indicators with matching parameters exists, create new indicator
-                        ActionIndicatorData newActionIndicatorData = createActionIndicator(unit, unit.actionQueue.ElementAt(i));
+                        ActionIndicatorData newActionIndicatorData = createActionIndicator(unit.actionQueue.ElementAt(i));
                         newActionIndicatorData.actionEntities.Add(unit);
 
                         // Create line for unit
-                        newActionIndicatorData.lineObjects.Add(createLine(unit, unit.actionQueue.ElementAt(i), newActionIndicatorData.actionIndicatorObject.transform));
+                        newActionIndicatorData.lineObjects.Add(createLine(unit.actionQueue.ElementAt(i), unit, newActionIndicatorData.actionIndicatorObject.transform));
                     }
                 }
                 else if (structure)
@@ -206,23 +167,19 @@ namespace MiniJam159.Commands
         }
 
         // Called upon new command received by unit
-        public override void addAction(Entity entity, Action action)
+        public override void addAction(Action action, Entity entity)
         {
-            // Get indicator properties from action
-            Vector3 targetPosition = action.getTargetPosition();
-            ActionType actionType = action.actionType;
-
             // Check to see if an indicator with these parameters already exists
             bool indicatorFound = false;
             foreach (ActionIndicatorData actionIndicator in actionIndicators)
             {
-                if (actionIndicator.targetPosition == targetPosition && actionIndicator.actionType == actionType)
+                if (actionIndicator.action == action)
                 {
                     actionIndicator.actionEntities.Add(entity);
 
                     // Create line for unit
                     UnitBase unit = entity as UnitBase;
-                    if (unit != null) actionIndicator.lineObjects.Add(createLine(unit, action, actionIndicator.actionIndicatorObject.transform));
+                    if (unit != null) actionIndicator.lineObjects.Add(createLine(action, unit, actionIndicator.actionIndicatorObject.transform));
 
                     indicatorFound = true;
                     break;
@@ -231,27 +188,23 @@ namespace MiniJam159.Commands
             if (indicatorFound) return;
 
             // No indicators with matching parameters exists, create new indicator
-            ActionIndicatorData newActionIndicatorData = createActionIndicator(entity, action);
+            ActionIndicatorData newActionIndicatorData = createActionIndicator(action);
+            newActionIndicatorData.actionEntities.Add(entity);
 
             // Create line for unit
             {
                 UnitBase unit = entity as UnitBase;
-                if (unit != null) newActionIndicatorData.lineObjects.Add(createLine(unit, action, newActionIndicatorData.actionIndicatorObject.transform));
+                if (unit != null) newActionIndicatorData.lineObjects.Add(createLine(action, unit, newActionIndicatorData.actionIndicatorObject.transform));
             }
         }
 
         // Called upon action completed by unit
-        public override void completeAction(Entity entity, Action action)
+        public override void completeAction(Action action, Entity entity)
         {
             // Remove entity from the list of entities on the indicator matching provided action
             for (int i = 0; i < actionIndicators.Count; i++)
             {
-                if (actionIndicators[i].targetPosition != action.getTargetPosition() ||
-                    actionIndicators[i].actionType != action.actionType ||
-                    !actionIndicators[i].actionEntities.Contains(entity))
-                {
-                    continue;
-                }
+                if (actionIndicators[i].action != action || !actionIndicators[i].actionEntities.Contains(entity)) continue;
 
                 // Destroy line and remove entity
                 {
@@ -276,7 +229,7 @@ namespace MiniJam159.Commands
                     Action nextAction = unit.actionQueue.Peek();
                     foreach (ActionIndicatorData actionIndicator in actionIndicators)
                     {
-                        if (actionIndicator.targetPosition == nextAction.getTargetPosition() && actionIndicator.actionType == nextAction.actionType)
+                        if (actionIndicator.action == nextAction)
                         {
                             // Find line matching entity
                             int entityIndex = actionIndicator.actionEntities.IndexOf(entity);
@@ -287,7 +240,7 @@ namespace MiniJam159.Commands
             }
         }
 
-        protected virtual GameObject createLine(UnitBase unit, Action action, Transform actionIndicatorTransform)
+        protected virtual GameObject createLine(Action action, UnitBase unit, Transform actionIndicatorTransform)
         {
             // Get index of action in unit's action queue
             int actionIndex = -1;
@@ -310,7 +263,7 @@ namespace MiniJam159.Commands
                 Action previousAction = unit.actionQueue.ElementAt(actionIndex - 1);
                 foreach (ActionIndicatorData actionIndicator in actionIndicators)
                 {
-                    if (actionIndicator.targetPosition == previousAction.getTargetPosition() && actionIndicator.actionType == previousAction.actionType)
+                    if (actionIndicator.action == previousAction)
                     {
                         startTransform = actionIndicator.actionIndicatorObject.transform;
                         break;

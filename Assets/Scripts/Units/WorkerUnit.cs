@@ -110,7 +110,7 @@ namespace MiniJam159.Units
             actionQueue.Enqueue(newAction);
 
             // Add new action to indicators
-            ActionIndicatorManagerBase.instance.addAction(this, newAction);
+            ActionIndicatorManagerBase.instance.addAction(newAction, this);
         }
 
         public override void buildCommand(bool addToQueue, GameObject targetObject)
@@ -123,7 +123,7 @@ namespace MiniJam159.Units
             actionQueue.Enqueue(newAction);
 
             // Add new action to indicators
-            ActionIndicatorManagerBase.instance.addAction(this, newAction);
+            ActionIndicatorManagerBase.instance.addAction(newAction, this);
         }
 
         public override void openBuildMenuCommand()

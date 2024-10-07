@@ -214,7 +214,7 @@ namespace MiniJam159.Units
             Action completedAction = actionQueue.Dequeue();
 
             // Remove self from action indicator list
-            ActionIndicatorManagerBase.instance.completeAction(this, completedAction);
+            ActionIndicatorManagerBase.instance.completeAction(completedAction, this);
         }
 
         protected virtual void clearActionQueue()
@@ -224,7 +224,7 @@ namespace MiniJam159.Units
             {
                 // Update action indicators
                 Action action = actionQueue.Dequeue();
-                ActionIndicatorManagerBase.instance.completeAction(this, action);
+                ActionIndicatorManagerBase.instance.completeAction(action, this);
             }
         }
 
@@ -257,7 +257,7 @@ namespace MiniJam159.Units
             actionQueue.Enqueue(newAction);
 
             // Add new action to indicators
-            ActionIndicatorManagerBase.instance.addAction(this, newAction);
+            ActionIndicatorManagerBase.instance.addAction(newAction, this);
         }
 
         public override void attackCommand(bool addToQueue, GameObject targetObject)
@@ -270,7 +270,7 @@ namespace MiniJam159.Units
             actionQueue.Enqueue(newAction);
 
             // Add new action to indicators
-            ActionIndicatorManagerBase.instance.addAction(this, newAction);
+            ActionIndicatorManagerBase.instance.addAction(newAction, this);
         }
 
         public override void attackMoveCommand(bool addToQueue, Vector3 targetPosition)
@@ -283,7 +283,7 @@ namespace MiniJam159.Units
             actionQueue.Enqueue(newAction);
 
             // Add new action to indicators
-            ActionIndicatorManagerBase.instance.addAction(this, newAction);
+            ActionIndicatorManagerBase.instance.addAction(newAction, this);
         }
 
         #endregion
