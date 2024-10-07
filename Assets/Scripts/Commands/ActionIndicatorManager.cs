@@ -8,6 +8,7 @@ using MiniJam159.PlayerCore;
 using MiniJam159.CommandCore;
 using MiniJam159.UnitCore;
 using MiniJam159.StructureCore;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace MiniJam159.Commands
 {
@@ -29,7 +30,7 @@ namespace MiniJam159.Commands
 
         public List<ActionIndicatorData> actionIndicators = new List<ActionIndicatorData>();
 
-        protected virtual ActionIndicatorData createActionIndicator(ActionType actionType, Vector3 targetPosition)
+        protected override ActionIndicatorData createMoveActionIndicator(ActionType actionType, Vector3 targetPosition)
         {
             GameObject newActionIndicator = null;
             switch (actionType)
@@ -37,17 +38,8 @@ namespace MiniJam159.Commands
                 case ActionType.MOVE:
                     newActionIndicator = Instantiate(moveActionIndicatorPrefab, actionIndicatorParentTransform);
                     break;
-                case ActionType.ATTACK:
-                    newActionIndicator = Instantiate(attackActionIndicatorPrefab, actionIndicatorParentTransform);
-                    break;
                 case ActionType.ATTACK_MOVE:
                     newActionIndicator = Instantiate(attackActionIndicatorPrefab, actionIndicatorParentTransform);
-                    break;
-                case ActionType.HARVEST:
-                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
-                    break;
-                case ActionType.BUILD:
-                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
                     break;
                 default:
                     break;
@@ -58,6 +50,76 @@ namespace MiniJam159.Commands
             // Add new data to list
             ActionIndicatorData newActionIndicatorData = new ActionIndicatorData(newActionIndicator, actionType, targetPosition);
             actionIndicators.Add(newActionIndicatorData);
+
+            return newActionIndicatorData;
+        }
+
+        protected override ActionIndicatorData createInteractActionIndicator(ActionType actionType, GameObject targetObject, float radius)
+        {
+            GameObject newActionIndicator = null;
+            switch (actionType)
+            {
+                case ActionType.HARVEST:
+                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
+                    break;
+                case ActionType.BUILD:
+                    newActionIndicator = Instantiate(interactActionIndicatorPrefab, actionIndicatorParentTransform);
+                    break;
+                default:
+                    break;
+            }
+            if (newActionIndicator == null) return null;
+            newActionIndicator.transform.position = targetObject.transform.position;
+
+            // Set properties of interact indicator script
+            InteractActionIndicator newInteractActionIndicator = newActionIndicator.GetComponent<InteractActionIndicator>();
+            newInteractActionIndicator.targetPosition = targetObject.transform.position;
+            newInteractActionIndicator.radius = radius;
+
+            // Add new data to list
+            ActionIndicatorData newActionIndicatorData = new ActionIndicatorData(newActionIndicator, actionType, targetObject, radius);
+            newActionIndicatorData.targetPosition = targetObject.transform.position;
+            actionIndicators.Add(newActionIndicatorData);
+
+            return newActionIndicatorData;
+        }
+
+        // Wrapper function for all types of action indicators
+        protected override ActionIndicatorData createActionIndicator(Entity entity, Action action)
+        {
+            // Get indicator properties from action
+            Vector3 targetPosition = action.getTargetPosition();
+            ActionType actionType = action.actionType;
+
+            // No indicators with matching parameters exists, create new indicator
+            ActionIndicatorData newActionIndicatorData = null;
+            switch (actionType)
+            {
+                case ActionType.MOVE:
+                    newActionIndicatorData = createMoveActionIndicator(actionType, targetPosition);
+                    break;
+                case ActionType.ATTACK_MOVE:
+                    newActionIndicatorData = createMoveActionIndicator(actionType, targetPosition);
+                    break;
+                case ActionType.HARVEST:
+                    //newActionIndicatorData = createInteractActionIndicator(actionType, targetPosition, (action as HarvestAction).targetObject, radius);
+                    break;
+                case ActionType.BUILD:
+                    GameObject targetObject = (action as BuildAction).targetObject;
+                    Structure targetStructure = targetObject.GetComponent<Structure>();
+                    if (targetStructure == null) break;
+
+                    float radius = Mathf.Max(targetStructure.size.x, targetStructure.size.z) / 2f;
+
+                    newActionIndicatorData = createInteractActionIndicator(actionType, (action as BuildAction).targetObject, radius);
+                    break;
+                default:
+                    break;
+            }
+            if (newActionIndicatorData == null) return null;
+
+            // Add calling entity to action entities list
+            newActionIndicatorData.actionEntities.Add(entity);
 
             return newActionIndicatorData;
         }
@@ -125,7 +187,7 @@ namespace MiniJam159.Commands
                         if (indicatorFound) continue;
 
                         // No indicators with matching parameters exists, create new indicator
-                        ActionIndicatorData newActionIndicatorData = createActionIndicator(actionType, targetPosition);
+                        ActionIndicatorData newActionIndicatorData = createActionIndicator(unit, unit.actionQueue.ElementAt(i));
                         newActionIndicatorData.actionEntities.Add(unit);
 
                         // Create line for unit
@@ -169,8 +231,7 @@ namespace MiniJam159.Commands
             if (indicatorFound) return;
 
             // No indicators with matching parameters exists, create new indicator
-            ActionIndicatorData newActionIndicatorData = createActionIndicator(actionType, targetPosition);
-            newActionIndicatorData.actionEntities.Add(entity);
+            ActionIndicatorData newActionIndicatorData = createActionIndicator(entity, action);
 
             // Create line for unit
             {

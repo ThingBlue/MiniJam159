@@ -30,7 +30,8 @@ namespace MiniJam159.Structures
 
         #endregion
 
-        private StructurePlacementData placementData;
+        private StructureType placementStructureType;
+        private Vector3 placementStructureSize;
         private bool previousInPlacementMode = false;
 
         private void Start()
@@ -65,26 +66,26 @@ namespace MiniJam159.Structures
                 gridTilesMaterial.SetVector("_PlacementPosition", mousePosition);
 
                 // Transform placement guide
-                placementGuide.transform.localScale = new Vector3(placementData.size.x / 10.0f, 1, placementData.size.z / 10.0f);
+                placementGuide.transform.localScale = new Vector3(placementStructureSize.x / 10.0f, 1, placementStructureSize.z / 10.0f);
 
                 Vector3 roundedPosition = mousePosition;
                 roundedPosition.x = Mathf.Round(mousePosition.x);
                 roundedPosition.z = Mathf.Round(mousePosition.z);
 
                 Vector3 snappedPosition = roundedPosition;
-                if (placementData.size.x % 2 == 1) snappedPosition.x += 0.5f;
-                if (placementData.size.z % 2 == 1) snappedPosition.z += 0.5f;
+                if (placementStructureSize.x % 2 == 1) snappedPosition.x += 0.5f;
+                if (placementStructureSize.z % 2 == 1) snappedPosition.z += 0.5f;
                 placementGuide.transform.SetPositionAndRotation(snappedPosition, Quaternion.identity);
 
                 // Check if placement is outside of the grid
                 Vector3 startPosition = new Vector3(
-                    roundedPosition.x - Mathf.Floor(placementData.size.x / 2.0f),
+                    roundedPosition.x - Mathf.Floor(placementStructureSize.x / 2.0f),
                     0,
-                    roundedPosition.z - Mathf.Floor(placementData.size.z / 2.0f)
+                    roundedPosition.z - Mathf.Floor(placementStructureSize.z / 2.0f)
                 );
-                Vector3 endPosition = startPosition + placementData.size;
+                Vector3 endPosition = startPosition + placementStructureSize;
                 if (startPosition.x < 0 || startPosition.z < 0 ||
-                    endPosition.x > GridManager.instance.mapXLength || endPosition.z > GridManager.instance.mapZLength)
+                    endPosition.x > GridManagerBase.instance.mapXLength || endPosition.z > GridManagerBase.instance.mapZLength)
                 {
                     placementGuide.GetComponent<MeshRenderer>().material = blockedTilesMaterial;
                 }
@@ -97,7 +98,8 @@ namespace MiniJam159.Structures
 
         public override void beginPlacement(StructureType structureType, GameObject structurePrefab)
         {
-            placementData = new StructurePlacementData(structureType, Vector3.zero, structurePrefab.GetComponent<Structure>().size);
+            placementStructureType = structureType;
+            placementStructureSize = structurePrefab.GetComponent<Structure>().size;
 
             // Begin placement
             PlayerControllerBase.instance.playerMode = PlayerMode.STRUCTURE_PLACEMENT;
@@ -108,7 +110,7 @@ namespace MiniJam159.Structures
             PlayerControllerBase.instance.playerMode = PlayerMode.NORMAL;
         }
 
-        public override StructurePlacementData confirmPlacement()
+        public override GameObject confirmPlacement()
         {
             // Get start position
             Vector3 mousePosition = InputManager.instance.getMousePositionInWorld();
@@ -118,23 +120,58 @@ namespace MiniJam159.Structures
             roundedPosition.z = Mathf.Round(mousePosition.z);
 
             Vector3 snappedPosition = roundedPosition;
-            if (placementData.size.x % 2 == 1) snappedPosition.x += 0.5f;
-            if (placementData.size.z % 2 == 1) snappedPosition.z += 0.5f;
+            if (placementStructureSize.x % 2 == 1) snappedPosition.x += 0.5f;
+            if (placementStructureSize.z % 2 == 1) snappedPosition.z += 0.5f;
 
             // Check for blocked tiles
             Vector3 startPosition = new Vector3(
-                roundedPosition.x - Mathf.Floor(placementData.size.x / 2.0f),
+                roundedPosition.x - Mathf.Floor(placementStructureSize.x / 2.0f),
                 0,
-                roundedPosition.z - Mathf.Floor(placementData.size.z / 2.0f)
+                roundedPosition.z - Mathf.Floor(placementStructureSize.z / 2.0f)
             );
 
             // Check if placement location is valid
-            if (!isPlacementBlocked(startPosition, placementData.size))
+            if (!isPlacementBlocked(startPosition, placementStructureSize))
             {
-                // Complete placement
-                PlayerControllerBase.instance.playerMode = PlayerMode.NORMAL;
-                placementData.position = new Vector3(snappedPosition.x, 0, snappedPosition.z);
-                return placementData;
+                GridManagerBase.instance.occupyTiles(startPosition, placementStructureSize, TileType.BUILDING);
+
+                // Instantiate strucutre
+                GameObject newStructureObject = null;
+                switch (placementStructureType)
+                {
+                    case StructureType.NEST:
+                        newStructureObject = Instantiate(nestStructurePrefab, snappedPosition, Quaternion.identity);
+                        break;
+                    case StructureType.WOMB:
+                        newStructureObject = Instantiate(wombStructurePrefab, snappedPosition, Quaternion.identity);
+                        break;
+                    case StructureType.NULL:
+                        newStructureObject = Instantiate(testStructurePrefab, snappedPosition, Quaternion.identity);
+                        break;
+                }
+
+                // Set start position variable on structure
+                Structure newStructure = newStructureObject.GetComponent<Structure>();
+                if (newStructure) newStructure.startPosition = startPosition;
+
+                GameObject newBlockedTilesObject = newStructureObject.transform.Find("BlockedTiles").gameObject;
+
+                // Set transform of blocked tiles indicator
+                newBlockedTilesObject.transform.position = new Vector3(newBlockedTilesObject.transform.position.x, 0, newBlockedTilesObject.transform.position.z);
+                newBlockedTilesObject.transform.localScale = new Vector3(placementStructureSize.x / 10.0f, 1, placementStructureSize.z / 10.0f);
+
+                // Create duplicate material to fix shader graph weirdness
+                Renderer renderer = newBlockedTilesObject.GetComponent<MeshRenderer>();
+                renderer.material = new Material(renderer.material);
+
+                // Add to structures
+                EntityManager.instance.playerStructureObjects.Add(newStructureObject);
+                EntityManager.instance.playerEntityObjects.Add(newStructureObject);
+
+                // Add to deposit points if new structure is a deposit point
+                if (depositPointStructureTypes.Contains(placementStructureType)) depositPointStructures.Add(newStructureObject);
+
+                return newStructureObject;
             }
 
             // Default to null when structure placement is blocked
@@ -148,8 +185,8 @@ namespace MiniJam159.Structures
                 for (int j = 0; j < size.z; j++)
                 {
                     if ((int)startPosition.x + i < 0 || (int)startPosition.z + j < 0 ||
-                        (int)startPosition.x + i >= GridManager.instance.mapXLength || (int)startPosition.z + j >= GridManager.instance.mapZLength ||
-                        GridManager.instance.isTileOccupied((int)startPosition.x + i, (int)startPosition.z + j))
+                        (int)startPosition.x + i >= GridManagerBase.instance.mapXLength || (int)startPosition.z + j >= GridManagerBase.instance.mapZLength ||
+                        GridManagerBase.instance.isTileOccupied((int)startPosition.x + i, (int)startPosition.z + j))
                     {
                         return true;
                     }
@@ -158,6 +195,7 @@ namespace MiniJam159.Structures
             return false;
         }
 
+        /*
         public override GameObject createStructure(StructurePlacementData structurePlacementData)
         {
             // Occupy tiles for new structure
@@ -166,7 +204,7 @@ namespace MiniJam159.Structures
                 0,
                 structurePlacementData.position.z - Mathf.Floor(placementData.size.z / 2.0f)
             );
-            GridManager.instance.occupyTiles(startPosition, structurePlacementData.size, TileType.BUILDING);
+            GridManagerBase.instance.occupyTiles(startPosition, structurePlacementData.size, TileType.BUILDING);
 
             // Instantiate strucutre
             GameObject newStructureObject = null;
@@ -182,6 +220,10 @@ namespace MiniJam159.Structures
                     newStructureObject = Instantiate(testStructurePrefab, structurePlacementData.position, Quaternion.identity);
                     break;
             }
+
+            // Set start position variable on structure
+            Structure newStructure = newStructureObject.GetComponent<Structure>();
+            if (newStructure) newStructure.startPosition = startPosition;
 
             GameObject newBlockedTilesObject = newStructureObject.transform.Find("BlockedTiles").gameObject;
 
@@ -202,6 +244,7 @@ namespace MiniJam159.Structures
 
             return newStructureObject;
         }
+        */
 
         #region Command callbacks
 

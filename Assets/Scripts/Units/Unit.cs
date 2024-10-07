@@ -7,6 +7,7 @@ using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
 using System.Linq;
 using MiniJam159.StructureCore;
+using TMPro;
 
 namespace MiniJam159.Units
 {
@@ -90,6 +91,36 @@ namespace MiniJam159.Units
             transform.Find("Mesh").position = new Vector3(transform.position.x, 0.4f, transform.position.z);
         }
 
+        protected virtual bool handlePathfinding(Vector3 targetPosition)
+        {
+            // Check if current path is still valid
+            if (pathUpdateTimer > pathUpdateInterval)
+            {
+                path = GridManagerBase.instance.getPathQueue(transform.position, targetPosition, pathfindingRadius);
+                pathUpdateTimer = 0f;
+            }
+
+            // Return true if path ended
+            if (path.Count == 0) return true;
+
+            // Stop moving to waypoint if reached
+            if (Vector3.Distance(transform.position, path.Peek()) <= 0.1f)
+            {
+                // Pop current waypoint
+                path.Dequeue();
+            }
+            else
+            {
+                // Move towards current waypoint
+                Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.fixedDeltaTime);
+                movement += moveTowardsDestination - transform.position;
+            }
+
+            // Return true if path ended
+            // Return false while path is still ongoing
+            return (path.Count == 0);
+        }
+
         #region Action handlers
 
         protected virtual void handleActions()
@@ -114,6 +145,58 @@ namespace MiniJam159.Units
             }
 
             // We remove actions from the queue after completing them
+        }
+
+        protected virtual void handleMoveAction(MoveAction action)
+        {
+            bool movementResult = handlePathfinding(action.targetPosition);
+
+            // Stop action if path ended
+            if (movementResult) endAction();
+        }
+
+        protected virtual void handleAttackAction(AttackAction action)
+        {
+            // Target within attack range, can attack
+            if (Vector3.Distance(transform.position, action.targetObject.transform.position) <= attackRange)
+            {
+                if (attackTimer >= attackCooldown)
+                {
+                    // Implement health reduction on the target here
+                    Debug.Log("Attacking target");
+
+                    // Reset attack timer
+                    attackTimer = 0;
+                }
+            }
+            // Target outside attack range, move towards target
+            else
+            {
+                // Calculate path
+                if (pathUpdateTimer > pathUpdateInterval || path.Count == 0)
+                {
+                    path = GridManagerBase.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius);
+                    pathUpdateTimer = 0f;
+                }
+
+                if (Vector3.Distance(transform.position, path.Peek()) <= 0.5f)
+                {
+                    // Pop current waypoint
+                    path.Dequeue();
+                }
+                else
+                {
+                    // Move towards current waypoint
+                    Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.deltaTime);
+                    movement += moveTowardsDestination - transform.position;
+                    //transform.position = moveTowardsDestination;
+                }
+            }
+        }
+
+        protected virtual void handleAttackMoveAction(AttackMoveAction action)
+        {
+
         }
 
         public virtual int getActionIndex(Action action)
@@ -145,80 +228,6 @@ namespace MiniJam159.Units
             }
         }
 
-        protected virtual void handleMoveAction(MoveAction action)
-        {
-            // Check if current path is still valid
-            if (pathUpdateTimer > pathUpdateInterval)
-            {
-                path = GridManager.instance.getPathQueue(transform.position, action.targetPosition, pathfindingRadius);
-                pathUpdateTimer = 0f;
-            }
-
-            // Stop action if path ended
-            if (path.Count == 0)
-            {
-                endAction();
-                return;
-            }
-
-            // Stop moving to position if reached
-            if (Vector3.Distance(transform.position, path.Peek()) <= 0.1f)
-            {
-                // Pop current waypoint
-                path.Dequeue();
-            }
-            else
-            {
-                Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.fixedDeltaTime);
-                movement += moveTowardsDestination - transform.position;
-                //transform.position = moveTowardsDestination;
-            }
-        }
-
-        protected virtual void handleAttackAction(AttackAction action)
-        {
-            // Target within attack range, can attack
-            if (Vector3.Distance(transform.position, action.targetObject.transform.position) <= attackRange)
-            {
-                if (attackTimer >= attackCooldown)
-                {
-                    // Implement health reduction on the target here
-                    Debug.Log("Attacking target");
-
-                    // Reset attack timer
-                    attackTimer = 0;
-                }
-            }
-            // Target outside attack range, move towards target
-            else
-            {
-                // Calculate path
-                if (pathUpdateTimer > pathUpdateInterval || path.Count == 0)
-                {
-                    path = GridManager.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius);
-                    pathUpdateTimer = 0f;
-                }
-
-                if (Vector3.Distance(transform.position, path.Peek()) <= 0.5f)
-                {
-                    // Pop current waypoint
-                    path.Dequeue();
-                }
-                else
-                {
-                    // Move towards current waypoint
-                    Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.deltaTime);
-                    movement += moveTowardsDestination - transform.position;
-                    //transform.position = moveTowardsDestination;
-                }
-            }
-        }
-
-        protected virtual void handleAttackMoveAction(AttackMoveAction action)
-        {
-
-        }
-
         #endregion
 
         #region Command handlers
@@ -235,10 +244,10 @@ namespace MiniJam159.Units
             if (!addToQueue) clearActionQueue();
 
             // Check if target position is occupied
-            if (GridManager.instance.isTileOccupied(GridManager.instance.getTileFromPosition(targetPosition)))
+            if (GridManagerBase.instance.isTileOccupied(GridManagerBase.instance.getTileFromPosition(targetPosition)))
             {
                 // Find closest free position to move to
-                targetPosition = GridManager.instance.getClosestFreeTilePosition(targetPosition, transform.position);
+                targetPosition = GridManagerBase.instance.getClosestFreeTilePosition(targetPosition, transform.position);
             }
 
             // Check if target position is accessible

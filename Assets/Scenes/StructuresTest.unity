@@ -1456,7 +1456,7 @@ MonoBehaviour:
   actionIndicatorParentTransform: {fileID: 541899473}
   moveActionIndicatorPrefab: {fileID: 8167167929073742156, guid: b34819483e2cbfc4ea34dd56bf2449f1, type: 3}
   attackActionIndicatorPrefab: {fileID: 0}
-  interactActionIndicatorPrefab: {fileID: 0}
+  interactActionIndicatorPrefab: {fileID: 7474912500606395696, guid: cf3cc8bdcf1dd0b4085fd31fb6ccd8f9, type: 3}
   rallyPointIndicatorPrefab: {fileID: 0}
   actionIndicatorLinePrefab: {fileID: 2911418083754529655, guid: 697333b33f2d8c644adbe7afdcbc7531, type: 3}
 --- !u!4 &541899473

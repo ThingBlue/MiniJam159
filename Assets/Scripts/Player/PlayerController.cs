@@ -149,8 +149,7 @@ namespace MiniJam159.Player
                     if (mouse0Down)
                     {
                         // Get data for new structure
-                        StructurePlacementData newStructurePlacementData = StructureManagerBase.instance.confirmPlacement();
-                        GameObject newStructureObject = StructureManagerBase.instance.createStructure(newStructurePlacementData);
+                        GameObject newStructureObject = StructureManagerBase.instance.confirmPlacement();
 
                         // Send selected workers to build structure
                         if (newStructureObject) executeBuildCommand(newStructureObject);
@@ -309,8 +308,8 @@ namespace MiniJam159.Player
         public override void executeMoveCommand(Vector3 targetPosition)
         {
             // Make sure target is not out of bounds
-            if (targetPosition.x < 0 || targetPosition.x > GridManager.instance.mapXLength ||
-                targetPosition.z < 0 || targetPosition.z > GridManager.instance.mapZLength)
+            if (targetPosition.x < 0 || targetPosition.x > GridManagerBase.instance.mapXLength ||
+                targetPosition.z < 0 || targetPosition.z > GridManagerBase.instance.mapZLength)
             {
                 playerMode = PlayerMode.NORMAL;
                 return;
@@ -334,8 +333,8 @@ namespace MiniJam159.Player
         public override void executeAttackMoveCommand(Vector3 targetPosition)
         {
             // Make sure target is not out of bounds
-            if (targetPosition.x < 0 || targetPosition.x > GridManager.instance.mapXLength ||
-                targetPosition.z < 0 || targetPosition.z > GridManager.instance.mapZLength)
+            if (targetPosition.x < 0 || targetPosition.x > GridManagerBase.instance.mapXLength ||
+                targetPosition.z < 0 || targetPosition.z > GridManagerBase.instance.mapZLength)
             {
                 playerMode = PlayerMode.NORMAL;
                 return;
@@ -356,8 +355,10 @@ namespace MiniJam159.Player
             playerMode = PlayerMode.NORMAL;
         }
 
-        public override void executeAttackCommand(GameObject target)
+        public override void executeAttackCommand(GameObject targetObject)
         {
+            if (targetObject == null) return;
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
@@ -366,15 +367,17 @@ namespace MiniJam159.Player
                 if (unit == null) continue;
 
                 bool addToQueue = InputManager.instance.getKey("QueueCommand");
-                unit.attackCommand(addToQueue, target);
+                unit.attackCommand(addToQueue, targetObject);
             }
 
             // Finish attack command
             playerMode = PlayerMode.NORMAL;
         }
 
-        public override void executeHarvestCommand(GameObject target)
+        public override void executeHarvestCommand(GameObject targetObject)
         {
+            if (targetObject == null) return;
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
@@ -383,15 +386,17 @@ namespace MiniJam159.Player
                 if (unit == null) continue;
 
                 bool addToQueue = InputManager.instance.getKey("QueueCommand");
-                unit.harvestCommand(addToQueue, target);
+                unit.harvestCommand(addToQueue, targetObject);
             }
 
             // Finish attack command
             playerMode = PlayerMode.NORMAL;
         }
 
-        public override void executeBuildCommand(GameObject target)
+        public override void executeBuildCommand(GameObject targetObject)
         {
+            if (targetObject == null) return;
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
@@ -400,7 +405,7 @@ namespace MiniJam159.Player
                 if (unit == null) continue;
 
                 bool addToQueue = InputManager.instance.getKey("QueueCommand");
-                unit.buildCommand(addToQueue, target);
+                unit.buildCommand(addToQueue, targetObject);
             }
 
             // Finish attack command

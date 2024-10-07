@@ -37,8 +37,8 @@ namespace MiniJam159.Debugging
         {
             if (InputManager.instance.getKeyDown("DebugPathfinding"))
             {
-                debugPath = GridManager.instance.calculatePath(new Vector2(0, 0), new Vector2(10, 10));
-                debugPath = GridManager.instance.simplifyPath(debugPath, 0.4f);
+                debugPath = GridManagerBase.instance.calculatePath(new Vector2(0, 0), new Vector2(10, 10));
+                debugPath = GridManagerBase.instance.simplifyPath(debugPath, 0.4f);
                 debugPath.Insert(0, pathfindingStartPosition);
                 Debug.Log("Path count: " + debugPath.Count);
                 foreach (Vector2 tile in debugPath) Debug.Log(tile);
@@ -46,7 +46,7 @@ namespace MiniJam159.Debugging
             if (InputManager.instance.getKeyDown("DebugClosestUnoccupiedTile"))
             {
                 closestUnoccupiedTileStartPosition = InputManager.instance.getMousePositionInWorld();
-                closestUnoccupiedTileResultPosition = GridManager.instance.getClosestFreeTilePosition(closestUnoccupiedTileStartPosition, closestUnoccupiedTileTargetPosition);
+                closestUnoccupiedTileResultPosition = GridManagerBase.instance.getClosestFreeTilePosition(closestUnoccupiedTileStartPosition, closestUnoccupiedTileTargetPosition);
                 Debug.Log("Mouse position: " + closestUnoccupiedTileStartPosition + ", closest unoccupied tile position: " + closestUnoccupiedTileResultPosition);
             }
 

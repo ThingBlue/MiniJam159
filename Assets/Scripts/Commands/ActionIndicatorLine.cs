@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MiniJam159.CommandCore
+namespace MiniJam159.Commands
 {
     public class ActionIndicatorLine : MonoBehaviour
     {

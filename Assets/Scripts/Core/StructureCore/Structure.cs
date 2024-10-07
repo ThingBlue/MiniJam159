@@ -24,6 +24,8 @@ namespace MiniJam159.StructureCore
 
         #endregion
 
+        public Vector2 startPosition;
+
         public float health = 1;
         public float buildProgress = 0;
 

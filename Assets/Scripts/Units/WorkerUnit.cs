@@ -126,11 +126,6 @@ namespace MiniJam159.Units
             ActionIndicatorManagerBase.instance.addAction(this, newAction);
         }
 
-        public virtual void placeStructureCommand(bool addToQueue, StructurePlacementData placementData)
-        {
-            
-        }
-
         public override void openBuildMenuCommand()
         {
             CommandManagerBase.instance.populateCommands(buildMenuCommands);

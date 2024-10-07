@@ -23,7 +23,6 @@ namespace MiniJam159.StructureCore
         // See StructureManager for implementations
         public virtual void beginPlacement(StructureType structureType, GameObject structurePrefab) { }
         public virtual void cancelPlacement() { }
-        public virtual StructurePlacementData confirmPlacement() { return null; }
-        public virtual GameObject createStructure(StructurePlacementData placementData) { return null; }
+        public virtual GameObject confirmPlacement() { return null; }
     }
 }
