@@ -8,6 +8,7 @@ using MiniJam159.GameCore;
 using System.Linq;
 using MiniJam159.StructureCore;
 using TMPro;
+using MiniJam159.Common;
 
 namespace MiniJam159.Units
 {
@@ -96,7 +97,7 @@ namespace MiniJam159.Units
             // Check if current path is still valid
             if (pathUpdateTimer > pathUpdateInterval)
             {
-                path = GridManagerBase.instance.getPathQueue(transform.position, targetPosition, pathfindingRadius);
+                path = GridManagerBase.instance.getPathQueue(transform.position, targetPosition, pathfindingRadius, new List<TileIgnoreData>());
                 pathUpdateTimer = 0f;
             }
 
@@ -126,7 +127,9 @@ namespace MiniJam159.Units
             // Check if current path is still valid
             if (pathUpdateTimer > pathUpdateInterval)
             {
-                path = GridManagerBase.instance.getPathQueueToStructure(transform.position, structure.transform.position, pathfindingRadius, structure.startPosition, structure.size);
+                TileIgnoreData newTileIgnoreData = new TileIgnoreData(MathUtilities.toVector2Floored(structure.startPosition), MathUtilities.toVector2Floored(structure.size));
+
+                path = GridManagerBase.instance.getPathQueue(transform.position, structure.transform.position, pathfindingRadius, new List<TileIgnoreData> { newTileIgnoreData });
                 pathUpdateTimer = 0f;
             }
 
@@ -205,7 +208,7 @@ namespace MiniJam159.Units
                 // Calculate path
                 if (pathUpdateTimer > pathUpdateInterval || path.Count == 0)
                 {
-                    path = GridManagerBase.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius);
+                    path = GridManagerBase.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius, new List<TileIgnoreData>());
                     pathUpdateTimer = 0f;
                 }
 
@@ -274,7 +277,7 @@ namespace MiniJam159.Units
             if (!addToQueue) clearActionQueue();
 
             // Check if target position is occupied
-            if (GridManagerBase.instance.isTileOccupied(GridManagerBase.instance.getTileFromPosition(targetPosition)))
+            if (GridManagerBase.instance.isTileOccupied(MathUtilities.toVector2Floored(targetPosition)))
             {
                 // Find closest free position to move to
                 targetPosition = GridManagerBase.instance.getClosestFreeTilePosition(targetPosition, transform.position);
@@ -397,7 +400,7 @@ namespace MiniJam159.Units
 
         private void OnDrawGizmos()
         {
-            if (path.Count > 0 && false)
+            if (path.Count > 0)
             {
                 Queue<Vector3> debugPath = new Queue<Vector3>(path);
 

@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
-using System.Linq;
-using Codice.CM.Common;
-using System.IO;
 using MiniJam159.Common;
 
 namespace MiniJam159.UnitCore

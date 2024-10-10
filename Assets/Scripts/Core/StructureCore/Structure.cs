@@ -9,6 +9,12 @@ using MiniJam159.CommandCore;
 
 namespace MiniJam159.StructureCore
 {
+    public enum StructureType
+    {
+        NULL = 0,
+        NEST,
+        WOMB
+    }
     public class Structure : Entity
     {
         #region Inspector members
