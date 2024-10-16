@@ -99,7 +99,34 @@ namespace MiniJam159.Units
             bool movementResult = handlePathfindingToStructure(action.targetObject.GetComponent<Structure>());
 
             // Stop action if path ended
-            if (movementResult) endAction();
+            if (movementResult)
+            {
+                Structure targetStructure = action.targetObject.GetComponent<Structure>();
+                if (targetStructure.buildProgress < targetStructure.maxBuildProgress)
+                {
+                    if (buildTimer > buildInterval)
+                    {
+                        // Contribute build progress and reset build timer
+                        targetStructure.addBuildProgress(buildRate);
+                        buildTimer = 0;
+                    }
+                    else
+                    {
+                        // Increment build timer
+                        buildTimer += Time.fixedDeltaTime;
+                    }
+                }
+                else
+                {
+                    // Build completed, complete action
+                    endAction();
+                }
+            }
+            else
+            {
+                // Keep build timer at 0 while moving
+                buildTimer = 0;
+            }
         }
 
         #endregion

@@ -124,6 +124,14 @@ namespace MiniJam159.Units
 
         protected virtual bool handlePathfindingToStructure(Structure structure)
         {
+            // Return true if target structure reached
+            if (transform.position.x >= structure.startPosition.x - pathfindingRadius && transform.position.x <= structure.startPosition.x + structure.size.x + pathfindingRadius &&
+                transform.position.z >= structure.startPosition.z - pathfindingRadius && transform.position.z <= structure.startPosition.z + structure.size.z + pathfindingRadius)
+            {
+                path.Clear();
+                return true;
+            }
+
             // Check if current path is still valid
             if (pathUpdateTimer > pathUpdateInterval)
             {
