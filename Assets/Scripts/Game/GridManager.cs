@@ -342,15 +342,15 @@ namespace MiniJam159.Game
             Vector3 direction = (endPosition - startPosition).normalized;
 
             // Create one line on either side
-            Vector3 normal = new Vector3(-direction.y, 0, direction.x);
+            Vector3 normal = new Vector3(-direction.z, 0, direction.x);
             Vector3 startPosition1 = startPosition + (normal * radius);
             Vector3 startPosition2 = startPosition - (normal * radius);
             Vector3 endPosition1 = endPosition + (normal * radius);
             Vector3 endPosition2 = endPosition - (normal * radius);
 
             // Check that adding radius doesn't put us outside the map
-            if (endPosition1.x < 0 || endPosition1.x >= mapXLength || endPosition1.y < 0 || endPosition1.y >= mapZLength) return true;
-            if (endPosition2.x < 0 || endPosition2.x >= mapXLength || endPosition2.y < 0 || endPosition2.y >= mapZLength) return true;
+            if (endPosition1.x < 0 || endPosition1.x >= mapXLength || endPosition1.z < 0 || endPosition1.z >= mapZLength) return true;
+            if (endPosition2.x < 0 || endPosition2.x >= mapXLength || endPosition2.z < 0 || endPosition2.z >= mapZLength) return true;
 
             // Get tiles on line for both lines
             if (isLineBlocked(startPosition1, endPosition1, tileIgnoreData)) return true;
