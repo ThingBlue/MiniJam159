@@ -40,36 +40,37 @@ namespace MiniJam159.Game
             return gridMatrix[z][x] != TileType.EMPTY;
         }
 
-        public override bool isTileOccupied(Vector2 tile)
+        public override bool isTileOccupied(Vector3 tile)
         {
-            if (tile.x < 0 || tile.x >= mapXLength || tile.y < 0 || tile.y >= mapZLength)
+            Vector3 flooredTile = MathUtilities.floorVector3(tile);
+            if (flooredTile.x < 0 || flooredTile.x >= mapXLength || flooredTile.z < 0 || flooredTile.z >= mapZLength)
             {
                 throw new System.Exception("Invalid tile position");
             }
 
-            return gridMatrix[(int)tile.y][(int)tile.x] != TileType.EMPTY;
+            return gridMatrix[(int)flooredTile.z][(int)flooredTile.x] != TileType.EMPTY;
         }
 
-        public override bool isAnyTileOccupied(List<Vector2> tiles)
+        public override bool isAnyTileOccupied(List<Vector3> tiles)
         {
-            foreach (Vector2 tile in tiles)
+            foreach (Vector3 tile in tiles)
             {
                 if (isTileOccupied(tile)) return true;
             }
             return false;
         }
 
-        public override bool isTileWithinStructure(Vector2 tile, Vector2 structureStartTile, Vector2 structureSize)
+        public override bool isTileWithinStructure(Vector3 tile, Vector3 structureStartTile, Vector3 structureSize)
         {
             if (tile.x >= structureStartTile.x && tile.x < structureStartTile.x + structureSize.x &&
-                tile.y >= structureStartTile.y && tile.y < structureStartTile.y + structureSize.y)
+                tile.z >= structureStartTile.z && tile.z < structureStartTile.z + structureSize.z)
             {
                 return true;
             }
             return false;
         }
 
-        public override bool isTileIgnored(Vector2 tile, List<TileIgnoreData> tileIgnoreData)
+        public override bool isTileIgnored(Vector3 tile, List<TileIgnoreData> tileIgnoreData)
         {
             // Check if tile is within any structures in ignore data
             foreach (TileIgnoreData ignoreData in tileIgnoreData)
@@ -77,17 +78,6 @@ namespace MiniJam159.Game
                 if (isTileWithinStructure(tile, ignoreData.startPosition, ignoreData.size)) return true;
             }
             return false;
-        }
-
-        public override void occupyTiles(Vector2 startPosition, Vector2 size, TileType occupationType = TileType.BUILDING)
-        {
-            for (int i = 0; i < size.x; i++)
-            {
-                for (int j = 0; j < size.y; j++)
-                {
-                    gridMatrix[(int)startPosition.y + j][(int)startPosition.x + i] = occupationType;
-                }
-            }
         }
 
         public override void occupyTiles(Vector3 startPosition, Vector3 size, TileType occupationType = TileType.BUILDING)
@@ -101,41 +91,28 @@ namespace MiniJam159.Game
             }
         }
 
-        // Wrapper function for calculateClosestUnoccupiedTile that takes a Vector3 and returns a Vector3
-        public override Vector3 getClosestFreeTilePosition(Vector3 startPosition, Vector3 targetPosition)
-        {
-            Vector2 startTile = MathUtilities.toVector2Floored(startPosition);
-            Vector2 targetTile = MathUtilities.toVector2Floored(targetPosition);
-            Vector2 result = calculateClosestFreeTile(startTile, targetTile);
-
-            // Return (-1, -1, -1) if no valid tiles found
-            if (result == -Vector2.one) return -Vector3.one;
-
-            return new Vector3(result.x, 0, result.y);
-        }
-
         // Find closest tile to startTile, prioritizing direction of targetTile
         // startTile = Mouse position, targetTile = Entity position
-        public Vector2 calculateClosestFreeTile(Vector2 startTile, Vector2 targetTile)
+        public Vector3 calculateClosestFreeTile(Vector3 startPosition, Vector3 targetPosition)
         {
             // Helper function for checking tile validity
-            void addTileToQueue(Vector2 tile, MinPriorityQueue<Vector2> queue, List<List<float>> costMatrix, Vector2 predecessorTile, Vector2 targetTile)
+            void addTileToQueue(Vector3 tile, MinPriorityQueue<Vector3> queue, List<List<float>> costMatrix, Vector3 predecessorTile, Vector3 targetTile)
             {
                 // Convert from float to int
                 int xPosition = (int)tile.x;
-                int zPosition = (int)tile.y;
+                int zPosition = (int)tile.z;
 
                 // Check if out of bounds
                 if (xPosition < 0 || xPosition >= mapXLength) return;
                 if (zPosition < 0 || zPosition >= mapZLength) return;
 
-                float predecessorCost = costMatrix[(int)predecessorTile.y][(int)predecessorTile.x];
+                float predecessorCost = costMatrix[(int)predecessorTile.z][(int)predecessorTile.x];
 
                 // Make sure we don't already have a better path to this tile
                 if (costMatrix[zPosition][xPosition] == -1 || costMatrix[zPosition][xPosition] > predecessorCost + 1)
                 {
                     // Calculate heuristic for this tile
-                    float heuristic = Vector2.Distance(tile, targetTile);
+                    float heuristic = Vector3.Distance(tile, targetTile);
 
                     // Moving through an occupied tile costs twice as much as moving through a regular tile
                     // Makes the search prefer free tiles over occupied ones
@@ -150,57 +127,49 @@ namespace MiniJam159.Game
 
             // Initialize matrices to hold calculation info
             List<List<float>> costMatrix = new List<List<float>>();
-            for (int y = 0; y < gridMatrix.Count; y++)
+            for (int z = 0; z < gridMatrix.Count; z++)
             {
                 List<float> costRow = new List<float>();
-                for (int x = 0; x < gridMatrix[y].Count; x++) costRow.Add(-1);
+                for (int x = 0; x < gridMatrix[z].Count; x++) costRow.Add(-1);
                 costMatrix.Add(costRow);
             }
 
+            // Floor start and target positions to get tiles
+            Vector3 startTile = MathUtilities.floorVector3(startPosition);
+            Vector3 targetTile = MathUtilities.floorVector3(targetPosition);
+
             // Initialize priority queue and matrices with start tile
-            MinPriorityQueue<Vector2> queue = new MinPriorityQueue<Vector2>();
+            MinPriorityQueue<Vector3> queue = new MinPriorityQueue<Vector3>();
             queue.add(0, startTile);
-            costMatrix[(int)startTile.y][(int)startTile.x] = 0;
+            costMatrix[(int)startTile.z][(int)startTile.x] = 0;
 
             // Loop until free tile found or all tiles exhausted
             while (queue.count() != 0)
             {
-                Vector2 tile = queue.pop();
+                Vector3 tile = queue.pop();
 
                 // Check if current tile is free
                 if (!isTileOccupied(tile)) return tile;
 
                 // Add neighbours to queue (Only add if cost is less)
-                addTileToQueue(new Vector2(tile.x, tile.y + 1), queue, costMatrix, tile, targetTile); // Above
-                addTileToQueue(new Vector2(tile.x, tile.y - 1), queue, costMatrix, tile, targetTile); // Below
-                addTileToQueue(new Vector2(tile.x - 1, tile.y), queue, costMatrix, tile, targetTile); // Left
-                addTileToQueue(new Vector2(tile.x + 1, tile.y), queue, costMatrix, tile, targetTile); // Right
+                addTileToQueue(new Vector3(tile.x, tile.z + 1), queue, costMatrix, tile, targetTile); // Above
+                addTileToQueue(new Vector3(tile.x, tile.z - 1), queue, costMatrix, tile, targetTile); // Below
+                addTileToQueue(new Vector3(tile.x - 1, tile.z), queue, costMatrix, tile, targetTile); // Left
+                addTileToQueue(new Vector3(tile.x + 1, tile.z), queue, costMatrix, tile, targetTile); // Right
             }
 
-            // Return (-1, -1) if no free tiles found
-            return -Vector2.one;
+            // Return (-1, -1, -1) if no free tiles found
+            return -Vector3.one;
         }
 
-        // Wrapper function for calculateClosestUnoccupiedTile that takes a Vector3 and returns a Vector3
-        public override Vector3 getClosestFreeTilePosition(Vector3 startPosition)
-        {
-            Vector2 startTile = MathUtilities.toVector2Floored(startPosition);
-            Vector2 result = calculateClosestFreeTile(startTile);
-
-            // Return (-1, -1, -1) if no valid tiles found
-            if (result == -Vector2.one) return -Vector3.one;
-
-            return new Vector3(result.x, 0, result.y);
-        }
-
-        public Vector2 calculateClosestFreeTile(Vector2 startTile)
+        public Vector3 calculateClosestFreeTile(Vector3 startPosition)
         {
             // Helper function for checking tile validity
-            void addTileToQueue(Vector2 tile, Queue<Vector2> queue, List<List<bool>> visitedMatrix)
+            void addTileToQueue(Vector3 tile, Queue<Vector3> queue, List<List<bool>> visitedMatrix)
             {
                 // Convert from float to int
                 int xPosition = (int)tile.x;
-                int zPosition = (int)tile.y;
+                int zPosition = (int)tile.z;
 
                 // Check if out of bounds
                 if (xPosition < 0 || xPosition >= mapXLength) return;
@@ -218,57 +187,55 @@ namespace MiniJam159.Game
 
             // Matrix to keep track of visited tiles
             List<List<bool>> visitedMatrix = new List<List<bool>>();
-            for (int y = 0; y < gridMatrix.Count; y++)
+            for (int z = 0; z < gridMatrix.Count; z++)
             {
                 List<bool> visitedRow = new List<bool>();
-                for (int x = 0; x < gridMatrix[y].Count; x++) visitedRow.Add(false);
+                for (int x = 0; x < gridMatrix[z].Count; x++) visitedRow.Add(false);
                 visitedMatrix.Add(visitedRow);
             }
 
+            // Floor start and target positions to get tiles
+            Vector3 startTile = MathUtilities.floorVector3(startPosition);
+
             // Initialize queue with start tile enqueued
-            Queue<Vector2> queue = new Queue<Vector2>();
+            Queue<Vector3> queue = new Queue<Vector3>();
             queue.Enqueue(startTile);
 
             // At worst case, loop until all tiles have been checked
             while (queue.Count > 0)
             {
-                Vector2 tile = queue.Dequeue();
+                Vector3 tile = queue.Dequeue();
 
                 // Check if current tile is free
                 if (!isTileOccupied(tile)) return tile;
 
                 // Enqueue all unvisited neighbours
-                addTileToQueue(new Vector2(tile.x, tile.y + 1), queue, visitedMatrix); // Above
-                addTileToQueue(new Vector2(tile.x, tile.y - 1), queue, visitedMatrix); // Below
-                addTileToQueue(new Vector2(tile.x - 1, tile.y), queue, visitedMatrix); // Left
-                addTileToQueue(new Vector2(tile.x + 1, tile.y), queue, visitedMatrix); // Right
+                addTileToQueue(new Vector3(tile.x, tile.z + 1), queue, visitedMatrix); // Above
+                addTileToQueue(new Vector3(tile.x, tile.z - 1), queue, visitedMatrix); // Below
+                addTileToQueue(new Vector3(tile.x - 1, tile.z), queue, visitedMatrix); // Left
+                addTileToQueue(new Vector3(tile.x + 1, tile.z), queue, visitedMatrix); // Right
             }
 
-            // If no free tiles found, return (-1, -1)
-            return -Vector2.one;
+            // If no free tiles found, return (-1, -1, -1)
+            return -Vector3.one;
         }
 
         public override Queue<Vector3> getPathQueue(Vector3 startPosition, Vector3 targetPosition, float radius, List<TileIgnoreData> tileIgnoreData)
         {
-            // Find tile positions from given positions
-            Vector2 startTile = MathUtilities.toVector2Floored(startPosition);
-            Vector2 targetTile = MathUtilities.toVector2Floored(targetPosition);
-            //if (isTileOccupied(targetTile)) targetTile = calculateClosestFreeTile(targetTile, startTile);
-
             // Calculate path
-            List<Vector2> fullPath = calculatePath(startTile, targetTile, tileIgnoreData);
-            List<Vector2> simplifiedPath = simplifyPath(fullPath, radius, tileIgnoreData);
+            List<Vector3> fullPath = calculatePath(startPosition, targetPosition, tileIgnoreData);
+            List<Vector3> simplifiedPath = simplifyPath(fullPath, radius, tileIgnoreData);
             return pathToQueue(simplifiedPath);
         }
 
-        public override List<Vector2> calculatePath(Vector2 startTile, Vector2 targetTile, List<TileIgnoreData> tileIgnoreData)
+        public override List<Vector3> calculatePath(Vector3 startPosition, Vector3 targetPosition, List<TileIgnoreData> tileIgnoreData)
         {
             // Helper function for checking tile validity
-            void addTileToQueue(Vector2 tile, MinPriorityQueue<Vector2> queue, List<List<float>> costMatrix, List<List<Vector2>> predecessorMatrix, Vector2 predecessorTile)
+            void addTileToQueue(Vector3 tile, MinPriorityQueue<Vector3> queue, List<List<float>> costMatrix, List<List<Vector3>> predecessorMatrix, Vector3 predecessorTile)
             {
                 // Convert from float to int
-                int xPosition = (int)tile.x;
-                int zPosition = (int)tile.y;
+                int xPosition = Mathf.FloorToInt(tile.x);
+                int zPosition = Mathf.FloorToInt(tile.z);
 
                 // Check if out of bounds
                 if (xPosition < 0 || xPosition >= mapXLength) return;
@@ -277,13 +244,13 @@ namespace MiniJam159.Game
                 // Check if tile is occupied, except tiles in tile ignore data
                 if (isTileOccupied(tile) && !isTileIgnored(tile, tileIgnoreData)) return;
 
-                float predecessorCost = costMatrix[(int)predecessorTile.y][(int)predecessorTile.x];
+                float predecessorCost = costMatrix[(int)predecessorTile.z][(int)predecessorTile.x];
 
                 // Make sure we don't already have a better path to this tile
                 if (costMatrix[zPosition][xPosition] == -1 || costMatrix[zPosition][xPosition] > predecessorCost + 1)
                 {
                     // Calculate heuristic for this tile
-                    float heuristic = Vector2.Distance(tile, targetTile);
+                    float heuristic = Vector3.Distance(tile, targetPosition);
 
                     // Add to matrices
                     costMatrix[zPosition][xPosition] = predecessorCost + 1;
@@ -295,15 +262,15 @@ namespace MiniJam159.Game
             }
 
             // Initialize matrices to hold calculation info
-            List<List<Vector2>> predecessorMatrix = new List<List<Vector2>>();
+            List<List<Vector3>> predecessorMatrix = new List<List<Vector3>>();
             List<List<float>> costMatrix = new List<List<float>>();
-            for (int y = 0; y < gridMatrix.Count; y++)
+            for (int z = 0; z < gridMatrix.Count; z++)
             {
-                List<Vector2> predecessorRow = new List<Vector2>();
+                List<Vector3> predecessorRow = new List<Vector3>();
                 List<float> costRow = new List<float>();
-                for (int x = 0; x < gridMatrix[y].Count; x++)
+                for (int x = 0; x < gridMatrix[z].Count; x++)
                 {
-                    predecessorRow.Add(-Vector2.one);
+                    predecessorRow.Add(-Vector3.one);
                     costRow.Add(-1);
                 }
                 predecessorMatrix.Add(predecessorRow);
@@ -311,32 +278,32 @@ namespace MiniJam159.Game
             }
 
             // Initialize priority queue and matrices with start tile
-            MinPriorityQueue<Vector2> queue = new MinPriorityQueue<Vector2>();
-            queue.add(0, startTile);
-            costMatrix[(int)startTile.y][(int)startTile.x] = 0;
+            MinPriorityQueue<Vector3> queue = new MinPriorityQueue<Vector3>();
+            queue.add(0, startPosition);
+            costMatrix[(int)startPosition.z][(int)startPosition.x] = 0;
 
             // Loop until target found or all tiles exhausted
             while (queue.count() != 0)
             {
-                Vector2 tile = queue.pop();
+                Vector3 tile = queue.pop();
 
                 // Check if target reached
-                if (tile == targetTile) break;
+                if (MathUtilities.floorVector3(tile) == MathUtilities.floorVector3(targetPosition)) break;
 
                 // Add neighbours to queue (Only add if cost is less)
-                addTileToQueue(new Vector2(tile.x, tile.y + 1), queue, costMatrix, predecessorMatrix, tile); // Above
-                addTileToQueue(new Vector2(tile.x, tile.y - 1), queue, costMatrix, predecessorMatrix, tile); // Below
-                addTileToQueue(new Vector2(tile.x - 1, tile.y), queue, costMatrix, predecessorMatrix, tile); // Left
-                addTileToQueue(new Vector2(tile.x + 1, tile.y), queue, costMatrix, predecessorMatrix, tile); // Right
+                addTileToQueue(MathUtilities.addHalfToPositionFloored(new Vector3(tile.x, 0, tile.z + 1)), queue, costMatrix, predecessorMatrix, tile); // Above
+                addTileToQueue(MathUtilities.addHalfToPositionFloored(new Vector3(tile.x, 0, tile.z - 1)), queue, costMatrix, predecessorMatrix, tile); // Below
+                addTileToQueue(MathUtilities.addHalfToPositionFloored(new Vector3(tile.x - 1, 0, tile.z)), queue, costMatrix, predecessorMatrix, tile); // Left
+                addTileToQueue(MathUtilities.addHalfToPositionFloored(new Vector3(tile.x + 1, 0, tile.z)), queue, costMatrix, predecessorMatrix, tile); // Right
             }
 
             // Retrace path from target back to start
-            List<Vector2> path = new List<Vector2>();
-            Vector2 retraceTile = targetTile;
-            while (retraceTile != -Vector2.one)
+            List<Vector3> path = new List<Vector3>();
+            Vector3 retraceTile = targetPosition;
+            while (retraceTile != -Vector3.one)
             {
                 path.Add(retraceTile);
-                retraceTile = predecessorMatrix[(int)retraceTile.y][(int)retraceTile.x];
+                retraceTile = predecessorMatrix[Mathf.FloorToInt(retraceTile.z)][Mathf.FloorToInt(retraceTile.x)];
             }
             path.Reverse();
 
@@ -345,14 +312,14 @@ namespace MiniJam159.Game
 
         // To simplify the path, we do linecasts from and earlier point to a later point
         // If the cast hits nothing, we can remove all points in between
-        public override List<Vector2> simplifyPath(List<Vector2> path, float radius, List<TileIgnoreData> tileIgnoreData)
+        public override List<Vector3> simplifyPath(List<Vector3> path, float radius, List<TileIgnoreData> tileIgnoreData)
         {
             for (int i = 0; i < path.Count - 1; i++)
             {
                 for (int j = path.Count - 1; j > i; j--)
                 {
                     // Do linecast from i to j and check for occupied tiles
-                    if (isLineBlocked(path[i] + new Vector2(0.5f, 0.5f), path[j] + new Vector2(0.5f, 0.5f), tileIgnoreData, radius)) continue;
+                    if (isLineBlocked(path[i], path[j], tileIgnoreData, radius)) continue;
 
                     // No occupied tiles, we can shorten path
                     for (int k = i + 1; k < j; k++) path.RemoveAt(i + 1);
@@ -366,20 +333,20 @@ namespace MiniJam159.Game
             return path;
         }
 
-        protected bool isLineBlocked(Vector2 startPosition, Vector2 endPosition, List<TileIgnoreData> tileIgnoreData, float radius)
+        protected bool isLineBlocked(Vector3 startPosition, Vector3 endPosition, List<TileIgnoreData> tileIgnoreData, float radius)
         {
             // Only cast 1 line if radius is 0
             if (radius == 0) return isLineBlocked(startPosition, endPosition, tileIgnoreData);
 
             // Calculate direction
-            Vector2 direction = (endPosition - startPosition).normalized;
+            Vector3 direction = (endPosition - startPosition).normalized;
 
             // Create one line on either side
-            Vector2 normal = new Vector2(-direction.y, direction.x);
-            Vector2 startPosition1 = startPosition + (normal * radius);
-            Vector2 startPosition2 = startPosition - (normal * radius);
-            Vector2 endPosition1 = endPosition + (normal * radius);
-            Vector2 endPosition2 = endPosition - (normal * radius);
+            Vector3 normal = new Vector3(-direction.y, 0, direction.x);
+            Vector3 startPosition1 = startPosition + (normal * radius);
+            Vector3 startPosition2 = startPosition - (normal * radius);
+            Vector3 endPosition1 = endPosition + (normal * radius);
+            Vector3 endPosition2 = endPosition - (normal * radius);
 
             // Check that adding radius doesn't put us outside the map
             if (endPosition1.x < 0 || endPosition1.x >= mapXLength || endPosition1.y < 0 || endPosition1.y >= mapZLength) return true;
@@ -390,15 +357,15 @@ namespace MiniJam159.Game
             return isLineBlocked(startPosition2, endPosition2, tileIgnoreData);
         }
 
-        protected bool isLineBlocked(Vector2 startPosition, Vector2 endPosition, List<TileIgnoreData> tileIgnoreData)
+        protected bool isLineBlocked(Vector3 startPosition, Vector3 endPosition, List<TileIgnoreData> tileIgnoreData)
         {
             // Calculate distance and direction
-            float distance = Vector2.Distance(startPosition, endPosition);
-            Vector2 direction = (endPosition - startPosition).normalized;
+            float distance = Vector3.Distance(startPosition, endPosition);
+            Vector3 direction = (endPosition - startPosition).normalized;
 
             // Initialize current tile and line start
-            Vector2 linePosition = startPosition;
-            Vector2 tile = MathUtilities.floorVector2(startPosition);
+            Vector3 linePosition = startPosition;
+            Vector3 tile = MathUtilities.floorVector3(startPosition);
 
             // Loop until we reach the end tile
             float currentDistance = 0f;
@@ -408,26 +375,26 @@ namespace MiniJam159.Game
 
                 // Calculate the next axes along the line
                 float nextX = tile.x;
-                float nextY = tile.y;
+                float nextZ = tile.z;
                 if (direction.x > 0) nextX = tile.x + 1;
-                if (direction.y > 0) nextY = tile.y + 1;
+                if (direction.z > 0) nextZ = tile.z + 1;
 
                 // Calculate distance to next axes
                 float distanceToNextX = Mathf.Infinity;
-                float distanceToNextY = Mathf.Infinity;
+                float distanceToNextZ = Mathf.Infinity;
 
                 if (direction.x != 0) distanceToNextX = Mathf.Abs(nextX - linePosition.x);
-                if (direction.y != 0) distanceToNextY = Mathf.Abs(nextY - linePosition.y);
+                if (direction.z != 0) distanceToNextZ = Mathf.Abs(nextZ - linePosition.z);
 
                 // Calculate when the line crosses the next X and Y axes
                 float timeToNextX = Mathf.Infinity;
-                float timeToNextY = Mathf.Infinity;
+                float timeToNextZ = Mathf.Infinity;
 
                 if (distanceToNextX != Mathf.Infinity) timeToNextX = Mathf.Abs(distanceToNextX / direction.x);
-                if (distanceToNextY != Mathf.Infinity) timeToNextY = Mathf.Abs(distanceToNextY / direction.y);
+                if (distanceToNextZ != Mathf.Infinity) timeToNextZ = Mathf.Abs(distanceToNextZ / direction.z);
 
                 // Move horizontally
-                if (timeToNextX < timeToNextY)
+                if (timeToNextX < timeToNextZ)
                 {
                     if (currentDistance + timeToNextX > distance) break;
 
@@ -436,13 +403,13 @@ namespace MiniJam159.Game
                     currentDistance += timeToNextX;
                 }
                 // Move vertically
-                else if (timeToNextX > timeToNextY)
+                else if (timeToNextX > timeToNextZ)
                 {
-                    if (currentDistance + timeToNextY > distance) break;
+                    if (currentDistance + timeToNextZ > distance) break;
 
-                    linePosition += direction * timeToNextY;
-                    tile.y += Mathf.Sign(direction.y);
-                    currentDistance += timeToNextY;
+                    linePosition += direction * timeToNextZ;
+                    tile.z += Mathf.Sign(direction.z);
+                    currentDistance += timeToNextZ;
                 }
                 // Exact diagonal
                 else
@@ -452,7 +419,7 @@ namespace MiniJam159.Game
                     // Move along both axes
                     linePosition += direction * timeToNextX;
                     tile.x += Mathf.Sign(direction.x);
-                    tile.y += Mathf.Sign(direction.y);
+                    tile.z += Mathf.Sign(direction.z);
                     currentDistance += timeToNextX;
                 }
             }
@@ -461,13 +428,10 @@ namespace MiniJam159.Game
             return false;
         }
 
-        public override Queue<Vector3> pathToQueue(List<Vector2> path)
+        public override Queue<Vector3> pathToQueue(List<Vector3> path)
         {
             Queue<Vector3> pathQueue = new Queue<Vector3>();
-            foreach (Vector2 tile in path)
-            {
-                pathQueue.Enqueue(MathUtilities.toVector3(tile) + new Vector3(0.5f, 0, 0.5f));
-            }
+            foreach (Vector3 tile in path) pathQueue.Enqueue(tile);
             return pathQueue;
         }
 

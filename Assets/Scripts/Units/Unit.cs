@@ -127,7 +127,7 @@ namespace MiniJam159.Units
             // Check if current path is still valid
             if (pathUpdateTimer > pathUpdateInterval)
             {
-                TileIgnoreData newTileIgnoreData = new TileIgnoreData(MathUtilities.toVector2Floored(structure.startPosition), MathUtilities.toVector2Floored(structure.size));
+                TileIgnoreData newTileIgnoreData = new TileIgnoreData(structure.startPosition, structure.size);
 
                 path = GridManagerBase.instance.getPathQueue(transform.position, structure.transform.position, pathfindingRadius, new List<TileIgnoreData> { newTileIgnoreData });
                 pathUpdateTimer = 0f;
@@ -149,6 +149,14 @@ namespace MiniJam159.Units
                 movement += moveTowardsDestination - transform.position;
             }
 
+            // Return true if target structure reached
+            if (transform.position.x >= structure.startPosition.x - pathfindingRadius && transform.position.x <= structure.startPosition.x + structure.size.x + pathfindingRadius &&
+                transform.position.z >= structure.startPosition.z - pathfindingRadius && transform.position.z <= structure.startPosition.z + structure.size.z + pathfindingRadius)
+            {
+                // Target structure reached so we can stop pathing
+                path.Clear();
+                return true;
+            }
             // Return true if path ended
             // Return false while path is still ongoing
             return (path.Count == 0);

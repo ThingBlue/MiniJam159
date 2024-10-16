@@ -18,7 +18,7 @@ namespace MiniJam159.Debugging
 
         #endregion
 
-        private List<Vector2> debugPath = new List<Vector2>();
+        private List<Vector3> debugPath = new List<Vector3>();
 
         private Vector3 closestUnoccupiedTileTargetPosition = Vector3.zero;
         private Vector3 closestUnoccupiedTileResultPosition = Vector3.zero;
@@ -37,7 +37,7 @@ namespace MiniJam159.Debugging
         {
             if (InputManager.instance.getKeyDown("DebugPathfinding"))
             {
-                debugPath = GridManagerBase.instance.calculatePath(new Vector2(0, 0), new Vector2(10, 10), new List<TileIgnoreData>());
+                debugPath = GridManagerBase.instance.calculatePath(new Vector3(0, 0, 0), new Vector3(10, 0, 10), new List<TileIgnoreData>());
                 debugPath = GridManagerBase.instance.simplifyPath(debugPath, 0.4f, new List<TileIgnoreData>());
                 debugPath.Insert(0, pathfindingStartPosition);
                 Debug.Log("Path count: " + debugPath.Count);
