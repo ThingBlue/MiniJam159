@@ -293,13 +293,11 @@ namespace MiniJam159.Units
             if (!addToQueue) clearActionQueue();
 
             // Check if target position is occupied
-            if (GridManagerBase.instance.isTileOccupied(MathUtilities.toVector2Floored(targetPosition)))
+            if (GridManagerBase.instance.isTileOccupied(MathUtilities.floorVector3(targetPosition)))
             {
                 // Find closest free position to move to
                 targetPosition = GridManagerBase.instance.getClosestFreeTilePosition(targetPosition, transform.position);
             }
-
-            // Check if target position is accessible
 
             // Enqueue new action
             Action newAction = new MoveAction(targetPosition);

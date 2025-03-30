@@ -230,6 +230,13 @@ namespace MiniJam159.Game
 
         public override List<Vector3> calculatePath(Vector3 startPosition, Vector3 targetPosition, List<TileIgnoreData> tileIgnoreData)
         {
+            // Standardize start and target positions
+            Vector3 modifiedStartPosition = MathUtilities.addHalfToPositionFloored(startPosition);
+
+            // Keep track of lowest heuristic tile
+            Vector3 lowestHeuristicTile = modifiedStartPosition;
+            float lowestHeuristic = Vector3.Distance(modifiedStartPosition, targetPosition);
+
             // Helper function for checking tile validity
             void addTileToQueue(Vector3 tile, MinPriorityQueue<Vector3> queue, List<List<float>> costMatrix, List<List<Vector3>> predecessorMatrix, Vector3 predecessorTile)
             {
@@ -251,6 +258,11 @@ namespace MiniJam159.Game
                 {
                     // Calculate heuristic for this tile
                     float heuristic = Vector3.Distance(tile, targetPosition);
+                    if (heuristic < lowestHeuristic)
+                    {
+                        lowestHeuristic = heuristic;
+                        lowestHeuristicTile = tile;
+                    }
 
                     // Add to matrices
                     costMatrix[zPosition][xPosition] = predecessorCost + 1;
@@ -279,13 +291,14 @@ namespace MiniJam159.Game
 
             // Initialize priority queue and matrices with start tile
             MinPriorityQueue<Vector3> queue = new MinPriorityQueue<Vector3>();
-            queue.add(0, startPosition);
-            costMatrix[(int)startPosition.z][(int)startPosition.x] = 0;
+            queue.add(0, modifiedStartPosition);
+            costMatrix[(int)modifiedStartPosition.z][(int)modifiedStartPosition.x] = 0;
 
             // Loop until target found or all tiles exhausted
+            Vector3 tile = modifiedStartPosition;
             while (queue.count() != 0)
             {
-                Vector3 tile = queue.pop();
+                tile = queue.pop();
 
                 // Check if target reached
                 if (MathUtilities.floorVector3(tile) == MathUtilities.floorVector3(targetPosition)) break;
@@ -297,9 +310,12 @@ namespace MiniJam159.Game
                 addTileToQueue(MathUtilities.addHalfToPositionFloored(new Vector3(tile.x + 1, 0, tile.z)), queue, costMatrix, predecessorMatrix, tile); // Right
             }
 
+            Vector3 retraceTile = targetPosition;
+            // No path to target tile, use tile with lowest heuristic as destination instead
+            if (MathUtilities.floorVector3(tile) != MathUtilities.floorVector3(targetPosition)) retraceTile = lowestHeuristicTile;
+
             // Retrace path from target back to start
             List<Vector3> path = new List<Vector3>();
-            Vector3 retraceTile = targetPosition;
             while (retraceTile != -Vector3.one)
             {
                 path.Add(retraceTile);
