@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 
-namespace MiniJam.UI
+namespace MiniJam159.UI
 {
     public class MinimapManager : MonoBehaviour
     {
@@ -72,12 +72,12 @@ namespace MiniJam.UI
                 scaledMousePosition.y = Mathf.Clamp(scaledMousePosition.y, 0f, 1f);
 
                 // Set camera position
-                CameraController.instance.setScaledMapPosition(scaledMousePosition);
+                CameraControllerBase.instance.setScaledMapPosition(scaledMousePosition);
             }
 
             // Handle view rectangle
             // Get scaled camera corner points
-            List<Vector2> scaledViewCornerPoints = CameraController.instance.getScaledCameraViewCornerPoints();
+            List<Vector2> scaledViewCornerPoints = CameraControllerBase.instance.getScaledCameraViewCornerPoints();
             
             // Scale up by minimap size
             for (int i = 0; i < scaledViewCornerPoints.Count; i++)

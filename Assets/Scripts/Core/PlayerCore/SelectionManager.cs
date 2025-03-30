@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using System;
 using UnityEngine.UI;
 
 using MiniJam159.GameCore;
-using MiniJam159.AICore;
+using MiniJam159.UnitCore;
 
 namespace MiniJam159.PlayerCore
 {

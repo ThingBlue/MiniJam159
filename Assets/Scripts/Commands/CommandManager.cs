@@ -9,6 +9,20 @@ namespace MiniJam159.Commands
 {
     public class CommandManager : CommandManagerBase
     {
+        public override void executeCommand(int index)
+        {
+            Debug.Log("Executing command: " + activeCommands[index]);
+            if (activeCommands[index] == null) return;
+
+            activeCommands[index].execute();
+        }
+
+        public override void clearCommands()
+        {
+            activeCommands.Clear();
+            for (int i = 0; i < 12; i++) activeCommands.Add(null);
+        }
+
         public override void populateCommands(List<CommandType> newCommandTypes)
         {
             activeCommands.Clear();
@@ -32,18 +46,10 @@ namespace MiniJam159.Commands
                 // Attach command script and texture to new button
                 switch (newCommandTypes[i])
                 {
-                    case CommandType.MOVE:
-                        newCommand = new MoveCommand();
+                    case CommandType.STOP:
+                        newCommand = new StopCommand();
                         break;
-                    case CommandType.ATTACK:
-                        newCommand = new AttackCommand();
-                        break;
-                    case CommandType.HOLD:
-                        newCommand = new HoldCommand();
-                        break;
-                    case CommandType.HARVEST:
-                        newCommand = new HarvestCommand();
-                        break;
+
                     case CommandType.OPEN_BUILD_MENU:
                         newCommand = new OpenBuildMenuCommand();
                         break;
@@ -58,7 +64,6 @@ namespace MiniJam159.Commands
                         newCommand = new BuildWombCommand();
                         break;
                 }
-                newCommand.initialize();
                 newCommand.commandType = newCommandTypes[i];
                 activeCommands.Add(newCommand);
             }

@@ -18,8 +18,8 @@ TagManager:
   - 
   - 
   - Unit
+  - UnitHardCollider
   - Structure
-  - 
   - 
   - 
   - 
@@ -42,6 +42,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Health Bars
+    uniqueID: 1752974335
     locked: 0
   - name: Map
     uniqueID: 2627346123

@@ -174,22 +174,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (3)
@@ -354,15 +338,6 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   unpauseEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  holdCommandEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  openBuildMenuCommandEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  cancelBuildMenuCommandEvent:
     m_PersistentCalls:
       m_Calls: []
   buildNestCommandEvent:
@@ -606,13 +581,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 177129412}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52a2de94c9c01df45b5f3c03627830ba, type: 3}
+  m_Script: {fileID: 11500000, guid: 64e8f8bdb86dea94cbbcd550b62bbb0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  squadPanelObject: {fileID: 177129412}
-  unbindBox: {fileID: 502852886}
-  deleteBox: {fileID: 1129032647}
-  squadDisplayBoxPrefab: {fileID: 5349138052447107023, guid: de953bc84b9a51c489846bf9f3e65b57, type: 3}
   squadSlotBoxes:
   - {fileID: 1582354887}
   - {fileID: 517479284}
@@ -622,7 +593,11 @@ MonoBehaviour:
   - {fileID: 1211941434}
   - {fileID: 154440642}
   - {fileID: 1081918107}
-  squadDeleteBox: {fileID: 1081918107}
+  squadDisplayBoxes: []
+  squadPanelObject: {fileID: 177129412}
+  unbindBox: {fileID: 502852886}
+  deleteBox: {fileID: 1129032647}
+  squadDisplayBoxPrefab: {fileID: 5349138052447107023, guid: de953bc84b9a51c489846bf9f3e65b57, type: 3}
   squadDisplayBoxSize: {x: 64, y: 128}
   firstBoxPosition: {x: -656, y: 144}
   squadDisplayBoxRowCount: 2
@@ -630,7 +605,6 @@ MonoBehaviour:
   panelSmoothTime: 0.05
   showPosition: 0
   hidePosition: 720
-  squadDisplayBoxes: []
 --- !u!1 &193226390
 GameObject:
   m_ObjectHideFlags: 0
@@ -783,51 +757,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 229696187}
   m_CullTransparentMesh: 1
---- !u!1 &263267997
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 263267999}
-  - component: {fileID: 263267998}
-  m_Layer: 0
-  m_Name: PlayerModeManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &263267998
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 263267997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6417e71f307278447bbf2860686cc9a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerMode: 0
---- !u!4 &263267999
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 263267997}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 12
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &275518470
 GameObject:
   m_ObjectHideFlags: 0
@@ -946,7 +875,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &308521646
 GameObject:
@@ -977,6 +906,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bee0c5ed7cfccc4abea317eb5ff7ae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  depositPointStructures: []
   placementGuide: {fileID: 1046527040}
   gridTilesRenderer: {fileID: 1834896601}
   placementGuideRenderer: {fileID: 1046527041}
@@ -987,7 +917,6 @@ MonoBehaviour:
   wombStructurePrefab: {fileID: 5914292673917186741, guid: bedf7ccd2febc0540bcff6dfb1c3d7c6, type: 3}
   testStructurePrefab: {fileID: 5914292673917186741, guid: bedf7ccd2febc0540bcff6dfb1c3d7c6, type: 3}
   depositPointStructureTypes: 01000000
-  depositPointStructures: []
 --- !u!4 &308521648
 Transform:
   m_ObjectHideFlags: 0
@@ -1310,7 +1239,7 @@ MonoBehaviour:
   commandButtonSize: 64
   moveCommandSprite: {fileID: 21300000, guid: 95683849944b4fb4e93945933966f87d, type: 3}
   attackCommandSprite: {fileID: 21300000, guid: 2b30954fa39e1ff409176e8484478604, type: 3}
-  holdCommandSprite: {fileID: 21300000, guid: 818d78a5e97f47b4e9db1261d96cd462, type: 3}
+  stopCommandSprite: {fileID: 21300000, guid: 818d78a5e97f47b4e9db1261d96cd462, type: 3}
   harvestCommandSprite: {fileID: 21300000, guid: 487c10d71a22f7640abebc4de6e3689a, type: 3}
   openBuildMenuCommandSprite: {fileID: 21300000, guid: cf09fcd436e2c7448ba3b3f468bf1095, type: 3}
   cancelBuildMenuCommandSprite: {fileID: 21300000, guid: 059119e69eb40b74489a005110b6b7a7, type: 3}
@@ -1495,6 +1424,56 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &541899471
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 541899473}
+  - component: {fileID: 541899472}
+  m_Layer: 0
+  m_Name: ActionIndicators
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &541899472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 541899471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49bc49796a3d6cb49a20233231677018, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionIndicatorParentTransform: {fileID: 541899473}
+  moveActionIndicatorPrefab: {fileID: 8167167929073742156, guid: b34819483e2cbfc4ea34dd56bf2449f1, type: 3}
+  attackActionIndicatorPrefab: {fileID: 0}
+  interactActionIndicatorPrefab: {fileID: 7474912500606395696, guid: cf3cc8bdcf1dd0b4085fd31fb6ccd8f9, type: 3}
+  rallyPointIndicatorPrefab: {fileID: 0}
+  actionIndicatorLinePrefab: {fileID: 2911418083754529655, guid: 697333b33f2d8c644adbe7afdcbc7531, type: 3}
+--- !u!4 &541899473
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 541899471}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 21
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &628414037
 GameObject:
   m_ObjectHideFlags: 0
@@ -1524,8 +1503,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f6687791b239244ebc4e30939f9bf16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugDrawUnitPaths: 0
   pathfindingStartPosition: {x: 0, y: 0}
   pathfindingEndPosition: {x: 10, y: 10}
+  closestUnoccupiedTileStartPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &628414039
 Transform:
   m_ObjectHideFlags: 0
@@ -1539,7 +1520,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &640330261
 GameObject:
@@ -1722,19 +1703,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8e884a6ef2167c41bcee524cd9de45e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  massSelectDelay: 0.2
+  massSelectMouseMoveDistance: 50
+  massSelectStartPosition: {x: 0, y: 0, z: 0}
   unitLayer:
     serializedVersion: 2
     m_Bits: 1024
   structureLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 4096
   massSelectBoxTransform: {fileID: 401467587}
-  massSelectDelay: 0.2
-  massSelectMouseMoveDistance: 50
   selectionRaycastDistance: 100
   drawMassSelectBoxCastGizmo: 0
   hoveredObject: {fileID: 0}
-  massSelectStartPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &707801752
 Transform:
   m_ObjectHideFlags: 0
@@ -1895,22 +1876,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (4)
@@ -1950,7 +1915,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 19
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &959593887
 GameObject:
@@ -2050,7 +2015,7 @@ RectTransform:
   - {fileID: 177129413}
   - {fileID: 1000442351}
   m_Father: {fileID: 0}
-  m_RootOrder: 20
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2399,7 +2364,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 18
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1055277989
 PrefabInstance:
@@ -2606,22 +2571,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab
@@ -2817,7 +2766,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1211941434
 GameObject:
@@ -3072,7 +3021,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 432ef22a5b8e1fa4bb6552fb8acb624c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  defaultMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 3}
   selectedOutlineMaterial: {fileID: 2100000, guid: 2cd68e4b28dbb8c429577e2a5e049d53, type: 2}
   hoveredOutlineColor: {r: 0, g: 1, b: 0, a: 0.7490196}
   selectedOutlineColor: {r: 1, g: 1, b: 1, a: 0.7490196}
@@ -3277,7 +3226,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1519632958
 PrefabInstance:
@@ -3329,22 +3278,6 @@ PrefabInstance:
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
@@ -3679,22 +3612,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (2)
@@ -3846,7 +3763,7 @@ RectTransform:
   m_Children:
   - {fileID: 401467587}
   m_Father: {fileID: 0}
-  m_RootOrder: 21
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3934,7 +3851,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 17
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1844366325
 GameObject:
@@ -4078,12 +3995,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 322507c10dad5474aaa787a390c54e4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerMode: 0
   unitLayer:
     serializedVersion: 2
     m_Bits: 1024
   structureLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 4096
   resourceLayer:
     serializedVersion: 2
     m_Bits: 33554432
@@ -4304,22 +4222,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.size
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[0]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[1]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
-      propertyPath: commands.Array.data[3]
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (5)
@@ -4500,6 +4402,10 @@ PrefabInstance:
     - target: {fileID: 3731014612963296188, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: m_Name
       value: WorkerUnitPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296188, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: structureDataList

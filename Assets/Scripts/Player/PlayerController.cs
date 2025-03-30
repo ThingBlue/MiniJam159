@@ -1,20 +1,21 @@
-using MiniJam159.GameCore;
-using MiniJam159.PlayerCore;
-using MiniJam159.Structures;
-using MiniJam159.AICore;
-using MiniJam159.CommandCore;
-using MiniJam159.Resources;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
+using MiniJam159.Common;
+using MiniJam159.GameCore;
+using MiniJam159.PlayerCore;
+using MiniJam159.UnitCore;
+using MiniJam159.StructureCore;
+using MiniJam159.CommandCore;
+using MiniJam159.Resources;
 using MiniJam159.UICore;
 
 namespace MiniJam159.Player
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : PlayerControllerBase
     {
         #region Inspector members
 
@@ -49,16 +50,6 @@ namespace MiniJam159.Player
 
         private float massSelectStartTimer;
 
-        // Singleton
-        public static PlayerController instance;
-
-        private void Awake()
-        {
-            // Singleton
-            if (instance == null) instance = this;
-            else Destroy(this);
-        }
-
         private void Update()
         {
             // Mouse
@@ -72,7 +63,7 @@ namespace MiniJam159.Player
             mouseScroll += Input.GetAxis("Mouse ScrollWheel");
 
             // Keyboard
-            if (PlayerModeManager.instance.playerMode == PlayerMode.NORMAL)
+            if (playerMode == PlayerMode.NORMAL)
             {
                 if (InputManager.instance.getKeyDown("QCommand")) CommandManagerBase.instance.executeCommand(0);
                 if (InputManager.instance.getKeyDown("WCommand")) CommandManagerBase.instance.executeCommand(1);
@@ -115,68 +106,13 @@ namespace MiniJam159.Player
             CameraController.instance.zoomCamera(mouseScroll);
 
             // Handle input based on state
-            switch (PlayerModeManager.instance.playerMode)
+            switch (playerMode)
             {
-                case PlayerMode.STRUCTURE_PLACEMENT:
-                    if (mouse0Down)
-                    {
-                        // Create structure
-                        GameObject newStructureObject = StructureManager.instance.finishPlacement();
-
-                        // Send selected workers to build structure
-                        if (newStructureObject) executeBuildTarget(newStructureObject);
-
-                        ignoreNextMouse0Up = true;
-                    }
-                    if (cancelCommandKeyDown || mouse1Down) StructureManager.instance.cancelPlacement();
-                    break;
-
-                case PlayerMode.ATTACK_TARGET:
-                    // Check for cancel
-                    if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-
-                    // Wait for player input
-                    if (!mouse0Down) break;
-
-                    GameObject attackTarget = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer);
-                    if (attackTarget == null || attackTarget.tag != enemyTag)
-                    {
-                        // No target, execute attack move instead
-                        executeAttackMove();
-                        break;
-                    }
-                    if (!EventSystem.current.IsPointerOverGameObject()) executeAttackTarget(attackTarget);
-                    break;
-
-                case PlayerMode.HARVEST_TARGET:
-                    // Check for cancel
-                    if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-
-                    // Wait for player input
-                    if (!mouse0Down) break;
-
-                    GameObject resourceTarget = InputManager.instance.mouseRaycastObject(resourceLayer);
-                    if (resourceTarget == null)
-                    {
-                        // No target, cancel attack command
-                        PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-                        return;
-                    }
-                    if (!EventSystem.current.IsPointerOverGameObject()) executeHarvestTarget(resourceTarget);
-                    break;
-
-                case PlayerMode.MOVE_TARGET:
-                    // Check for cancel
-                    if (cancelCommandKeyDown) PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
-
-                    if (mouse0Down && !EventSystem.current.IsPointerOverGameObject()) executeMove();
-                    break;
-
                 case PlayerMode.MASS_SELECT:
                     // Check for cancel
                     if (cancelCommandKeyDown || mouse1Down)
                     {
-                        PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+                        playerMode = PlayerMode.NORMAL;
                         canSelect = false;
                     }
 
@@ -190,6 +126,37 @@ namespace MiniJam159.Player
                         // Execute mass select
                         SelectionControllerBase.instance.executeMassSelect();
                     }
+                    break;
+
+                case PlayerMode.ATTACK_TARGET:
+                    // Check for cancel
+                    if (cancelCommandKeyDown) playerMode = PlayerMode.NORMAL;
+
+                    // Wait for player input
+                    if (!mouse0Down) break;
+
+                    GameObject attackTarget = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer);
+                    if (attackTarget == null || attackTarget.tag != enemyTag)
+                    {
+                        // No target, execute attack move instead
+                        executeAttackMoveCommand(InputManager.instance.getMousePositionInWorld());
+                        break;
+                    }
+                    if (!EventSystem.current.IsPointerOverGameObject()) executeAttackCommand(attackTarget);
+                    break;
+
+                case PlayerMode.STRUCTURE_PLACEMENT:
+                    if (mouse0Down)
+                    {
+                        // Get data for new structure
+                        GameObject newStructureObject = StructureManagerBase.instance.confirmPlacement();
+
+                        // Send selected workers to build structure
+                        if (newStructureObject) executeBuildCommand(newStructureObject);
+
+                        ignoreNextMouse0Up = true;
+                    }
+                    if (cancelCommandKeyDown || mouse1Down) StructureManagerBase.instance.cancelPlacement();
                     break;
 
                 case PlayerMode.NORMAL:
@@ -225,7 +192,7 @@ namespace MiniJam159.Player
                             Vector3.Distance(SelectionControllerBase.instance.massSelectStartPosition, Input.mousePosition) > SelectionController.instance.massSelectMouseMoveDistance)
                         {
                             // Start mass select
-                            PlayerModeManager.instance.playerMode = PlayerMode.MASS_SELECT;
+                            playerMode = PlayerMode.MASS_SELECT;
                         }
                     }
                     else
@@ -245,34 +212,21 @@ namespace MiniJam159.Player
                         SelectionControllerBase.instance.executeSingleSelect();
                     }
 
-                    // Movement commands
+                    // Right click commands
                     if (mouse1Down && !EventSystem.current.IsPointerOverGameObject())
                     {
                         // Raycast at mouse position to check what the player is hovering over
-                        GameObject target = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer | resourceLayer);
-                        Entity targetEntity = null;
-                        GameAI targetUnit = null;
-                        Structure targetStructure = null;
-                        Resource targetResource = null;
-                        if (target) targetEntity = target.GetComponent<Entity>();
-                        if (target) targetUnit = target.GetComponent<GameAI>();
-                        if (target) targetStructure = target.GetComponent<Structure>();
-                        if (target) targetResource = target.GetComponent<Resource>();
+                        GameObject targetObject = InputManager.instance.mouseRaycastObject(unitLayer | structureLayer | resourceLayer);
 
-                        // Attack if hovering over enemy unit or structure
-                        if (targetEntity != null && target.tag == enemyTag) executeAttackTarget(target);
-                        // Harvest is hovering over resource
-                        else if (targetResource != null) executeHarvestTarget(target);
-                        // Harvest is hovering over unfinished building
-                        else if (targetStructure != null && targetStructure.buildProgress < targetStructure.maxBuildProgress) executeBuildTarget(target);
-                        // Move if none of the above
-                        else executeMove();
+                        if (targetObject != null) interactWithObject(targetObject);
+                        // Default to move if no object hit
+                        else executeMoveCommand(InputManager.instance.getMousePositionInWorld());
                     }
                     break;
             }
 
             // Don't allow start of mass select when occupied
-            if (PlayerModeManager.instance.playerMode != PlayerMode.NORMAL && PlayerModeManager.instance.playerMode != PlayerMode.MASS_SELECT)
+            if (playerMode != PlayerMode.NORMAL && playerMode != PlayerMode.MASS_SELECT)
             {
                 SelectionControllerBase.instance.massSelectStartPosition = Input.mousePosition;
                 canSelect = false;
@@ -323,125 +277,141 @@ namespace MiniJam159.Player
             }
 
             // Update commands
-            SelectionControllerBase.instance.populateCommands(newFocusIndex);
+            SelectionControllerBase.instance.populateCommands();
 
             // Update UI
             SelectionDisplayManagerBase.instance.updateSelectionDisplayBoxes(false);
         }
 
-        public void executeMove()
+        public void interactWithObject(GameObject targetObject)
         {
+            if (targetObject == null) return;
+
+            // Check what the object is
+            Entity targetEntity = targetObject.GetComponent<Entity>();
+            UnitBase targetUnit = targetObject.GetComponent<UnitBase>();
+            Structure targetStructure = targetObject.GetComponent<Structure>();
+            Resource targetResource = targetObject.GetComponent<Resource>();
+
+            // Attack if hovering over enemy unit or structure
+            if (targetEntity != null && targetObject.tag == enemyTag) executeAttackCommand(targetObject);
+            // Harvest is hovering over resource
+            else if (targetResource != null) executeHarvestCommand(targetObject);
+            // Harvest is hovering over unfinished building
+            else if (targetStructure != null && targetStructure.buildProgress < targetStructure.maxBuildProgress) executeBuildCommand(targetObject);
+            // Move if none of the above
+            else executeMoveCommand(InputManager.instance.getMousePositionInWorld());
+        }
+
+        #region Command executors
+
+        public override void executeMoveCommand(Vector3 targetPosition)
+        {
+            // Make sure target is not out of bounds
+            if (targetPosition.x < 0 || targetPosition.x > GridManagerBase.instance.mapXLength ||
+                targetPosition.z < 0 || targetPosition.z > GridManagerBase.instance.mapZLength)
+            {
+                playerMode = PlayerMode.NORMAL;
+                return;
+            }
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("moveAICommand");
-                if (method != null)
-                {
-                    // Invoke command method in ai using mouse position in world
-                    Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
-                    method.Invoke(ai, new object[] { mousePositionInWorld });
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.moveCommand(addToQueue, targetPosition);
             }
 
             // Finish command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeAttackMove()
+        public override void executeAttackMoveCommand(Vector3 targetPosition)
         {
+            // Make sure target is not out of bounds
+            if (targetPosition.x < 0 || targetPosition.x > GridManagerBase.instance.mapXLength ||
+                targetPosition.z < 0 || targetPosition.z > GridManagerBase.instance.mapZLength)
+            {
+                playerMode = PlayerMode.NORMAL;
+                return;
+            }
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("attackMoveAICommand");
-                if (method != null)
-                {
-                    // Invoke command method in ai using mouse position in world
-                    Vector3 mousePositionInWorld = InputManager.instance.getMousePositionInWorld();
-                    method.Invoke(ai, new object[] { mousePositionInWorld });
-
-                    Debug.Log("Attack moving");
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.attackMoveCommand(addToQueue, targetPosition);
             }
 
             // Finish command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeAttackTarget(GameObject target)
+        public override void executeAttackCommand(GameObject targetObject)
         {
+            if (targetObject == null) return;
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("attackAICommand");
-                if (method != null)
-                {
-                    // Invoke attack command method in ai using transform of target
-                    method.Invoke(ai, new object[] { target.transform });
-
-                    Debug.Log("Attacking " + target);
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.attackCommand(addToQueue, targetObject);
             }
 
             // Finish attack command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeHarvestTarget(GameObject target)
+        public override void executeHarvestCommand(GameObject targetObject)
         {
+            if (targetObject == null) return;
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("harvestAICommand");
-                if (method != null)
-                {
-                    // Invoke command method in ai using transform of target
-                    method.Invoke(ai, new object[] { target });
-
-                    Debug.Log("Harvesting " + target);
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.harvestCommand(addToQueue, targetObject);
             }
 
             // Finish attack command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
 
-        public void executeBuildTarget(GameObject target)
+        public override void executeBuildCommand(GameObject targetObject)
         {
+            if (targetObject == null) return;
+
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
             {
-                // Check that object has a GameAI
-                GameAI ai = selectedObject.GetComponent<GameAI>();
-                if (ai == null) continue;
+                // Check that object has a unit component
+                UnitBase unit = selectedObject.GetComponent<UnitBase>();
+                if (unit == null) continue;
 
-                MethodInfo method = ai.GetType().GetMethod("buildStructureCommand");
-                if (method != null)
-                {
-                    // Invoke command method in ai using transform of target
-                    method.Invoke(ai, new object[] { target });
-
-                    Debug.Log("Building " + target);
-                }
+                bool addToQueue = InputManager.instance.getKey("QueueCommand");
+                unit.buildCommand(addToQueue, targetObject);
             }
 
             // Finish attack command
-            PlayerModeManager.instance.playerMode = PlayerMode.NORMAL;
+            playerMode = PlayerMode.NORMAL;
         }
+
+        #endregion
     }
 }

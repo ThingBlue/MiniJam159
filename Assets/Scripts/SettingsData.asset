@@ -73,4 +73,6 @@ MonoBehaviour:
     keys: 38000000
   - name: ToggleSquadBind
     keys: 44010000
+  - name: QueueCommand
+    keys: 30010000
   doubleClickMaxDelay: 0.5
