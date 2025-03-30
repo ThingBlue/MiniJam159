@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MiniJam159.GameCore
+namespace MiniJam159.EntityCore
 {
     public class EntityManager : MonoBehaviour
     {

@@ -46,7 +46,7 @@ namespace MiniJam159.Debugging
             if (InputManager.instance.getKeyDown("DebugClosestUnoccupiedTile"))
             {
                 closestUnoccupiedTileStartPosition = InputManager.instance.getMousePositionInWorld();
-                closestUnoccupiedTileResultPosition = GridManagerBase.instance.getClosestFreeTilePosition(closestUnoccupiedTileStartPosition, closestUnoccupiedTileTargetPosition);
+                closestUnoccupiedTileResultPosition = GridManagerBase.instance.calculateClosestFreeTile(closestUnoccupiedTileStartPosition, closestUnoccupiedTileTargetPosition);
                 Debug.Log("Mouse position: " + closestUnoccupiedTileStartPosition + ", closest unoccupied tile position: " + closestUnoccupiedTileResultPosition);
             }
 

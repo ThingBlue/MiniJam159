@@ -12,6 +12,7 @@ using MiniJam159.StructureCore;
 using MiniJam159.CommandCore;
 using MiniJam159.Resources;
 using MiniJam159.UICore;
+using MiniJam159.EntityCore;
 
 namespace MiniJam159.Player
 {

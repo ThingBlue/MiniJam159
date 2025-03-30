@@ -53,8 +53,8 @@ namespace MiniJam159.GameCore
 
         public virtual void occupyTiles(Vector3 startPosition, Vector3 size, TileType occupationType = TileType.BUILDING) { }
 
-        public virtual Vector3 getClosestFreeTilePosition(Vector3 startPosition, Vector3 targetPosition) { return Vector3.zero; }
-        public virtual Vector3 getClosestFreeTilePosition(Vector3 startPosition) { return Vector3.zero; }
+        public virtual Vector3 calculateClosestFreeTile(Vector3 startPosition, Vector3 targetPosition) { return Vector3.zero; }
+        public virtual Vector3 calculateClosestFreeTile(Vector3 startPosition) { return Vector3.zero; }
 
         public virtual Queue<Vector3> getPathQueue(Vector3 startPosition, Vector3 targetPosition, float radius, List<TileIgnoreData> tileIgnoreData) { return new Queue<Vector3>(); }
         public virtual List<Vector3> calculatePath(Vector3 startPosition, Vector3 targetPosition, List<TileIgnoreData> tileIgnoreData) { return new List<Vector3>(); }

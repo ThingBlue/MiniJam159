@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using System.Linq;
 
 using MiniJam159.UnitCore;
 using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
-using System.Linq;
 using MiniJam159.StructureCore;
-using TMPro;
 using MiniJam159.Common;
+using MiniJam159.EntityCore;
 
 namespace MiniJam159.Units
 {
@@ -122,8 +123,10 @@ namespace MiniJam159.Units
         protected virtual bool handlePathfindingToStructure(Structure structure)
         {
             // Return true if target structure reached
-            if (transform.position.x >= structure.startPosition.x - pathfindingRadius && transform.position.x <= structure.startPosition.x + structure.size.x + pathfindingRadius &&
-                transform.position.z >= structure.startPosition.z - pathfindingRadius && transform.position.z <= structure.startPosition.z + structure.size.z + pathfindingRadius)
+            if (transform.position.x + GetComponent<CapsuleCollider>().radius >= structure.startPosition.x - pathfindingRadius &&
+                transform.position.x - GetComponent<CapsuleCollider>().radius <= structure.startPosition.x + structure.size.x + pathfindingRadius &&
+                transform.position.z + GetComponent<CapsuleCollider>().radius >= structure.startPosition.z - pathfindingRadius &&
+                transform.position.z - GetComponent<CapsuleCollider>().radius <= structure.startPosition.z + structure.size.z + pathfindingRadius)
             {
                 path.Clear();
                 return true;
@@ -293,7 +296,7 @@ namespace MiniJam159.Units
             if (GridManagerBase.instance.isTileOccupied(MathUtilities.floorVector3(targetPosition)))
             {
                 // Find closest free position to move to
-                targetPosition = GridManagerBase.instance.getClosestFreeTilePosition(targetPosition, transform.position);
+                targetPosition = GridManagerBase.instance.calculateClosestFreeTile(targetPosition, transform.position);
             }
 
             // Enqueue new action

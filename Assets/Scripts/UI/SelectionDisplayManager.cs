@@ -1,12 +1,14 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
 using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
 using MiniJam159.Player;
 using MiniJam159.PlayerCore;
 using MiniJam159.UICore;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+using MiniJam159.EntityCore;
 
 namespace MiniJam159.UI
 {

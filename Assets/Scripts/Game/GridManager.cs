@@ -93,7 +93,7 @@ namespace MiniJam159.Game
 
         // Find closest tile to startTile, prioritizing direction of targetTile
         // startTile = Mouse position, targetTile = Entity position
-        public Vector3 calculateClosestFreeTile(Vector3 startPosition, Vector3 targetPosition)
+        public override Vector3 calculateClosestFreeTile(Vector3 startPosition, Vector3 targetPosition)
         {
             // Helper function for checking tile validity
             void addTileToQueue(Vector3 tile, MinPriorityQueue<Vector3> queue, List<List<float>> costMatrix, Vector3 predecessorTile, Vector3 targetTile)
@@ -152,17 +152,17 @@ namespace MiniJam159.Game
                 if (!isTileOccupied(tile)) return tile;
 
                 // Add neighbours to queue (Only add if cost is less)
-                addTileToQueue(new Vector3(tile.x, tile.z + 1), queue, costMatrix, tile, targetTile); // Above
-                addTileToQueue(new Vector3(tile.x, tile.z - 1), queue, costMatrix, tile, targetTile); // Below
-                addTileToQueue(new Vector3(tile.x - 1, tile.z), queue, costMatrix, tile, targetTile); // Left
-                addTileToQueue(new Vector3(tile.x + 1, tile.z), queue, costMatrix, tile, targetTile); // Right
+                addTileToQueue(new Vector3(tile.x, 0, tile.z + 1), queue, costMatrix, tile, targetTile); // Above
+                addTileToQueue(new Vector3(tile.x, 0, tile.z - 1), queue, costMatrix, tile, targetTile); // Below
+                addTileToQueue(new Vector3(tile.x - 1, 0, tile.z), queue, costMatrix, tile, targetTile); // Left
+                addTileToQueue(new Vector3(tile.x + 1, 0, tile.z), queue, costMatrix, tile, targetTile); // Right
             }
 
             // Return (-1, -1, -1) if no free tiles found
             return -Vector3.one;
         }
 
-        public Vector3 calculateClosestFreeTile(Vector3 startPosition)
+        public override Vector3 calculateClosestFreeTile(Vector3 startPosition)
         {
             // Helper function for checking tile validity
             void addTileToQueue(Vector3 tile, Queue<Vector3> queue, List<List<bool>> visitedMatrix)
@@ -210,10 +210,10 @@ namespace MiniJam159.Game
                 if (!isTileOccupied(tile)) return tile;
 
                 // Enqueue all unvisited neighbours
-                addTileToQueue(new Vector3(tile.x, tile.z + 1), queue, visitedMatrix); // Above
-                addTileToQueue(new Vector3(tile.x, tile.z - 1), queue, visitedMatrix); // Below
-                addTileToQueue(new Vector3(tile.x - 1, tile.z), queue, visitedMatrix); // Left
-                addTileToQueue(new Vector3(tile.x + 1, tile.z), queue, visitedMatrix); // Right
+                addTileToQueue(new Vector3(tile.x, 0, tile.z + 1), queue, visitedMatrix); // Above
+                addTileToQueue(new Vector3(tile.x, 0, tile.z - 1), queue, visitedMatrix); // Below
+                addTileToQueue(new Vector3(tile.x - 1, 0, tile.z), queue, visitedMatrix); // Left
+                addTileToQueue(new Vector3(tile.x + 1, 0, tile.z), queue, visitedMatrix); // Right
             }
 
             // If no free tiles found, return (-1, -1, -1)

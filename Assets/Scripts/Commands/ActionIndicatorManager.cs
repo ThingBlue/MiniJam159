@@ -8,8 +8,7 @@ using MiniJam159.PlayerCore;
 using MiniJam159.CommandCore;
 using MiniJam159.UnitCore;
 using MiniJam159.StructureCore;
-using static UnityEngine.EventSystems.EventTrigger;
-using static UnityEngine.UI.CanvasScaler;
+using MiniJam159.EntityCore;
 
 namespace MiniJam159.Commands
 {

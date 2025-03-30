@@ -7,6 +7,7 @@ using MiniJam159.GameCore;
 using UnityEngine.EventSystems;
 using MiniJam159.PlayerCore;
 using MiniJam159.UICore;
+using MiniJam159.EntityCore;
 
 namespace MiniJam159.UI
 {

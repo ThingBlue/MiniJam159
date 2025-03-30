@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 using MiniJam159.GameCore;
 using MiniJam159.UnitCore;
+using MiniJam159.EntityCore;
 
 namespace MiniJam159.PlayerCore
 {

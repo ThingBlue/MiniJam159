@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MiniJam159.GameCore
+namespace MiniJam159.EntityCore
 {
     public class HealthBar : MonoBehaviour
     {

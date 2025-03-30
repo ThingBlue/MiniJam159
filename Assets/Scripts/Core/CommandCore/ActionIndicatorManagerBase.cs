@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using MiniJam159.EntityCore;
+
 using MiniJam159.GameCore;
 
 namespace MiniJam159.CommandCore

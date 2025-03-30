@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
 using MiniJam159.Common;
+using MiniJam159.EntityCore;
 
 namespace MiniJam159.UnitCore
 {
