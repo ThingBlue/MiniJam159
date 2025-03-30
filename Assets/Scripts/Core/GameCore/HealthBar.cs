@@ -11,35 +11,39 @@ namespace MiniJam159.GameCore
 
         public RectTransform healthBarCanvasTransform;
         public RectTransform healthBarTransform;
-        public float maxHealth;
 
         public float minSize;
         public float sizeScaling;
 
         #endregion
 
-        public float health;
+        public float maxHealth;
+        public Entity attachedEntity;
 
-        // IMPORTANT: Owner entity is expected to initialize health bar with
-        //            setMaxHealth() and set Health()
-
-        public void setMaxHealth(float maxHealth)
+        private void Start()
         {
-            this.maxHealth = maxHealth;
+            // Try getting entity from parent object
+            if (transform && transform.parent) attachedEntity = transform.parent.GetComponent<Entity>();
+            // Found nothing, throw error
+            if (!attachedEntity) throw new System.Exception("Health bar on " + gameObject.name + " cannot find entity on parent object");
 
+            // Get max health value from entity
+            maxHealth = attachedEntity.maxHealth;
             // Refresh health bar background width
             healthBarCanvasTransform.sizeDelta = new Vector2(minSize + (maxHealth * sizeScaling), healthBarCanvasTransform.sizeDelta.y);
-
             // Make sure health bar is still at the correct width
             healthBarTransform.offsetMin = new Vector2(0, healthBarTransform.offsetMin.y);
+
+            // Subscribe to health changed event
+            attachedEntity.onHealthChangedEvent += onHealthChanged;
+            // Immediately perform health change once
+            onHealthChanged(attachedEntity.health);
         }
 
-        public void setHealth(float health)
+        public void onHealthChanged(float newValue)
         {
-            this.health = health;
-
-            // Calculate percentage, capped at 1
-            float healthPercentage = Mathf.Min(health / maxHealth, 1f);
+            // Calculate clamped percentage
+            float healthPercentage = Mathf.Clamp(0f, newValue / maxHealth, 1f);
 
             // Refresh health bar width by changing right offset
             float missingWidth = (1f - healthPercentage) * healthBarCanvasTransform.sizeDelta.x;

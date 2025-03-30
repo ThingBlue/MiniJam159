@@ -14,6 +14,35 @@ namespace MiniJam159.GameCore
 
         #endregion
 
+        // Health changed event that other scripts can subscribe to
+        public delegate void onHealthChangedDelegate(float newValue);
+        public event onHealthChangedDelegate onHealthChangedEvent;
+        public float _health;
+        public float health
+        {
+            get
+            {
+                return _health;
+            }
+            set
+            {
+                if (_health == value) return;
+                _health = value;
+                if (onHealthChangedEvent != null) onHealthChangedEvent(_health);
+            }
+        }
+
+        protected virtual void Start()
+        {
+            onHealthChangedEvent += onHealthChanged;
+        }
+
+        protected virtual void onHealthChanged(float newValue)
+        {
+            // Check for death
+            if (newValue <= 0) Destroy(gameObject);
+        }
+
         // Sets colour of outline to provided colour
         public void setOutline(Material outlineMaterial, Color color)
         {

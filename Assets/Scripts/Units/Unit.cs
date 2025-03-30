@@ -34,7 +34,6 @@ namespace MiniJam159.Units
 
         #endregion
 
-        public float health;
         protected float attackTimer = 0f;
 
         // Pathfinding
@@ -46,18 +45,16 @@ namespace MiniJam159.Units
 
         protected Vector3 movement = Vector3.zero;
 
-        protected virtual void Start()
+        protected override void Start()
         {
+            base.Start();
+
             // TEMP
             EntityManager.instance.playerUnitObjects.Add(gameObject);
             EntityManager.instance.playerEntityObjects.Add(gameObject);
 
             // Start at max health
             health = maxHealth;
-
-            // Set health bar values
-            healthBar.setMaxHealth(maxHealth);
-            healthBar.setHealth(health);
         }
 
         protected virtual void OnDestroy()

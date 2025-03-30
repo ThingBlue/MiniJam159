@@ -558,6 +558,26 @@ namespace MiniJam159.Player
             SelectionDisplayManagerBase.instance.showSelectionDisplayBoxes();
         }
 
+        // Updates selection to remove any entities that have been destroyed
+        public override void refreshSelection()
+        {
+            // Clear UI
+            SelectionDisplayManagerBase.instance.clearSelectionDisplayBoxes();
+            CommandPanelManagerBase.instance.clearCommandButtons();
+
+            for (int i = 0; i < SelectionManager.instance.selectedObjects.Count; i++)
+            {
+                if (SelectionManager.instance.selectedObjects[i] == null)
+                {
+                    SelectionManager.instance.selectedObjects.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            // Sort and do anything that needs to be done after selection finishes
+            postSelection();
+        }
+
         public override void populateCommands()
         {
             int focusIndex = SelectionManager.instance.getFocusIndex();

@@ -32,7 +32,6 @@ namespace MiniJam159.StructureCore
 
         public Vector3 startPosition;
 
-        public float health = 1;
         public float buildProgress = 0;
 
         protected virtual void Awake()
@@ -41,11 +40,10 @@ namespace MiniJam159.StructureCore
             commands = new List<CommandType>();
         }
 
-        protected void Start()
+        protected override void Start()
         {
-            // Set health bar values
-            healthBar.setMaxHealth(maxHealth);
-            healthBar.setHealth(health);
+            // Set health to 1 on start - Needs construction
+            health = 1;
         }
 
         public virtual void populateCommands()
@@ -66,9 +64,6 @@ namespace MiniJam159.StructureCore
 
             // Clamp health value
             health = Mathf.Min(health, maxHealth);
-
-            // Update health bar
-            healthBar.setHealth(health);
         }
     }
 

@@ -50,6 +50,7 @@ namespace MiniJam159.PlayerCore
 
         // Utilities
         public virtual void sortSelection() { }
+        public virtual void refreshSelection() { }
         public virtual void populateCommands() { }
     }
 }
