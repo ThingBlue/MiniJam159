@@ -1,7 +1,9 @@
-using MiniJam159.GameCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+using MiniJam159.GameCore;
+using MiniJam159.MapCore;
 
 namespace MiniJam159.Debugging
 {
@@ -37,8 +39,8 @@ namespace MiniJam159.Debugging
         {
             if (InputManager.instance.getKeyDown("DebugPathfinding"))
             {
-                debugPath = GridManagerBase.instance.calculatePath(new Vector3(0, 0, 0), new Vector3(10, 0, 10), new List<TileIgnoreData>());
-                debugPath = GridManagerBase.instance.simplifyPath(debugPath, 0.4f, new List<TileIgnoreData>());
+                debugPath = PathfinderBase.instance.calculatePath(new Vector3(0, 0, 0), new Vector3(10, 0, 10), new List<TileIgnoreData>());
+                debugPath = PathfinderBase.instance.simplifyPath(debugPath, 0.4f, new List<TileIgnoreData>());
                 debugPath.Insert(0, pathfindingStartPosition);
                 Debug.Log("Path count: " + debugPath.Count);
                 foreach (Vector2 tile in debugPath) Debug.Log(tile);

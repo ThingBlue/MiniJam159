@@ -7,6 +7,7 @@ using MiniJam159.PlayerCore;
 using MiniJam159.StructureCore;
 using MiniJam159.Common;
 using MiniJam159.EntityCore;
+using MiniJam159.MapCore;
 
 namespace MiniJam159.Structures
 {

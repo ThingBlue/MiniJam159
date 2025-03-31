@@ -1,10 +1,7 @@
 {
-    "name": "MiniJam159.Debugging",
+    "name": "MiniJam159.MapCore",
     "rootNamespace": "",
-    "references": [
-        "GUID:0f3c0a8212f3aa04ab219718b9a57984",
-        "GUID:b22442e83970f954daf4e9eca3c35232"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

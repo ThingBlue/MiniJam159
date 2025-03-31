@@ -1,224 +1,42 @@
+using MiniJam159.Common;
+using MiniJam159.GameCore;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Threading;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.TextCore.Text;
 
-using MiniJam159.GameCore;
-using UnityEditor.Rendering;
-using MiniJam159.Common;
-
-namespace MiniJam159.Game
+namespace MiniJam159.MapCore
 {
-    public class GridManager : GridManagerBase
+    public class Pathfinder : PathfinderBase
     {
-        public List<List<TileType>> gridMatrix;
-
-        protected void Start()
+        protected void Update()
         {
-            gridMatrix = new List<List<TileType>>();
-            for (int i = 0; i < mapZLength; i++)
-            {
-                List<TileType> newList = new List<TileType>();
-                for (int j = 0; j < mapXLength; j++)
-                {
-                    newList.Add(TileType.EMPTY);
-                }
-                gridMatrix.Add(newList);
-            }
+            // Handle queue in regular update
+            if (pathRequestQueue.Count > 0) handlePathRequests();
         }
 
-        public override bool isTileOccupied(int x, int z)
+        protected virtual void handlePathRequests()
         {
-            if (x < 0 || x >= mapXLength || z < 0 || z >= mapZLength)
-            {
-                throw new System.Exception("Invalid tile position");
-            }
+            if (pathRequestQueue.Count == 0 || threadCount >= maxThreadCount) return;
 
-            return gridMatrix[z][x] != TileType.EMPTY;
+            // Handle top request
+            PathRequest currentPathRequest = pathRequestQueue.Dequeue();
+            Thread thread = new Thread(() => handlePathRequest(currentPathRequest));
+            thread.Start();
+
+            Interlocked.Increment(ref threadCount); // Thread safe increment
         }
 
-        public override bool isTileOccupied(Vector3 tile)
+        protected void handlePathRequest(PathRequest pathRequest)
         {
-            Vector3 flooredTile = MathUtilities.floorVector3(tile);
-            if (flooredTile.x < 0 || flooredTile.x >= mapXLength || flooredTile.z < 0 || flooredTile.z >= mapZLength)
-            {
-                throw new System.Exception("Invalid tile position");
-            }
+            Queue<Vector3> result = getPathQueue(pathRequest.startPosition, pathRequest.targetPosition, pathRequest.radius, pathRequest.tileIgnoreData);
 
-            return gridMatrix[(int)flooredTile.z][(int)flooredTile.x] != TileType.EMPTY;
-        }
+            Interlocked.Decrement(ref threadCount); // Thread safe decrement
 
-        public override bool isAnyTileOccupied(List<Vector3> tiles)
-        {
-            foreach (Vector3 tile in tiles)
-            {
-                if (isTileOccupied(tile)) return true;
-            }
-            return false;
-        }
-
-        public override bool isTileWithinStructure(Vector3 tile, Vector3 structureStartTile, Vector3 structureSize)
-        {
-            if (tile.x >= structureStartTile.x && tile.x < structureStartTile.x + structureSize.x &&
-                tile.z >= structureStartTile.z && tile.z < structureStartTile.z + structureSize.z)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public override bool isTileIgnored(Vector3 tile, List<TileIgnoreData> tileIgnoreData)
-        {
-            // Check if tile is within any structures in ignore data
-            foreach (TileIgnoreData ignoreData in tileIgnoreData)
-            {
-                if (isTileWithinStructure(tile, ignoreData.startPosition, ignoreData.size)) return true;
-            }
-            return false;
-        }
-
-        public override void occupyTiles(Vector3 startPosition, Vector3 size, TileType occupationType = TileType.BUILDING)
-        {
-            for (int i = 0; i < size.x; i++)
-            {
-                for (int j = 0; j < size.z; j++)
-                {
-                    gridMatrix[(int)startPosition.z + j][(int)startPosition.x + i] = occupationType;
-                }
-            }
-            if (size.x >= 1 || size.z >= 1) mapChangedEvent.Invoke();
-        }
-
-        // Find closest tile to startTile, prioritizing direction of targetTile
-        // startTile = Mouse position, targetTile = Entity position
-        public override Vector3 calculateClosestFreeTile(Vector3 startPosition, Vector3 targetPosition)
-        {
-            // Helper function for checking tile validity
-            void addTileToQueue(Vector3 tile, MinPriorityQueue<Vector3> queue, List<List<float>> costMatrix, Vector3 predecessorTile, Vector3 targetTile)
-            {
-                // Convert from float to int
-                int xPosition = (int)tile.x;
-                int zPosition = (int)tile.z;
-
-                // Check if out of bounds
-                if (xPosition < 0 || xPosition >= mapXLength) return;
-                if (zPosition < 0 || zPosition >= mapZLength) return;
-
-                float predecessorCost = costMatrix[(int)predecessorTile.z][(int)predecessorTile.x];
-
-                // Make sure we don't already have a better path to this tile
-                if (costMatrix[zPosition][xPosition] == -1 || costMatrix[zPosition][xPosition] > predecessorCost + 1)
-                {
-                    // Calculate heuristic for this tile
-                    float heuristic = Vector3.Distance(tile, targetTile);
-
-                    // Moving through an occupied tile costs twice as much as moving through a regular tile
-                    // Makes the search prefer free tiles over occupied ones
-                    float cost = 1;
-                    if (isTileOccupied(tile)) cost = 2;
-
-                    // Add to queue and cost matrix with new cost + heuristic
-                    costMatrix[zPosition][xPosition] = predecessorCost + cost;
-                    queue.add(predecessorCost + cost + heuristic, tile);
-                }
-            }
-
-            // Initialize matrices to hold calculation info
-            List<List<float>> costMatrix = new List<List<float>>();
-            for (int z = 0; z < gridMatrix.Count; z++)
-            {
-                List<float> costRow = new List<float>();
-                for (int x = 0; x < gridMatrix[z].Count; x++) costRow.Add(-1);
-                costMatrix.Add(costRow);
-            }
-
-            // Floor start and target positions to get tiles
-            Vector3 startTile = MathUtilities.floorVector3(startPosition);
-            Vector3 targetTile = MathUtilities.floorVector3(targetPosition);
-
-            // Initialize priority queue and matrices with start tile
-            MinPriorityQueue<Vector3> queue = new MinPriorityQueue<Vector3>();
-            queue.add(0, startTile);
-            costMatrix[(int)startTile.z][(int)startTile.x] = 0;
-
-            // Loop until free tile found or all tiles exhausted
-            while (queue.count() != 0)
-            {
-                Vector3 tile = queue.pop();
-
-                // Check if current tile is free
-                if (!isTileOccupied(tile)) return tile;
-
-                // Add neighbours to queue (Only add if cost is less)
-                addTileToQueue(new Vector3(tile.x, 0, tile.z + 1), queue, costMatrix, tile, targetTile); // Above
-                addTileToQueue(new Vector3(tile.x, 0, tile.z - 1), queue, costMatrix, tile, targetTile); // Below
-                addTileToQueue(new Vector3(tile.x - 1, 0, tile.z), queue, costMatrix, tile, targetTile); // Left
-                addTileToQueue(new Vector3(tile.x + 1, 0, tile.z), queue, costMatrix, tile, targetTile); // Right
-            }
-
-            // Return (-1, -1, -1) if no free tiles found
-            return -Vector3.one;
-        }
-
-        public override Vector3 calculateClosestFreeTile(Vector3 startPosition)
-        {
-            // Helper function for checking tile validity
-            void addTileToQueue(Vector3 tile, Queue<Vector3> queue, List<List<bool>> visitedMatrix)
-            {
-                // Convert from float to int
-                int xPosition = (int)tile.x;
-                int zPosition = (int)tile.z;
-
-                // Check if out of bounds
-                if (xPosition < 0 || xPosition >= mapXLength) return;
-                if (zPosition < 0 || zPosition >= mapZLength) return;
-
-                // Check if tile has already been visited
-                if (visitedMatrix[zPosition][xPosition] == true) return;
-
-                // Mark as visited
-                visitedMatrix[zPosition][xPosition] = true;
-
-                // Add to queue
-                queue.Enqueue(tile);
-            }
-
-            // Matrix to keep track of visited tiles
-            List<List<bool>> visitedMatrix = new List<List<bool>>();
-            for (int z = 0; z < gridMatrix.Count; z++)
-            {
-                List<bool> visitedRow = new List<bool>();
-                for (int x = 0; x < gridMatrix[z].Count; x++) visitedRow.Add(false);
-                visitedMatrix.Add(visitedRow);
-            }
-
-            // Floor start and target positions to get tiles
-            Vector3 startTile = MathUtilities.floorVector3(startPosition);
-
-            // Initialize queue with start tile enqueued
-            Queue<Vector3> queue = new Queue<Vector3>();
-            queue.Enqueue(startTile);
-
-            // At worst case, loop until all tiles have been checked
-            while (queue.Count > 0)
-            {
-                Vector3 tile = queue.Dequeue();
-
-                // Check if current tile is free
-                if (!isTileOccupied(tile)) return tile;
-
-                // Enqueue all unvisited neighbours
-                addTileToQueue(new Vector3(tile.x, 0, tile.z + 1), queue, visitedMatrix); // Above
-                addTileToQueue(new Vector3(tile.x, 0, tile.z - 1), queue, visitedMatrix); // Below
-                addTileToQueue(new Vector3(tile.x - 1, 0, tile.z), queue, visitedMatrix); // Left
-                addTileToQueue(new Vector3(tile.x + 1, 0, tile.z), queue, visitedMatrix); // Right
-            }
-
-            // If no free tiles found, return (-1, -1, -1)
-            return -Vector3.one;
+            // Callback
+            pathRequest.callback.Invoke(result);
         }
 
         public override Queue<Vector3> getPathQueue(Vector3 startPosition, Vector3 targetPosition, float radius, List<TileIgnoreData> tileIgnoreData)
@@ -246,11 +64,11 @@ namespace MiniJam159.Game
                 int zPosition = Mathf.FloorToInt(tile.z);
 
                 // Check if out of bounds
-                if (xPosition < 0 || xPosition >= mapXLength) return;
-                if (zPosition < 0 || zPosition >= mapZLength) return;
+                if (xPosition < 0 || xPosition >= GridManagerBase.instance.mapXLength) return;
+                if (zPosition < 0 || zPosition >= GridManagerBase.instance.mapZLength) return;
 
                 // Check if tile is occupied, except tiles in tile ignore data
-                if (isTileOccupied(tile) && !isTileIgnored(tile, tileIgnoreData)) return;
+                if (GridManagerBase.instance.isTileOccupied(tile) && !GridManagerBase.instance.isTileIgnored(tile, tileIgnoreData)) return;
 
                 float predecessorCost = costMatrix[(int)predecessorTile.z][(int)predecessorTile.x];
 
@@ -277,11 +95,11 @@ namespace MiniJam159.Game
             // Initialize matrices to hold calculation info
             List<List<Vector3>> predecessorMatrix = new List<List<Vector3>>();
             List<List<float>> costMatrix = new List<List<float>>();
-            for (int z = 0; z < gridMatrix.Count; z++)
+            for (int z = 0; z < GridManagerBase.instance.gridMatrix.Count; z++)
             {
                 List<Vector3> predecessorRow = new List<Vector3>();
                 List<float> costRow = new List<float>();
-                for (int x = 0; x < gridMatrix[z].Count; x++)
+                for (int x = 0; x < GridManagerBase.instance.gridMatrix[z].Count; x++)
                 {
                     predecessorRow.Add(-Vector3.one);
                     costRow.Add(-1);
@@ -366,8 +184,8 @@ namespace MiniJam159.Game
             Vector3 endPosition2 = endPosition - (normal * radius);
 
             // Check that adding radius doesn't put us outside the map
-            if (endPosition1.x < 0 || endPosition1.x >= mapXLength || endPosition1.z < 0 || endPosition1.z >= mapZLength) return true;
-            if (endPosition2.x < 0 || endPosition2.x >= mapXLength || endPosition2.z < 0 || endPosition2.z >= mapZLength) return true;
+            if (endPosition1.x < 0 || endPosition1.x >= GridManagerBase.instance.mapXLength || endPosition1.z < 0 || endPosition1.z >= GridManagerBase.instance.mapZLength) return true;
+            if (endPosition2.x < 0 || endPosition2.x >= GridManagerBase.instance.mapXLength || endPosition2.z < 0 || endPosition2.z >= GridManagerBase.instance.mapZLength) return true;
 
             // Get tiles on line for both lines
             if (isLineBlocked(startPosition1, endPosition1, tileIgnoreData)) return true;
@@ -388,7 +206,7 @@ namespace MiniJam159.Game
             float currentDistance = 0f;
             while (currentDistance < distance)
             {
-                if (isTileOccupied(tile) && !isTileIgnored(tile, tileIgnoreData)) return true;
+                if (GridManagerBase.instance.isTileOccupied(tile) && !GridManagerBase.instance.isTileIgnored(tile, tileIgnoreData)) return true;
 
                 // Calculate the next axes along the line
                 float nextX = tile.x;

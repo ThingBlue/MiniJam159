@@ -11,6 +11,7 @@ using MiniJam159.Structures;
 
 using TMPro;
 using MiniJam159.StructureCore;
+using MiniJam159.MapCore;
 
 namespace MiniJam159.Units
 {
@@ -96,12 +97,13 @@ namespace MiniJam159.Units
         {
             if (action == null || action.targetObject == null || action.targetObject.GetComponent<Structure>() == null) return;
 
-            bool movementResult = handlePathfindingToStructure(action.targetObject.GetComponent<Structure>());
+            Structure targetStructure = action.targetObject.GetComponent<Structure>();
+            TileIgnoreData tileIgnoreData = new TileIgnoreData(targetStructure.startPosition, targetStructure.size);
+            bool movementResult = handlePathing(targetStructure.transform.position, targetStructure.size, new List<TileIgnoreData>{ tileIgnoreData });
 
             // Stop action if path ended
             if (movementResult)
             {
-                Structure targetStructure = action.targetObject.GetComponent<Structure>();
                 if (targetStructure.buildProgress < targetStructure.maxBuildProgress)
                 {
                     if (buildTimer > buildInterval)

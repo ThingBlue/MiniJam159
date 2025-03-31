@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace MiniJam159.GameCore
+namespace MiniJam159.MapCore
 {
     public enum TileType
     {
@@ -32,10 +32,10 @@ namespace MiniJam159.GameCore
 
         public int mapXLength;
         public int mapZLength;
-        public float pathUpdateInterval;
 
         #endregion
 
+        public List<List<TileType>> gridMatrix;
         public UnityEvent mapChangedEvent;
 
         // Singleton
@@ -59,11 +59,5 @@ namespace MiniJam159.GameCore
 
         public virtual Vector3 calculateClosestFreeTile(Vector3 startPosition, Vector3 targetPosition) { return Vector3.zero; }
         public virtual Vector3 calculateClosestFreeTile(Vector3 startPosition) { return Vector3.zero; }
-
-        public virtual Queue<Vector3> getPathQueue(Vector3 startPosition, Vector3 targetPosition, float radius, List<TileIgnoreData> tileIgnoreData) { return new Queue<Vector3>(); }
-        public virtual List<Vector3> calculatePath(Vector3 startPosition, Vector3 targetPosition, List<TileIgnoreData> tileIgnoreData) { return new List<Vector3>(); }
-        public virtual List<Vector3> simplifyPath(List<Vector3> path, float radius, List<TileIgnoreData> tileIgnoreData) { return new List<Vector3>(); }
-
-        public virtual Queue<Vector3> pathToQueue(List<Vector3> path) { return new Queue<Vector3>(); }
     }
 }

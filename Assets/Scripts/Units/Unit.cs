@@ -6,10 +6,10 @@ using System.Linq;
 
 using MiniJam159.UnitCore;
 using MiniJam159.CommandCore;
-using MiniJam159.GameCore;
 using MiniJam159.StructureCore;
 using MiniJam159.Common;
 using MiniJam159.EntityCore;
+using MiniJam159.MapCore;
 
 namespace MiniJam159.Units
 {
@@ -93,17 +93,32 @@ namespace MiniJam159.Units
             transform.Find("Mesh").position = new Vector3(transform.position.x, 0.4f, transform.position.z);
         }
 
-        protected virtual bool handlePathfinding(Vector3 targetPosition)
+        protected virtual bool handlePathing(Vector3 targetPosition, Vector3 targetSize, List<TileIgnoreData> tileIgnoreData)
         {
             // Check if current path is still valid
             if (pathNeedsUpdate)
             {
-                path = GridManagerBase.instance.getPathQueue(transform.position, targetPosition, pathfindingRadius, new List<TileIgnoreData>());
+                //path = GridManagerBase.instance.getPathQueue(transform.position, targetPosition, pathfindingRadius, new List<TileIgnoreData>());
+                PathRequest request = new PathRequest(transform.position, targetPosition, pathfindingRadius, new List<TileIgnoreData>(), onPathfindingCompleteCallback);
+                PathfinderBase.instance.addPathRequest(request);
                 pathNeedsUpdate = false;
+
+                // Temporary path list
+                path = new Queue<Vector3>(new[] { targetPosition });
             }
 
             // Return true if path ended
             if (path.Count == 0) return true;
+            // Return true if target reached
+            if (transform.position.x >= (targetPosition.x - targetSize.x / 2.0f) - pathfindingRadius &&
+                transform.position.x <= (targetPosition.x + targetSize.x / 2.0f) + pathfindingRadius &&
+                transform.position.z >= (targetPosition.z - targetSize.z / 2.0f) - pathfindingRadius &&
+                transform.position.z <= (targetPosition.z + targetSize.z / 2.0f) + pathfindingRadius)
+            {
+                // Target reached so we can stop pathing
+                path.Clear();
+                return true;
+            }
 
             // Stop moving to waypoint if reached
             if (Vector3.Distance(transform.position, path.Peek()) <= 0.1f)
@@ -120,57 +135,8 @@ namespace MiniJam159.Units
 
             // Return true if path ended
             // Return false while path is still ongoing
-            return (path.Count == 0);
-        }
-
-        protected virtual bool handlePathfindingToStructure(Structure structure)
-        {
-            // Return true if target structure reached
-            if (transform.position.x + GetComponent<CapsuleCollider>().radius >= structure.startPosition.x - pathfindingRadius &&
-                transform.position.x - GetComponent<CapsuleCollider>().radius <= structure.startPosition.x + structure.size.x + pathfindingRadius &&
-                transform.position.z + GetComponent<CapsuleCollider>().radius >= structure.startPosition.z - pathfindingRadius &&
-                transform.position.z - GetComponent<CapsuleCollider>().radius <= structure.startPosition.z + structure.size.z + pathfindingRadius)
-            {
-                path.Clear();
-                return true;
-            }
-
-            // Check if current path is still valid
-            if (pathNeedsUpdate)
-            {
-                TileIgnoreData newTileIgnoreData = new TileIgnoreData(structure.startPosition, structure.size);
-
-                path = GridManagerBase.instance.getPathQueue(transform.position, structure.transform.position, pathfindingRadius, new List<TileIgnoreData> { newTileIgnoreData });
-                pathNeedsUpdate = false;
-            }
-
-            // Return true if path ended
-            if (path.Count == 0) return true;
-
-            // Stop moving to waypoint if reached
-            if (Vector3.Distance(transform.position, path.Peek()) <= 0.1f)
-            {
-                // Pop current waypoint
-                path.Dequeue();
-            }
-            else
-            {
-                // Move towards current waypoint
-                Vector3 moveTowardsDestination = Vector3.MoveTowards(transform.position, path.Peek(), moveSpeed * Time.fixedDeltaTime);
-                movement += moveTowardsDestination - transform.position;
-            }
-
-            // Return true if target structure reached
-            if (transform.position.x >= structure.startPosition.x - pathfindingRadius && transform.position.x <= structure.startPosition.x + structure.size.x + pathfindingRadius &&
-                transform.position.z >= structure.startPosition.z - pathfindingRadius && transform.position.z <= structure.startPosition.z + structure.size.z + pathfindingRadius)
-            {
-                // Target structure reached so we can stop pathing
-                path.Clear();
-                return true;
-            }
-            // Return true if path ended
-            // Return false while path is still ongoing
-            return (path.Count == 0);
+            //return (path.Count == 0);
+            return false;
         }
 
         #region Action handlers
@@ -208,7 +174,7 @@ namespace MiniJam159.Units
 
         protected virtual void handleMoveAction(MoveAction action)
         {
-            bool movementResult = handlePathfinding(action.targetPosition);
+            bool movementResult = handlePathing(action.targetPosition, Vector3.zero, new List<TileIgnoreData>());
 
             // Stop action if path ended
             if (movementResult) endAction();
@@ -234,7 +200,9 @@ namespace MiniJam159.Units
                 // Calculate path
                 if (pathNeedsUpdate)
                 {
-                    path = GridManagerBase.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius, new List<TileIgnoreData>());
+                    //path = GridManagerBase.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius, new List<TileIgnoreData>());
+                    PathRequest request = new PathRequest(transform.position, action.targetObject.transform.position, pathfindingRadius, new List<TileIgnoreData>(), onPathfindingCompleteCallback);
+                    PathfinderBase.instance.addPathRequest(request);
                     pathNeedsUpdate = false;
                 }
 
@@ -422,11 +390,17 @@ namespace MiniJam159.Units
             collisions.Remove(other);
         }
 
-        #region Event system callbacks
+        #region Callbacks
 
         private void onMapChangedCallback()
         {
             pathNeedsUpdate = true;
+        }
+
+        private void onPathfindingCompleteCallback(Queue<Vector3> path)
+        {
+            this.path = path;
+            return;
         }
 
         #endregion
