@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace MiniJam159.GameCore
 {
@@ -31,8 +32,11 @@ namespace MiniJam159.GameCore
 
         public int mapXLength;
         public int mapZLength;
+        public float pathUpdateInterval;
 
         #endregion
+
+        public UnityEvent mapChangedEvent;
 
         // Singleton
         public static GridManagerBase instance;

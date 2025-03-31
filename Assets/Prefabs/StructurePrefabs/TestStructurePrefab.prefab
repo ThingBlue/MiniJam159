@@ -52,13 +52,13 @@ MonoBehaviour:
   sortPriority: 2
   displayIcon: {fileID: 21300000, guid: 9ac9ded29c5895846917ec7d37eb640c, type: 3}
   maxHealth: 1000
+  _health: 0
   structureType: 2
   size: {x: 2, y: 1, z: 3}
   healthBar: {fileID: 1741809159139363169}
   commands: 
   maxBuildProgress: 1000
   startPosition: {x: 0, y: 0, z: 0}
-  health: 0
   buildProgress: 0
 --- !u!136 &5573282585575954200
 CapsuleCollider:
@@ -372,6 +372,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6523151610093264364, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+      propertyPath: ownerEntity
+      value: 
+      objectReference: {fileID: 473903977527802775}
     - target: {fileID: 6523151610093264364, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
       propertyPath: sizeScaling
       value: 0.002

@@ -15,8 +15,8 @@ namespace MiniJam159.EntityCore
         #endregion
 
         // Health changed event that other scripts can subscribe to
-        public delegate void onHealthChangedDelegate(float newValue);
-        public event onHealthChangedDelegate onHealthChangedEvent;
+        public delegate void healthChangedDelegate(float newValue);
+        public event healthChangedDelegate healthChangedEvent;
         public float _health;
         public float health
         {
@@ -28,13 +28,13 @@ namespace MiniJam159.EntityCore
             {
                 if (_health == value) return;
                 _health = value;
-                if (onHealthChangedEvent != null) onHealthChangedEvent(_health);
+                if (healthChangedEvent != null) healthChangedEvent(_health);
             }
         }
 
         protected virtual void Start()
         {
-            onHealthChangedEvent += onHealthChanged;
+            healthChangedEvent += onHealthChanged;
         }
 
         protected virtual void onHealthChanged(float newValue)

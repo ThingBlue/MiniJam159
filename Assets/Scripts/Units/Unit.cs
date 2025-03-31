@@ -20,7 +20,6 @@ namespace MiniJam159.Units
         public HealthBar healthBar;
 
         public float moveSpeed;
-        public float pathUpdateInterval;
         public float pathfindingRadius;
 
         public string targetTag = "Enemy"; // Tag to identify targets
@@ -35,11 +34,13 @@ namespace MiniJam159.Units
 
         #endregion
 
+        protected Action lastAction = null;
+
         protected float attackTimer = 0f;
 
         // Pathfinding
         public Queue<Vector3> path = new Queue<Vector3>();
-        protected float pathUpdateTimer;
+        protected bool pathNeedsUpdate = true;
 
         // Collisions
         public List<Collider> collisions = new List<Collider>();
@@ -56,6 +57,9 @@ namespace MiniJam159.Units
 
             // Start at max health
             health = maxHealth;
+
+            // Subscribe to events
+            GridManagerBase.instance.mapChangedEvent.AddListener(onMapChangedCallback);
         }
 
         protected virtual void OnDestroy()
@@ -66,7 +70,6 @@ namespace MiniJam159.Units
         protected virtual void Update()
         {
             // Increment timers
-            pathUpdateTimer += Time.deltaTime;
             attackTimer += Time.deltaTime;
         }
 
@@ -93,10 +96,10 @@ namespace MiniJam159.Units
         protected virtual bool handlePathfinding(Vector3 targetPosition)
         {
             // Check if current path is still valid
-            if (pathUpdateTimer > pathUpdateInterval)
+            if (pathNeedsUpdate)
             {
                 path = GridManagerBase.instance.getPathQueue(transform.position, targetPosition, pathfindingRadius, new List<TileIgnoreData>());
-                pathUpdateTimer = 0f;
+                pathNeedsUpdate = false;
             }
 
             // Return true if path ended
@@ -133,12 +136,12 @@ namespace MiniJam159.Units
             }
 
             // Check if current path is still valid
-            if (pathUpdateTimer > pathUpdateInterval)
+            if (pathNeedsUpdate)
             {
                 TileIgnoreData newTileIgnoreData = new TileIgnoreData(structure.startPosition, structure.size);
 
                 path = GridManagerBase.instance.getPathQueue(transform.position, structure.transform.position, pathfindingRadius, new List<TileIgnoreData> { newTileIgnoreData });
-                pathUpdateTimer = 0f;
+                pathNeedsUpdate = false;
             }
 
             // Return true if path ended
@@ -178,6 +181,13 @@ namespace MiniJam159.Units
 
             // Handle current action
             Action currentAction = actionQueue.Peek();
+
+            if (currentAction != null && currentAction != lastAction)
+            {
+                lastAction = currentAction;
+                pathNeedsUpdate = true; // Reset path flag on new action
+            }
+
             switch (currentAction.actionType)
             {
                 case ActionType.MOVE:
@@ -222,10 +232,10 @@ namespace MiniJam159.Units
             else
             {
                 // Calculate path
-                if (pathUpdateTimer > pathUpdateInterval || path.Count == 0)
+                if (pathNeedsUpdate)
                 {
                     path = GridManagerBase.instance.getPathQueue(transform.position, action.targetObject.transform.position, pathfindingRadius, new List<TileIgnoreData>());
-                    pathUpdateTimer = 0f;
+                    pathNeedsUpdate = false;
                 }
 
                 if (Vector3.Distance(transform.position, path.Peek()) <= 0.5f)
@@ -411,6 +421,15 @@ namespace MiniJam159.Units
         {
             collisions.Remove(other);
         }
+
+        #region Event system callbacks
+
+        private void onMapChangedCallback()
+        {
+            pathNeedsUpdate = true;
+        }
+
+        #endregion
 
         private void OnDrawGizmos()
         {

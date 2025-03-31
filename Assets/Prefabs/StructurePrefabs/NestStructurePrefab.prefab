@@ -150,13 +150,13 @@ MonoBehaviour:
   sortPriority: 1
   displayIcon: {fileID: 21300000, guid: f489cf0343145d84e985744045e57628, type: 3}
   maxHealth: 2000
+  _health: 0
   structureType: 0
   size: {x: 4, y: 1, z: 4}
   healthBar: {fileID: 4862731472706367738}
   commands: 
   maxBuildProgress: 2000
   startPosition: {x: 0, y: 0, z: 0}
-  health: 1
   buildProgress: 0
 --- !u!136 &8724851188102702734
 CapsuleCollider:
@@ -372,6 +372,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6523151610093264364, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+      propertyPath: ownerEntity
+      value: 
+      objectReference: {fileID: 4903812382357214784}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
 --- !u!114 &4862731472706367738 stripped

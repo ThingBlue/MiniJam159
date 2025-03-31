@@ -421,10 +421,10 @@ MonoBehaviour:
   sortPriority: 1001
   displayIcon: {fileID: 21300000, guid: 059119e69eb40b74489a005110b6b7a7, type: 3}
   maxHealth: 100
+  _health: 0
   commands: 000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000
   healthBar: {fileID: 6922051565218666619}
   moveSpeed: 5
-  pathUpdateInterval: 0
   pathfindingRadius: 0.4
   targetTag: Enemy
   attackDamage: 10
@@ -433,7 +433,6 @@ MonoBehaviour:
   attackRange: 2
   surroundDistance: 1.5
   coordinationRadius: 5
-  health: 0
   collisions: []
   harvestRange: 2
   depositRange: 3
@@ -693,6 +692,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6523151610093264364, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
+      propertyPath: ownerEntity
+      value: 
+      objectReference: {fileID: 3731014612963296189}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 15dda3cda9a2bdc4ab63ffa9e99d7769, type: 3}
 --- !u!114 &6922051565218666619 stripped

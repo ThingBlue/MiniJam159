@@ -89,6 +89,7 @@ namespace MiniJam159.Game
                     gridMatrix[(int)startPosition.z + j][(int)startPosition.x + i] = occupationType;
                 }
             }
+            if (size.x >= 1 || size.z >= 1) mapChangedEvent.Invoke();
         }
 
         // Find closest tile to startTile, prioritizing direction of targetTile
@@ -450,105 +451,6 @@ namespace MiniJam159.Game
             foreach (Vector3 tile in path) pathQueue.Enqueue(tile);
             return pathQueue;
         }
-
-        /*
-        protected List<Vector2> getTilesOnLine(Vector2 startPosition, Vector2 endPosition, float radius)
-        {
-            // Only cast 1 line if radius is 0
-            if (radius == 0) return getTilesOnLine(startPosition, endPosition);
-
-            // Calculate direction
-            Vector2 direction = (endPosition - startPosition).normalized;
-
-            // Create one line on either side
-            Vector2 normal = new Vector2(-direction.y, direction.x);
-            Vector2 startPosition1 = startPosition + normal;
-            Vector2 startPosition2 = startPosition - normal;
-            Vector2 endPosition1 = endPosition + normal;
-            Vector2 endPosition2 = endPosition - normal;
-
-            // Get tiles on line for both lines
-            List<Vector2> tilesOnLine1 = getTilesOnLine(startPosition1, endPosition1);
-            List<Vector2> tilesOnLine2 = getTilesOnLine(startPosition2, endPosition2);
-
-            // Merge and remove duplicates
-            List<Vector2> tilesOnLine = tilesOnLine1.Union(tilesOnLine2).ToList();
-
-            return tilesOnLine;
-        }
-
-        protected List<Vector2> getTilesOnLine(Vector2 startPosition, Vector2 endPosition)
-        {
-            // Calculate distance and direction
-            float distance = Vector2.Distance(startPosition, endPosition);
-            Vector2 direction = (endPosition - startPosition).normalized;
-
-            // Initialize current tile and line start
-            Vector2 linePosition = startPosition;
-            Vector2 tile = MathUtilities.toVector2Floored(startPosition);
-
-            List<Vector2> tilesOnLine = new List<Vector2>();
-
-            // Loop until we reach the end tile
-            float currentDistance = 0f;
-            while (currentDistance < distance)
-            {
-                tilesOnLine.Add(tile);
-
-                // Calculate the next axes along the line
-                float nextX = tile.x;
-                float nextY = tile.y;
-                if (direction.x > 0) nextX = tile.x + 1;
-                if (direction.y > 0) nextY = tile.y + 1;
-
-                // Calculate distance to next axes
-                float distanceToNextX = Mathf.Infinity;
-                float distanceToNextY = Mathf.Infinity;
-
-                if (direction.x != 0) distanceToNextX = Mathf.Abs(nextX - linePosition.x);
-                if (direction.y != 0) distanceToNextY = Mathf.Abs(nextY - linePosition.y);
-
-                // Calculate when the line crosses the next X and Y axes
-                float timeToNextX = Mathf.Infinity;
-                float timeToNextY = Mathf.Infinity;
-
-                if (distanceToNextX != Mathf.Infinity) timeToNextX = Mathf.Abs(distanceToNextX / direction.x);
-                if (distanceToNextY != Mathf.Infinity) timeToNextY = Mathf.Abs(distanceToNextY / direction.y);
-
-                // Move horizontally
-                if (timeToNextX < timeToNextY)
-                {
-                    if (currentDistance + timeToNextX > distance) break;
-
-                    linePosition += direction * timeToNextX;
-                    tile.x += Mathf.Sign(direction.x);
-                    currentDistance += timeToNextX;
-                }
-                // Move vertically
-                else if (timeToNextX > timeToNextY)
-                {
-                    if (currentDistance + timeToNextY > distance) break;
-
-                    linePosition += direction * timeToNextY;
-                    tile.y += Mathf.Sign(direction.y);
-                    currentDistance += timeToNextY;
-                }
-                // Exact diagonal
-                else
-                {
-                    if (currentDistance + timeToNextX > distance) break;
-
-                    // Move along both axes
-                    linePosition += direction * timeToNextX;
-                    tile.x += Mathf.Sign(direction.x);
-                    tile.y += Mathf.Sign(direction.y);
-                    currentDistance += timeToNextX;
-                }
-            }
-
-            return tilesOnLine;
-        }
-        */
 
     }
 }
