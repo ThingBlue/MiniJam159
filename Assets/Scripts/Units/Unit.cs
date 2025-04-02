@@ -81,6 +81,10 @@ namespace MiniJam159.Units
             // Handle collisions
             handleCollisions();
 
+            // Raycast ahead to prevent moving through objects
+            RaycastHit hitInfo;
+            if (Physics.Linecast(transform.position, transform.position + movement, out hitInfo)) movement = hitInfo.point - transform.position;
+
             // Do movement and reset
             transform.position += movement;
             movement = Vector3.zero;
