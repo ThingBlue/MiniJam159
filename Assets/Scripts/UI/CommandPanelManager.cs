@@ -27,6 +27,8 @@ namespace MiniJam159.UI
         public Sprite buildNestCommandSprite;
         public Sprite buildWombCommandSprite;
 
+        public Sprite buildTestSquareCommandSprite;
+
         #endregion
 
         public List<GameObject> commandButtons = new List<GameObject>();
@@ -74,6 +76,10 @@ namespace MiniJam159.UI
                         break;
                     case CommandType.BUILD_WOMB:
                         newButtonObject.GetComponent<Image>().sprite = buildWombCommandSprite;
+                        break;
+
+                    case CommandType.BUILD_TEST_SQUARE:
+                        newButtonObject.GetComponent<Image>().sprite = buildTestSquareCommandSprite;
                         break;
                 }
                 commandButtons.Add(newButtonObject);

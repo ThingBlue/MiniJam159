@@ -96,7 +96,8 @@ namespace MiniJam159.Units
         protected virtual bool handlePathing(Vector3 targetPosition, Vector3 targetSize, List<TileIgnoreData> tileIgnoreData)
         {
             // Check if current path is still valid
-            if (pathNeedsUpdate)
+            // Also immediately return true if already on target
+            if (pathNeedsUpdate && Vector3.Distance(transform.position, targetPosition) > pathfindingRadius)
             {
                 //path = GridManagerBase.instance.getPathQueue(transform.position, targetPosition, pathfindingRadius, new List<TileIgnoreData>());
                 PathRequest request = new PathRequest(transform.position, targetPosition, pathfindingRadius, new List<TileIgnoreData>(), onPathfindingCompleteCallback);
@@ -121,7 +122,7 @@ namespace MiniJam159.Units
             }
 
             // Stop moving to waypoint if reached
-            if (Vector3.Distance(transform.position, path.Peek()) <= 0.1f)
+            if (Vector3.Distance(transform.position, path.Peek()) <= pathfindingRadius)
             {
                 // Pop current waypoint
                 path.Dequeue();

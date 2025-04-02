@@ -116,4 +116,19 @@ namespace MiniJam159.Commands
         }
     }
 
+    public class BuildTestSquareCommand : Command
+    {
+        public BuildTestSquareCommand()
+        {
+            tooltip = "<b>Test Square</b>\n";
+        }
+
+        public override void execute()
+        {
+            if (PlayerControllerBase.instance.playerMode != PlayerMode.NORMAL) return;
+
+            EventManager.instance.buildTestSquareCommandEvent.Invoke();
+        }
+    }
+
 }

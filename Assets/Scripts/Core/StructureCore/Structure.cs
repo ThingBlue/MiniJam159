@@ -14,7 +14,9 @@ namespace MiniJam159.StructureCore
     {
         NULL = 0,
         NEST,
-        WOMB
+        WOMB,
+
+        TEST_SQUARE
     }
     public class Structure : Entity
     {
@@ -74,6 +76,11 @@ namespace MiniJam159.StructureCore
     }
 
     public class WombStructure : Structure
+    {
+
+    }
+
+    public class TestSquareStructure : Structure
     {
 
     }

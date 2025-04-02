@@ -26,7 +26,9 @@ namespace MiniJam159.Structures
 
         public GameObject nestStructurePrefab;
         public GameObject wombStructurePrefab;
+
         public GameObject testStructurePrefab;
+        public GameObject testSquareStructurePrefab;
 
         public List<StructureType> depositPointStructureTypes;
 
@@ -41,6 +43,8 @@ namespace MiniJam159.Structures
             // Subscribe to events
             EventManager.instance.buildNestCommandEvent.AddListener(onBuildNestCommandCallback);
             EventManager.instance.buildWombCommandEvent.AddListener(onBuildWombCommandCallback);
+
+            EventManager.instance.buildTestSquareCommandEvent.AddListener(onBuildTestSquareCommandCallback);
         }
 
         private void FixedUpdate()
@@ -147,6 +151,11 @@ namespace MiniJam159.Structures
                     case StructureType.WOMB:
                         newStructureObject = Instantiate(wombStructurePrefab, snappedPosition, Quaternion.identity);
                         break;
+
+                    case StructureType.TEST_SQUARE:
+                        newStructureObject = Instantiate(testSquareStructurePrefab, snappedPosition, Quaternion.identity);
+                        break;
+
                     case StructureType.NULL:
                         newStructureObject = Instantiate(testStructurePrefab, snappedPosition, Quaternion.identity);
                         break;
@@ -258,6 +267,11 @@ namespace MiniJam159.Structures
         private void onBuildWombCommandCallback()
         {
             beginPlacement(StructureType.WOMB, wombStructurePrefab);
+        }
+
+        private void onBuildTestSquareCommandCallback()
+        {
+            beginPlacement(StructureType.TEST_SQUARE, testSquareStructurePrefab);
         }
 
         #endregion

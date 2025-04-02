@@ -13,7 +13,9 @@ namespace MiniJam159.CommandCore
         CANCEL_BUILD_MENU,
 
         BUILD_NEST,
-        BUILD_WOMB
+        BUILD_WOMB,
+
+        BUILD_TEST_SQUARE
     }
 
     public class Command

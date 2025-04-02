@@ -63,6 +63,10 @@ namespace MiniJam159.Commands
                     case CommandType.BUILD_WOMB:
                         newCommand = new BuildWombCommand();
                         break;
+
+                    case CommandType.BUILD_TEST_SQUARE:
+                        newCommand = new BuildTestSquareCommand();
+                        break;
                 }
                 newCommand.commandType = newCommandTypes[i];
                 activeCommands.Add(newCommand);

@@ -444,7 +444,7 @@ MonoBehaviour:
   depositInterval: 0.5
   buildInterval: 0.5
   resourceCarryCapacity: 100
-  buildMenuCommands: 050000000000000000000000000000000000000000000000000000000000000004000000000000000000000003000000
+  buildMenuCommands: 050000000000000000000000000000000600000000000000000000000000000004000000000000000000000003000000
   debugText: {fileID: 4246136043180166723}
   lockDepositPoint: 0
   depositPointObject: {fileID: 0}
@@ -458,7 +458,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.4
+  m_Radius: 0.6
   m_Height: 0.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.4, z: 0}
