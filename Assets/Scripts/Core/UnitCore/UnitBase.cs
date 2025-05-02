@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Sirenix.Serialization;
 
 using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
@@ -8,11 +9,17 @@ using MiniJam159.EntityCore;
 
 namespace MiniJam159.UnitCore
 {
+    public enum UnitType
+    {
+        NULL = 0
+    }
+
     public abstract class UnitBase : Entity
     {
         #region Inspector members
 
-        public List<CommandType> commands = new List<CommandType>();
+        [SerializeReference]
+        public List<CommandBase> commands = new List<CommandBase>();
 
         #endregion
 

@@ -18,30 +18,25 @@ namespace MiniJam159.StructureCore
 
         TEST_SQUARE
     }
+
     public class Structure : Entity
     {
         #region Inspector members
 
         public StructureType structureType;
-
         public Vector3 size;
+        public float maxBuildProgress;
 
         public HealthBar healthBar;
-        public List<CommandType> commands;
 
-        public float maxBuildProgress;
+        [SerializeReference]
+        public List<CommandBase> commands = new List<CommandBase>();
 
         #endregion
 
         public Vector3 startPosition;
 
         public float buildProgress = 0;
-
-        protected virtual void Awake()
-        {
-            // Initialization
-            commands = new List<CommandType>();
-        }
 
         protected override void Start()
         {

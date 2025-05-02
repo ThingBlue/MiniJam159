@@ -67,13 +67,13 @@ namespace MiniJam159.Units
             EntityManager.instance.playerUnitObjects.Remove(gameObject);
         }
 
-        protected virtual void Update()
+        protected override void Update()
         {
             // Increment timers
             attackTimer += Time.deltaTime;
         }
 
-        protected virtual void FixedUpdate()
+        protected override void FixedUpdate()
         {
             // Handle actions (and movement)
             if (actionQueue.Count > 0) handleActions();
@@ -100,8 +100,7 @@ namespace MiniJam159.Units
         protected virtual bool handlePathing(Vector3 targetPosition, Vector3 targetSize, List<TileIgnoreData> tileIgnoreData)
         {
             // Check if current path is still valid
-            // Also immediately return true if already on target
-            if (pathNeedsUpdate && Vector3.Distance(transform.position, targetPosition) > pathfindingRadius)
+            if (pathNeedsUpdate)
             {
                 //path = GridManagerBase.instance.getPathQueue(transform.position, targetPosition, pathfindingRadius, new List<TileIgnoreData>());
                 PathRequest request = new PathRequest(transform.position, targetPosition, pathfindingRadius, new List<TileIgnoreData>(), onPathfindingCompleteCallback);

@@ -25,12 +25,6 @@ namespace MiniJam159.GameCore
         public UnityEvent pauseEvent = new UnityEvent();
         public UnityEvent unpauseEvent = new UnityEvent();
 
-        // Build structure commands
-        public UnityEvent buildNestCommandEvent = new UnityEvent();
-        public UnityEvent buildWombCommandEvent = new UnityEvent();
-
-        public UnityEvent buildTestSquareCommandEvent = new UnityEvent();
-
         #endregion
 
         public static EventManager instance;

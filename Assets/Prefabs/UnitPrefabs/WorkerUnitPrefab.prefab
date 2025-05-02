@@ -422,7 +422,20 @@ MonoBehaviour:
   displayIcon: {fileID: 21300000, guid: 059119e69eb40b74489a005110b6b7a7, type: 3}
   maxHealth: 100
   _health: 0
-  commands: 000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000
+  trainingTimer: 0
+  commands:
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: 69936697270861826
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: 69936697270861827
   healthBar: {fileID: 6922051565218666619}
   moveSpeed: 5
   pathfindingRadius: 0.4
@@ -437,17 +450,65 @@ MonoBehaviour:
   harvestRange: 2
   depositRange: 3
   buildRange: 3
-  harvestRate: 20
-  depositRate: 20
+  harvestRate: 10
+  depositRate: 10
   buildRate: 100
-  harvestInterval: 1
-  depositInterval: 0.5
-  buildInterval: 0.5
   resourceCarryCapacity: 100
-  buildMenuCommands: 050000000000000000000000000000000600000000000000000000000000000004000000000000000000000003000000
+  buildMenuCommands:
+  - rid: 69936697270861832
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: 69936697270861831
+  - rid: 69936697270861833
+  - rid: -2
+  - rid: -2
+  - rid: 69936697270861828
   debugText: {fileID: 4246136043180166723}
   lockDepositPoint: 0
   depositPointObject: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 69936697270861826
+      type: {class: StopCommand, ns: MiniJam159.Commands, asm: MiniJam159.Commands}
+      data:
+        tooltip: '<b>Stop</b>
+
+          Selected units will stop moving and attack
+          enemies in range'
+    - rid: 69936697270861827
+      type: {class: OpenBuildMenuCommand, ns: MiniJam159.Commands, asm: MiniJam159.Commands}
+      data:
+        tooltip: '<b>Build</b>
+
+          Opens the build menu'
+    - rid: 69936697270861828
+      type: {class: CancelBuildMenuCommand, ns: MiniJam159.Commands, asm: MiniJam159.Commands}
+      data:
+        tooltip: '<b>Cancel</b>
+
+          Closes the build menu'
+    - rid: 69936697270861831
+      type: {class: PlaceStructureCommand, ns: MiniJam159.Commands, asm: MiniJam159.Commands}
+      data:
+        tooltip: DEFAULT COMMAND TOOLTIP
+        structureType: 3
+    - rid: 69936697270861832
+      type: {class: PlaceStructureCommand, ns: MiniJam159.Commands, asm: MiniJam159.Commands}
+      data:
+        tooltip: DEFAULT COMMAND TOOLTIP
+        structureType: 2
+    - rid: 69936697270861833
+      type: {class: PlaceStructureCommand, ns: MiniJam159.Commands, asm: MiniJam159.Commands}
+      data:
+        tooltip: DEFAULT COMMAND TOOLTIP
+        structureType: 1
 --- !u!136 &8399223877264226320
 CapsuleCollider:
   m_ObjectHideFlags: 0

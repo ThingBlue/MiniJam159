@@ -283,7 +283,20 @@ MonoBehaviour:
   displayIcon: {fileID: 21300000, guid: cd9f05cf0dc137243a07d149c8e22bd9, type: 3}
   maxHealth: 200
   _health: 0
-  commands: 000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000
+  trainingTimer: 0
+  commands:
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: 69936697270861825
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
+  - rid: -2
   healthBar: {fileID: 6224580914414646629}
   moveSpeed: 3
   pathfindingRadius: 0.5
@@ -295,6 +308,18 @@ MonoBehaviour:
   surroundDistance: 1.5
   coordinationRadius: 5
   collisions: []
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 69936697270861825
+      type: {class: StopCommand, ns: MiniJam159.Commands, asm: MiniJam159.Commands}
+      data:
+        tooltip: '<b>Stop</b>
+
+          Selected units will stop moving and attack
+          enemies in range'
 --- !u!136 &5600978479329750819
 CapsuleCollider:
   m_ObjectHideFlags: 0

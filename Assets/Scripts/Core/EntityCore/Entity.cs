@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace MiniJam159.EntityCore
 {
+    [SerializeField]
+    public class TrainingData
+    {
+        public GameObject prefab;
+        public float time;
+    }
+
     public class Entity : MonoBehaviour
     {
         #region Inspector members
@@ -32,9 +39,24 @@ namespace MiniJam159.EntityCore
             }
         }
 
+        public Queue<TrainingData> trainingQueue = new Queue<TrainingData>();
+        public float trainingTimer;
+
         protected virtual void Start()
         {
             healthChangedEvent += onHealthChanged;
+        }
+
+        protected virtual void Update()
+        {
+        }
+
+        protected virtual void FixedUpdate()
+        {
+            if (trainingQueue.Count > 0)
+            {
+                trainingTimer += Time.fixedDeltaTime;
+            }
         }
 
         protected virtual void onHealthChanged(float newValue)

@@ -8,6 +8,7 @@ using MiniJam159.StructureCore;
 using MiniJam159.Common;
 using MiniJam159.EntityCore;
 using MiniJam159.MapCore;
+using UnityEngine.Events;
 
 namespace MiniJam159.Structures
 {
@@ -37,15 +38,6 @@ namespace MiniJam159.Structures
         private StructureType placementStructureType;
         private Vector3 placementStructureSize;
         private bool previousInPlacementMode = false;
-
-        private void Start()
-        {
-            // Subscribe to events
-            EventManager.instance.buildNestCommandEvent.AddListener(onBuildNestCommandCallback);
-            EventManager.instance.buildWombCommandEvent.AddListener(onBuildWombCommandCallback);
-
-            EventManager.instance.buildTestSquareCommandEvent.AddListener(onBuildTestSquareCommandCallback);
-        }
 
         private void FixedUpdate()
         {
@@ -102,9 +94,26 @@ namespace MiniJam159.Structures
             }
         }
 
-        public override void beginPlacement(StructureType structureType, GameObject structurePrefab)
+        public override void beginPlacement(StructureType structureType)
         {
             placementStructureType = structureType;
+            GameObject structurePrefab = new GameObject();
+            switch (structureType)
+            {
+                case StructureType.NEST:
+                    structurePrefab = nestStructurePrefab;
+                    break;
+                case StructureType.WOMB:
+                    structurePrefab = wombStructurePrefab;
+                    break;
+                case StructureType.TEST_SQUARE:
+                    structurePrefab = testSquareStructurePrefab;
+                    break;
+                default:
+                    break;
+            }
+            if (structurePrefab == null) return;
+
             placementStructureSize = structurePrefab.GetComponent<Structure>().size;
 
             // Begin placement
@@ -257,25 +266,21 @@ namespace MiniJam159.Structures
         }
         */
 
-        #region Command callbacks
-
-        private void onBuildNestCommandCallback()
+        public override Sprite getStructureSprite(StructureType structureType)
         {
-            beginPlacement(StructureType.NEST, nestStructurePrefab);
+            switch (structureType)
+            {
+                case StructureType.NEST:
+                    return nestStructurePrefab.GetComponent<Structure>().displayIcon;
+                case StructureType.WOMB:
+                    return wombStructurePrefab.GetComponent<Structure>().displayIcon;
+                case StructureType.TEST_SQUARE:
+                    return testSquareStructurePrefab.GetComponent<Structure>().displayIcon;
+                default:
+                    break;
+            }
+            return null;
         }
-
-        private void onBuildWombCommandCallback()
-        {
-            beginPlacement(StructureType.WOMB, wombStructurePrefab);
-        }
-
-        private void onBuildTestSquareCommandCallback()
-        {
-            beginPlacement(StructureType.TEST_SQUARE, testSquareStructurePrefab);
-        }
-
-        #endregion
-
 
     }
 }

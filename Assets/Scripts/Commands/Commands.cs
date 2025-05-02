@@ -1,20 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEditor;
+using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
 using MiniJam159.PlayerCore;
-using MiniJam159.Structures;
+using MiniJam159.StructureCore;
 using MiniJam159.UnitCore;
 
 namespace MiniJam159.Commands
 {
-    public class StopCommand : Command
+    [Serializable]
+    public class StopCommand : CommandBase
     {
         public StopCommand()
         {
@@ -36,9 +32,15 @@ namespace MiniJam159.Commands
             // Finish command
             PlayerControllerBase.instance.playerMode = PlayerMode.NORMAL;
         }
+
+        public override CommandBase clone()
+        {
+            return new StopCommand { tooltip = this.tooltip };
+        }
     }
 
-    public class AttackCommand : Command
+    [Serializable]
+    public class AttackCommand : CommandBase
     {
         public AttackCommand()
         {
@@ -49,9 +51,15 @@ namespace MiniJam159.Commands
         {
             if (PlayerControllerBase.instance.playerMode == PlayerMode.NORMAL) PlayerControllerBase.instance.playerMode = PlayerMode.ATTACK_TARGET;
         }
+
+        public override CommandBase clone()
+        {
+            return new AttackCommand { tooltip = this.tooltip };
+        }
     }
 
-    public class OpenBuildMenuCommand : Command
+    [Serializable]
+    public class OpenBuildMenuCommand : CommandBase
     {
         public OpenBuildMenuCommand()
         {
@@ -71,9 +79,15 @@ namespace MiniJam159.Commands
 
             unit.openBuildMenuCommand();
         }
+
+        public override CommandBase clone()
+        {
+            return new OpenBuildMenuCommand { tooltip = this.tooltip };
+        }
     }
 
-    public class CancelBuildMenuCommand : Command
+    [Serializable]
+    public class CancelBuildMenuCommand : CommandBase
     {
         public CancelBuildMenuCommand()
         {
@@ -84,50 +98,43 @@ namespace MiniJam159.Commands
         {
             SelectionControllerBase.instance.populateCommands();
         }
+
+        public override CommandBase clone()
+        {
+            return new CancelBuildMenuCommand { tooltip = this.tooltip };
+        }
     }
 
-    public class BuildNestCommand : Command
+    [Serializable]
+    public class PlaceStructureCommand : CommandBase
     {
-        public BuildNestCommand()
-        {
-            tooltip = "<b>Nest</b>\nThe core of the colony.";
-        }
+        public StructureType structureType;
 
         public override void execute()
         {
             if (PlayerControllerBase.instance.playerMode != PlayerMode.NORMAL) return;
+            StructureManagerBase.instance.beginPlacement(structureType);
+        }
 
-            EventManager.instance.buildNestCommandEvent.Invoke();
+        public override CommandBase clone()
+        {
+            return new PlaceStructureCommand { tooltip = this.tooltip, structureType = this.structureType };
         }
     }
 
-    public class BuildWombCommand : Command
+    [Serializable]
+    public class TrainUnitCommand : CommandBase
     {
-        public BuildWombCommand()
-        {
-            tooltip = "<b>Womb</b>\nCreates basic melee units.";
-        }
+        public UnitType unitType;
 
         public override void execute()
         {
-            if (PlayerControllerBase.instance.playerMode != PlayerMode.NORMAL) return;
-
-            EventManager.instance.buildWombCommandEvent.Invoke();
-        }
-    }
-
-    public class BuildTestSquareCommand : Command
-    {
-        public BuildTestSquareCommand()
-        {
-            tooltip = "<b>Test Square</b>\n";
+            return;
         }
 
-        public override void execute()
+        public override CommandBase clone()
         {
-            if (PlayerControllerBase.instance.playerMode != PlayerMode.NORMAL) return;
-
-            EventManager.instance.buildTestSquareCommandEvent.Invoke();
+            return new TrainUnitCommand { tooltip = this.tooltip, unitType = this.unitType };
         }
     }
 

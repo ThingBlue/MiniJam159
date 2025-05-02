@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Sirenix.Serialization;
+using TMPro;
 
 using MiniJam159.Common;
 using MiniJam159.UnitCore;
@@ -8,8 +10,6 @@ using MiniJam159.CommandCore;
 using MiniJam159.GameCore;
 using MiniJam159.Resources;
 using MiniJam159.Structures;
-
-using TMPro;
 using MiniJam159.StructureCore;
 using MiniJam159.MapCore;
 
@@ -23,16 +23,14 @@ namespace MiniJam159.Units
         public float depositRange = 2f;
         public float buildRange = 2f;
 
-        public float harvestRate = 20f;
-        public float depositRate = 20f;
-        public float buildRate = 20f;
-        public float harvestInterval = 1f;
-        public float depositInterval = 0.5f;
-        public float buildInterval = 0.5f;
+        public float harvestRate = 10f;
+        public float depositRate = 10f;
+        public float buildRate = 100f;
 
         public float resourceCarryCapacity = 100f;
 
-        public List<CommandType> buildMenuCommands;
+        [SerializeReference]
+        public List<CommandBase> buildMenuCommands = new List<CommandBase>();
 
         public TMP_Text debugText;
 
@@ -72,6 +70,13 @@ namespace MiniJam159.Units
 
             // Handle current action
             Action currentAction = actionQueue.Peek();
+
+            if (currentAction != null && currentAction != lastAction)
+            {
+                lastAction = currentAction;
+                pathNeedsUpdate = true; // Reset path flag on new action
+            }
+
             switch (currentAction.actionType)
             {
                 case ActionType.HARVEST:
@@ -106,17 +111,7 @@ namespace MiniJam159.Units
             {
                 if (targetStructure.buildProgress < targetStructure.maxBuildProgress)
                 {
-                    if (buildTimer > buildInterval)
-                    {
-                        // Contribute build progress and reset build timer
-                        targetStructure.addBuildProgress(buildRate);
-                        buildTimer = 0;
-                    }
-                    else
-                    {
-                        // Increment build timer
-                        buildTimer += Time.fixedDeltaTime;
-                    }
+                    targetStructure.addBuildProgress(buildRate * Time.fixedDeltaTime);
                 }
                 else
                 {

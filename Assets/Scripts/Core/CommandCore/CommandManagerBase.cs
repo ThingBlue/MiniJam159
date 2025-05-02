@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
+
 using MiniJam159.GameCore;
 
 namespace MiniJam159.CommandCore
 {
-    public class CommandManagerBase : MonoBehaviour
+    public class CommandManagerBase : SerializedMonoBehaviour
     {
-        public List<Command> activeCommands = new List<Command>();
+        [ReadOnly]
+        public List<CommandBase> activeCommands = new List<CommandBase>();
 
         // Singleton
         public static CommandManagerBase instance;
@@ -29,9 +32,15 @@ namespace MiniJam159.CommandCore
             // See CommandManager::clearCommands()
         }
 
-        public virtual void populateCommands(List<CommandType> newCommandTypes)
+        public virtual void populateCommands(List<CommandBase> commands)
         {
-            // See CommandManager::populateCommands(List<CommandType> newCommandTypes)
+            // See CommandManager::populateCommands(List<CommandBase> commands)
+        }
+
+        public virtual Sprite getCommandSprite(CommandBase command)
+        {
+            // See CommandManager::getCommandSprite(CommandBase command)
+            return null;
         }
 
     }

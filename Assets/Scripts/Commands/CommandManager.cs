@@ -1,14 +1,25 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using MiniJam159.GameCore;
+
 using MiniJam159.CommandCore;
 using MiniJam159.UICore;
+using MiniJam159.StructureCore;
 
 namespace MiniJam159.Commands
 {
     public class CommandManager : CommandManagerBase
     {
+        #region Inspector members
+
+        public Sprite attackCommandSprite;
+        public Sprite stopCommandSprite;
+        public Sprite openBuildMenuCommandSprite;
+        public Sprite cancelBuildMenuCommandSprite;
+
+        #endregion
+
         public override void executeCommand(int index)
         {
             Debug.Log("Executing command: " + activeCommands[index]);
@@ -23,57 +34,34 @@ namespace MiniJam159.Commands
             for (int i = 0; i < 12; i++) activeCommands.Add(null);
         }
 
-        public override void populateCommands(List<CommandType> newCommandTypes)
+        public override void populateCommands(List<CommandBase> commands)
         {
             activeCommands.Clear();
 
             // Clear UI
             CommandPanelManagerBase.instance.clearCommandButtons();
 
-            // Create new ui
-            for (int i = 0; i < newCommandTypes.Count; i++)
-            {
-                // Skip null commands
-                if (newCommandTypes[i] == CommandType.NULL)
-                {
-                    // Add null command to command manager
-                    activeCommands.Add(null);
-                    continue;
-                }
-
-                Command newCommand = null;
-
-                // Attach command script and texture to new button
-                switch (newCommandTypes[i])
-                {
-                    case CommandType.STOP:
-                        newCommand = new StopCommand();
-                        break;
-
-                    case CommandType.OPEN_BUILD_MENU:
-                        newCommand = new OpenBuildMenuCommand();
-                        break;
-                    case CommandType.CANCEL_BUILD_MENU:
-                        newCommand = new CancelBuildMenuCommand();
-                        break;
-
-                    case CommandType.BUILD_NEST:
-                        newCommand = new BuildNestCommand();
-                        break;
-                    case CommandType.BUILD_WOMB:
-                        newCommand = new BuildWombCommand();
-                        break;
-
-                    case CommandType.BUILD_TEST_SQUARE:
-                        newCommand = new BuildTestSquareCommand();
-                        break;
-                }
-                newCommand.commandType = newCommandTypes[i];
-                activeCommands.Add(newCommand);
-            }
+            // Create new ui by deep copying commands list, preserving nulls
+            activeCommands = commands.Select(item => item != null ? item.clone() : null).ToList();
 
             // Update UI
             CommandPanelManagerBase.instance.populateCommandButtons();
+        }
+
+        public override Sprite getCommandSprite(CommandBase command)
+        {
+            if (command is AttackCommand) return attackCommandSprite;
+            if (command is StopCommand) return stopCommandSprite;
+            if (command is OpenBuildMenuCommand) return openBuildMenuCommandSprite;
+            if (command is CancelBuildMenuCommand) return cancelBuildMenuCommandSprite;
+            if (command is PlaceStructureCommand)
+            {
+                // Return sprite based on structure sprite
+                PlaceStructureCommand placeStructureCommand = command as PlaceStructureCommand;
+                return StructureManagerBase.instance.getStructureSprite(placeStructureCommand.structureType);
+            }
+            Debug.LogError("Forgot to add a command sprite for command: " + command.GetType().Name);
+            return null;
         }
 
     }

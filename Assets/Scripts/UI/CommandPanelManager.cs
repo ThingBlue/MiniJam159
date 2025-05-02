@@ -17,18 +17,6 @@ namespace MiniJam159.UI
         public GameObject commandButtonPrefab;
         public float commandButtonSize;
 
-        public Sprite moveCommandSprite;
-        public Sprite attackCommandSprite;
-        public Sprite stopCommandSprite;
-        public Sprite harvestCommandSprite;
-        public Sprite openBuildMenuCommandSprite;
-        public Sprite cancelBuildMenuCommandSprite;
-
-        public Sprite buildNestCommandSprite;
-        public Sprite buildWombCommandSprite;
-
-        public Sprite buildTestSquareCommandSprite;
-
         #endregion
 
         public List<GameObject> commandButtons = new List<GameObject>();
@@ -38,7 +26,7 @@ namespace MiniJam159.UI
             // Create new ui and populate command buttons
             for (int i = 0; i < CommandManagerBase.instance.activeCommands.Count; i++)
             {
-                Command activeCommand = CommandManagerBase.instance.activeCommands[i];
+                CommandBase activeCommand = CommandManagerBase.instance.activeCommands[i];
 
                 // Skip null commands
                 if (activeCommand == null) continue;
@@ -58,30 +46,8 @@ namespace MiniJam159.UI
                 newButtonObject.transform.localPosition = new Vector2(-96.0f + xOffset, 64.0f + yOffset);
 
                 // Attach command texture to new button
-                switch (activeCommand.commandType)
-                {
-                    case CommandType.STOP:
-                        newButtonObject.GetComponent<Image>().sprite = stopCommandSprite;
-                        break;
+                newButtonObject.GetComponent<Image>().sprite = CommandManagerBase.instance.getCommandSprite(activeCommand);
 
-                    case CommandType.OPEN_BUILD_MENU:
-                        newButtonObject.GetComponent<Image>().sprite = openBuildMenuCommandSprite;
-                        break;
-                    case CommandType.CANCEL_BUILD_MENU:
-                        newButtonObject.GetComponent<Image>().sprite = cancelBuildMenuCommandSprite;
-                        break;
-
-                    case CommandType.BUILD_NEST:
-                        newButtonObject.GetComponent<Image>().sprite = buildNestCommandSprite;
-                        break;
-                    case CommandType.BUILD_WOMB:
-                        newButtonObject.GetComponent<Image>().sprite = buildWombCommandSprite;
-                        break;
-
-                    case CommandType.BUILD_TEST_SQUARE:
-                        newButtonObject.GetComponent<Image>().sprite = buildTestSquareCommandSprite;
-                        break;
-                }
                 commandButtons.Add(newButtonObject);
             }
         }
