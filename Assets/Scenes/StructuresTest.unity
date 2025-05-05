@@ -6614,7 +6614,7 @@ MonoBehaviour:
   ps: {fileID: 694641995}
   edgeLength: 960
   standardDeviation: 240
-  particlesPerSecond: 8
+  particlesPerSecond: 2
   heightAmplitude: 80
   heightStdDev: 200
   minVelocity: 1
@@ -13428,7 +13428,8 @@ MonoBehaviour:
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
-  m_Cameras: []
+  m_Cameras:
+  - {fileID: 1767965584}
   m_RendererIndex: -1
   m_VolumeLayerMask:
     serializedVersion: 2
@@ -13785,7 +13786,7 @@ Camera:
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
-  m_AllowMSAA: 1
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
@@ -13821,7 +13822,7 @@ MonoBehaviour:
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
-  m_CameraType: 0
+  m_CameraType: 1
   m_Cameras: []
   m_RendererIndex: -1
   m_VolumeLayerMask:
@@ -14588,6 +14589,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1131789218040930341, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296187, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: m_RootOrder
       value: 32
