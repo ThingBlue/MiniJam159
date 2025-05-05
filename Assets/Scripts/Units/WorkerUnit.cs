@@ -7,7 +7,6 @@ using TMPro;
 using MiniJam159.Common;
 using MiniJam159.UnitCore;
 using MiniJam159.CommandCore;
-using MiniJam159.GameCore;
 using MiniJam159.Resources;
 using MiniJam159.Structures;
 using MiniJam159.StructureCore;

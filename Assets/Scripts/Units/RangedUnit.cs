@@ -1,6 +1,5 @@
 using UnityEngine;
 
-using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
 
 namespace MiniJam159.Units

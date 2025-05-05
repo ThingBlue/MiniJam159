@@ -577,7 +577,7 @@
     },
     "m_ActiveTargets": [
         {
-            "m_Id": "e99ae7408808493b9fe08887a13bd90a"
+            "m_Id": "f2a6f02631b94319899fb8c25c4731bd"
         }
     ]
 }
@@ -2255,12 +2255,6 @@
 
 {
     "m_SGVersion": 0,
-    "m_Type": "UnityEditor.Rendering.BuiltIn.ShaderGraph.BuiltInUnlitSubTarget",
-    "m_ObjectId": "7e1cc211806d452d8402359560fe8985"
-}
-
-{
-    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
     "m_ObjectId": "7ebbde5198754976a3f77eb6cc2be577",
     "m_Id": 0,
@@ -3028,6 +3022,12 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalUnlitSubTarget",
+    "m_ObjectId": "b97a56b07b6a4582825a8534c52eb6de"
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicValueMaterialSlot",
     "m_ObjectId": "b9a8b6496f6b417ca82f4d9444f7a2cd",
     "m_Id": 0,
@@ -3557,23 +3557,6 @@
 }
 
 {
-    "m_SGVersion": 2,
-    "m_Type": "UnityEditor.Rendering.BuiltIn.ShaderGraph.BuiltInTarget",
-    "m_ObjectId": "e99ae7408808493b9fe08887a13bd90a",
-    "m_ActiveSubTarget": {
-        "m_Id": "7e1cc211806d452d8402359560fe8985"
-    },
-    "m_AllowMaterialOverride": false,
-    "m_SurfaceType": 1,
-    "m_ZWriteControl": 0,
-    "m_ZTestMode": 4,
-    "m_AlphaMode": 0,
-    "m_RenderFace": 1,
-    "m_AlphaClip": false,
-    "m_CustomEditorGUI": ""
-}
-
-{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "ea45de170ff24c329707340c32eaaa53",
@@ -3687,6 +3670,26 @@
     },
     "m_Space": 0,
     "m_PositionSource": 0
+}
+
+{
+    "m_SGVersion": 1,
+    "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalTarget",
+    "m_ObjectId": "f2a6f02631b94319899fb8c25c4731bd",
+    "m_ActiveSubTarget": {
+        "m_Id": "b97a56b07b6a4582825a8534c52eb6de"
+    },
+    "m_AllowMaterialOverride": false,
+    "m_SurfaceType": 1,
+    "m_ZTestMode": 4,
+    "m_ZWriteControl": 0,
+    "m_AlphaMode": 0,
+    "m_RenderFace": 1,
+    "m_AlphaClip": false,
+    "m_CastShadows": true,
+    "m_ReceiveShadows": true,
+    "m_CustomEditorGUI": "",
+    "m_SupportVFX": false
 }
 
 {

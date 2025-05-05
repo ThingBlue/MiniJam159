@@ -6,7 +6,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-using MiniJam159.GameCore;
 using MiniJam159.MapCore;
 using MiniJam159.Common;
 

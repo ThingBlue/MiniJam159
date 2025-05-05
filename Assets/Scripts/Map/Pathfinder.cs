@@ -1,11 +1,10 @@
-using MiniJam159.Common;
-using MiniJam159.GameCore;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
+
+using MiniJam159.Common;
 
 namespace MiniJam159.MapCore
 {

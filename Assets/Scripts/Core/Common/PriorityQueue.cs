@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace MiniJam159.GameCore
+namespace MiniJam159.Common
 {
     public class PriorityQueueBase<T>
     {

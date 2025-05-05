@@ -151,13 +151,17 @@ MonoBehaviour:
   displayIcon: {fileID: 21300000, guid: f489cf0343145d84e985744045e57628, type: 3}
   maxHealth: 2000
   _health: 0
+  trainingTimer: 0
   structureType: 0
   size: {x: 4, y: 1, z: 4}
-  healthBar: {fileID: 4862731472706367738}
-  commands: 
   maxBuildProgress: 2000
+  healthBar: {fileID: 4862731472706367738}
+  commands: []
   startPosition: {x: 0, y: 0, z: 0}
   buildProgress: 0
+  references:
+    version: 2
+    RefIds: []
 --- !u!136 &8724851188102702734
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -247,7 +251,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2cd68e4b28dbb8c429577e2a5e049d53, type: 2}
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 177d19097ceec8748b04a774cbc100fe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
