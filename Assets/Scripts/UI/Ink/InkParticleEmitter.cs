@@ -1,14 +1,16 @@
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MiniJam159.Common
+namespace MiniJam159.UI
 {
-    public class GaussianEdgeParticleEmission : MonoBehaviour
+    public class InkParticleEmitter : MonoBehaviour
     {
         #region Inspector members
 
         public ParticleSystem ps;
+
         public float edgeLength = 5f;
         public float standardDeviation = 0.3f; // Controls how tight the center bias is
         public int particlesPerSecond = 10;
@@ -23,10 +25,12 @@ namespace MiniJam159.Common
 
         private float emissionTimer;
 
+        [ReadOnly] public bool emitting = false;
+
         private void FixedUpdate()
         {
             // Increment timer
-            if (particlesPerSecond > 0)
+            if (emitting && particlesPerSecond > 0)
             {
                 emissionTimer += Time.fixedDeltaTime;
             }
@@ -73,6 +77,16 @@ namespace MiniJam159.Common
             float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) *
                                   Mathf.Sin(2.0f * Mathf.PI * u2); // Standard normal (0, 1)
             return mean + stdDev * randStdNormal;
+        }
+
+        public void startEmission()
+        {
+            emitting = true;
+        }
+
+        public void stopEmission()
+        {
+            emitting = false;
         }
     }
 }
