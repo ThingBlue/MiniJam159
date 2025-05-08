@@ -33,6 +33,10 @@ namespace MiniJam159.UI
         // Fade out
         public float fadeOutLerpFactor;
 
+        public float layer1FadeOutTime;
+        public float layer2FadeOutTime;
+        public float layer3FadeOutTime;
+
         #endregion
 
         private bool fadingIn = false;
@@ -45,6 +49,11 @@ namespace MiniJam159.UI
         private float currentLayer1NoisePan;
         private float currentLayer2NoisePan;
         private float currentLayer3NoisePan;
+
+        // Fade out
+        private float currentLayer1FadeOut = 0;
+        private float currentLayer2FadeOut = 0;
+        private float currentLayer3FadeOut = 0;
 
         private void Update()
         {
@@ -77,22 +86,26 @@ namespace MiniJam159.UI
                 // Upwards pan
                 //currentLayer1NoisePan = Mathf.SmoothDamp(currentLayer1NoisePan, layer1NoisePan, ref layer1NoisePanSmoothVelocity, layer1NoisePanTime);
                 currentLayer1NoisePan = Mathf.Lerp(currentLayer1NoisePan, layer1NoisePan, layer1NoisePanLerpFactor);
-                layer1Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer1NoisePan, 0, 0));
                 currentLayer2NoisePan = Mathf.Lerp(currentLayer2NoisePan, layer2NoisePan, layer2NoisePanLerpFactor);
-                layer2Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer2NoisePan, 0, 0));
                 currentLayer3NoisePan = Mathf.Lerp(currentLayer3NoisePan, layer3NoisePan, layer3NoisePanLerpFactor);
+                layer1Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer1NoisePan, 0, 0));
+                layer2Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer2NoisePan, 0, 0));
                 layer3Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer3NoisePan, 0, 0));
             }
 
             // Fade out
             if (fadingOut)
             {
-                float layer1NewAlpha = Mathf.Lerp(layer1Image.color.a, 0, fadeOutLerpFactor);
-                float layer2NewAlpha = Mathf.Lerp(layer2Image.color.a, 0, fadeOutLerpFactor);
-                float layer3NewAlpha = Mathf.Lerp(layer3Image.color.a, 0, fadeOutLerpFactor);
-                layer1Image.color = new Color(layer1Image.color.r, layer1Image.color.g, layer1Image.color.b, layer1NewAlpha);
-                layer2Image.color = new Color(layer2Image.color.r, layer2Image.color.g, layer2Image.color.b, layer2NewAlpha);
-                layer3Image.color = new Color(layer3Image.color.r, layer3Image.color.g, layer3Image.color.b, layer3NewAlpha);
+                Material layer1Material = layer1Image.material;
+                Material layer2Material = layer2Image.material;
+                Material layer3Material = layer3Image.material;
+
+                currentLayer1FadeOut = Mathf.MoveTowards(currentLayer1FadeOut, 1, Time.fixedDeltaTime / layer1FadeOutTime);
+                currentLayer2FadeOut = Mathf.MoveTowards(currentLayer2FadeOut, 1, Time.fixedDeltaTime / layer1FadeOutTime);
+                currentLayer3FadeOut = Mathf.MoveTowards(currentLayer3FadeOut, 1, Time.fixedDeltaTime / layer1FadeOutTime);
+                layer1Material.SetFloat("_FadeOut", currentLayer1FadeOut);
+                layer2Material.SetFloat("_FadeOut", currentLayer2FadeOut);
+                layer3Material.SetFloat("_FadeOut", currentLayer3FadeOut);
             }
         }
 
@@ -119,11 +132,16 @@ namespace MiniJam159.UI
             layer2Material.SetVector("_Noise2Pan", new Vector4());
             layer3Material.SetVector("_Noise2Pan", new Vector4());
 
-            // Reset alpha
-            layer1Image.color = new Color(layer1Image.color.r, layer1Image.color.g, layer1Image.color.b, layer1Alpha);
-            layer2Image.color = new Color(layer2Image.color.r, layer2Image.color.g, layer2Image.color.b, layer2Alpha);
-            layer3Image.color = new Color(layer3Image.color.r, layer3Image.color.g, layer3Image.color.b, layer3Alpha);
 
+            // Reset fade out
+            currentLayer1FadeOut = 0;
+            currentLayer2FadeOut = 0;
+            currentLayer3FadeOut = 0;
+            layer1Material.SetFloat("_FadeOut", 0);
+            layer2Material.SetFloat("_FadeOut", 0);
+            layer3Material.SetFloat("_FadeOut", 0);
+
+            // Start particle system
             inkParticleEmitter.startEmission();
         }
 

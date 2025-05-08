@@ -14310,6 +14310,9 @@ MonoBehaviour:
   layer3NoisePan: -0.5
   layer3NoisePanLerpFactor: 0.08
   fadeOutLerpFactor: 0.1
+  layer1FadeOutTime: 0.5
+  layer2FadeOutTime: 0.5
+  layer3FadeOutTime: 0.5
 --- !u!1 &1941822591
 GameObject:
   m_ObjectHideFlags: 0
