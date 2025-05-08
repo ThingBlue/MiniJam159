@@ -11,34 +11,40 @@ namespace MiniJam159.UI
 
         public InkParticleEmitter inkParticleEmitter;
 
-        public Image image;
+        public Image layer1Image;
+        public Image layer2Image;
+        public Image layer3Image;
 
+        public float layer1Alpha;
+        public float layer2Alpha;
+        public float layer3Alpha;
+
+        // Fade in
         public float maxZoom;
         public float zoomSmoothTime;
 
-        public float minNoise1Zoom;
-        public float maxNoise1Zoom;
-        public float noise1ZoomSmoothTime;
+        public float layer1NoisePan;
+        public float layer1NoisePanLerpFactor;
+        public float layer2NoisePan;
+        public float layer2NoisePanLerpFactor;
+        public float layer3NoisePan;
+        public float layer3NoisePanLerpFactor;
 
-        public float minNoise2Zoom;
-        public float maxNoise2Zoom;
-        public float noise2ZoomSmoothTime;
-
+        // Fade out
         public float fadeOutLerpFactor;
 
         #endregion
 
-        private float currentZoom;
-        private float zoomVelocity;
-
-        private float currentNoise1Zoom;
-        private float noise1ZoomVelocity;
-
-        private float currentNoise2Zoom;
-        private float noise2ZoomVelocity;
-
         private bool fadingIn = false;
         private bool fadingOut = false;
+
+        // Fade in
+        private float currentZoom;
+        private float zoomSmoothVelocity;
+
+        private float currentLayer1NoisePan;
+        private float currentLayer2NoisePan;
+        private float currentLayer3NoisePan;
 
         private void Update()
         {
@@ -58,25 +64,35 @@ namespace MiniJam159.UI
             // Fade in
             if (fadingIn)
             {
-                Material material = image.material;
+                Material layer1Material = layer1Image.material;
+                Material layer2Material = layer2Image.material;
+                Material layer3Material = layer3Image.material;
 
                 // Zoom
-                currentZoom = Mathf.SmoothDamp(currentZoom, maxZoom, ref zoomVelocity, zoomSmoothTime);
-                material.SetFloat("_Zoom", currentZoom);
+                currentZoom = Mathf.SmoothDamp(currentZoom, maxZoom, ref zoomSmoothVelocity, zoomSmoothTime);
+                layer1Material.SetFloat("_Zoom", currentZoom);
+                layer2Material.SetFloat("_Zoom", currentZoom);
+                layer3Material.SetFloat("_Zoom", currentZoom);
 
-                // Noise zoom
-                currentNoise1Zoom = Mathf.SmoothDamp(currentNoise1Zoom, maxNoise1Zoom, ref noise1ZoomVelocity, noise1ZoomSmoothTime);
-                material.SetFloat("_Noise1Zoom", currentNoise1Zoom);
-
-                currentNoise2Zoom = Mathf.SmoothDamp(currentNoise2Zoom, maxNoise2Zoom, ref noise2ZoomVelocity, noise2ZoomSmoothTime);
-                material.SetFloat("_Noise2eZoom", currentNoise2Zoom);
+                // Upwards pan
+                //currentLayer1NoisePan = Mathf.SmoothDamp(currentLayer1NoisePan, layer1NoisePan, ref layer1NoisePanSmoothVelocity, layer1NoisePanTime);
+                currentLayer1NoisePan = Mathf.Lerp(currentLayer1NoisePan, layer1NoisePan, layer1NoisePanLerpFactor);
+                layer1Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer1NoisePan, 0, 0));
+                currentLayer2NoisePan = Mathf.Lerp(currentLayer2NoisePan, layer2NoisePan, layer2NoisePanLerpFactor);
+                layer2Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer2NoisePan, 0, 0));
+                currentLayer3NoisePan = Mathf.Lerp(currentLayer3NoisePan, layer3NoisePan, layer3NoisePanLerpFactor);
+                layer3Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer3NoisePan, 0, 0));
             }
 
             // Fade out
             if (fadingOut)
             {
-                float newAlpha = Mathf.Lerp(image.color.a, 0, fadeOutLerpFactor);
-                image.color = new Color(image.color.r, image.color.g, image.color.b, newAlpha);
+                float layer1NewAlpha = Mathf.Lerp(layer1Image.color.a, 0, fadeOutLerpFactor);
+                float layer2NewAlpha = Mathf.Lerp(layer2Image.color.a, 0, fadeOutLerpFactor);
+                float layer3NewAlpha = Mathf.Lerp(layer3Image.color.a, 0, fadeOutLerpFactor);
+                layer1Image.color = new Color(layer1Image.color.r, layer1Image.color.g, layer1Image.color.b, layer1NewAlpha);
+                layer2Image.color = new Color(layer2Image.color.r, layer2Image.color.g, layer2Image.color.b, layer2NewAlpha);
+                layer3Image.color = new Color(layer3Image.color.r, layer3Image.color.g, layer3Image.color.b, layer3NewAlpha);
             }
         }
 
@@ -86,15 +102,27 @@ namespace MiniJam159.UI
             fadingOut = false;
 
             currentZoom = 0;
-            currentNoise1Zoom = minNoise1Zoom;
-            currentNoise2Zoom = minNoise2Zoom;
+            currentLayer1NoisePan = 0;
+            currentLayer2NoisePan = 0;
+            currentLayer3NoisePan = 0;
 
             // Immediately set zoom so that resetting alpha doesn't pop ink back in for a frame
-            Material material = image.material;
-            material.SetFloat("_Zoom", currentZoom);
+            Material layer1Material = layer1Image.material;
+            Material layer2Material = layer2Image.material;
+            Material layer3Material = layer3Image.material;
+
+            layer1Material.SetFloat("_Zoom", currentZoom);
+            layer2Material.SetFloat("_Zoom", currentZoom);
+            layer3Material.SetFloat("_Zoom", currentZoom);
+
+            layer1Material.SetVector("_Noise2Pan", new Vector4());
+            layer2Material.SetVector("_Noise2Pan", new Vector4());
+            layer3Material.SetVector("_Noise2Pan", new Vector4());
 
             // Reset alpha
-            image.color = new Color(image.color.r, image.color.g, image.color.b, 1);
+            layer1Image.color = new Color(layer1Image.color.r, layer1Image.color.g, layer1Image.color.b, layer1Alpha);
+            layer2Image.color = new Color(layer2Image.color.r, layer2Image.color.g, layer2Image.color.b, layer2Alpha);
+            layer3Image.color = new Color(layer3Image.color.r, layer3Image.color.g, layer3Image.color.b, layer3Alpha);
 
             inkParticleEmitter.startEmission();
         }

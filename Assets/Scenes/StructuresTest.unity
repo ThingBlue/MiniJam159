@@ -1010,7 +1010,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -120}
+  m_AnchoredPosition: {x: 0, y: -80}
   m_SizeDelta: {x: 1920, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &363835257
@@ -13136,7 +13136,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -140}
+  m_AnchoredPosition: {x: 0, y: -120}
   m_SizeDelta: {x: 1920, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1489685932
@@ -14094,7 +14094,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 0, y: -70}
   m_SizeDelta: {x: 1920, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1850767782
@@ -14295,15 +14295,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inkParticleEmitter: {fileID: 694641996}
-  image: {fileID: 1489685932}
+  layer1Image: {fileID: 1489685932}
+  layer2Image: {fileID: 363835257}
+  layer3Image: {fileID: 1850767782}
+  layer1Alpha: 0.8
+  layer2Alpha: 0.5
+  layer3Alpha: 0.2
   maxZoom: 0.5
   zoomSmoothTime: 0.2
-  minNoise1Zoom: 0.3
-  maxNoise1Zoom: 0.5
-  noise1ZoomSmoothTime: 0.35
-  minNoise2Zoom: 1
-  maxNoise2Zoom: 1
-  noise2ZoomSmoothTime: 0
+  layer1NoisePan: -0.5
+  layer1NoisePanLerpFactor: 0.08
+  layer2NoisePan: -0.5
+  layer2NoisePanLerpFactor: 0.05
+  layer3NoisePan: -0.5
+  layer3NoisePanLerpFactor: 0.08
   fadeOutLerpFactor: 0.1
 --- !u!1 &1941822591
 GameObject:
