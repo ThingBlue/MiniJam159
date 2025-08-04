@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace MiniJam159.UI
 {
-    public class InkSpread : MonoBehaviour
+    public class InkSpreadAnimator : MonoBehaviour
     {
         #region Inspector members
 

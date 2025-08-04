@@ -87,7 +87,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _ExpansionAmount: 0
-    - _FadeNOutoiseScale: 200
+    - _FadeNOutoiseScale: 100
     - _FadeOut: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
@@ -143,7 +143,7 @@ Material:
     - _TimeToExpand: 5
     - _UVSec: 0
     - _ZWrite: 1
-    - _Zoom: 0.49999827
+    - _Zoom: 0.49999994
     m_Colors:
     - Vector2_C3B3BAAC: {r: 0.65, g: 0.06, b: 0, a: 0}
     - _Color: {r: 0.1, g: 0.09, b: 0.09, a: 1}
@@ -155,7 +155,7 @@ Material:
     - _Noise1Pan: {r: 0, g: 0, b: 0, a: 0}
     - _Noise1PanSpeed: {r: 0, g: -0.01, b: 0, a: 0}
     - _Noise1StaticOffset: {r: 1, g: 0, b: 0, a: 0}
-    - _Noise2Pan: {r: 0, g: -0.49036866, b: 0, a: 0}
+    - _Noise2Pan: {r: 0, g: -0.49999973, b: 0, a: 0}
     - _Noise2PanSpeed: {r: 0, g: -0.002, b: 0, a: 0}
     - _Noise2StaticOffset: {r: 0, g: 0.05, b: 0, a: 0}
     - _Noise3PanSpeed: {r: 0, g: -0.002, b: 0, a: 0}
