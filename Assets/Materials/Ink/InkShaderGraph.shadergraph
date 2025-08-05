@@ -3703,7 +3703,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "138637ed7bfd43e4bb57109ad7d5aa9e",
     "m_Id": 0,
-    "m_DisplayName": "FadeNOutoiseScale",
+    "m_DisplayName": "FadeOutNoiseScale",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -7523,10 +7523,10 @@
     "m_Guid": {
         "m_GuidSerialized": "4b975c53-86b0-4564-a549-d292a2792f50"
     },
-    "m_Name": "FadeNOutoiseScale",
+    "m_Name": "FadeOutNoiseScale",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "FadeNOutoiseScale",
-    "m_DefaultReferenceName": "_FadeNOutoiseScale",
+    "m_RefNameGeneratedByDisplayName": "FadeOutNoiseScale",
+    "m_DefaultReferenceName": "_FadeOutNoiseScale",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
