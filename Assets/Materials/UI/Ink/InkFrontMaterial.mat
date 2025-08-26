@@ -14,7 +14,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 4200
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -122,7 +122,7 @@ Material:
     - _Noise2Sharpness: 0.5
     - _Noise2Strength: 0.2
     - _Noise2Zoom: 0.5
-    - _Noise3Scale: 2000
+    - _Noise3Scale: 10
     - _Noise3Sharpness: 0.1
     - _Noise3Strength: 0.5
     - _Noise3Zoom: 0.5
@@ -132,7 +132,7 @@ Material:
     - _OutputSize: 0.5
     - _Output_Size: 0.3
     - _Parallax: 0.02
-    - _QueueControl: 0
+    - _QueueControl: 1
     - _QueueOffset: 0
     - _Shape_Strength: 0.4
     - _Sharpness: 0.5
@@ -154,12 +154,12 @@ Material:
     - _Layer2PanSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _Noies1StaticOffset: {r: 0, g: 0, b: 0, a: 0}
     - _Noise1Pan: {r: 0, g: -0.9999997, b: 0, a: 0}
-    - _Noise1PanSpeed: {r: 0, g: -0.01, b: 0, a: 0}
+    - _Noise1PanSpeed: {r: 0, g: -0.005, b: 0, a: 0}
     - _Noise1StaticOffset: {r: 0, g: 0, b: 0, a: 0}
-    - _Noise2Pan: {r: 0, g: 0.2999999, b: 0, a: 0}
-    - _Noise2PanSpeed: {r: 0, g: -0.002, b: 0, a: 0}
+    - _Noise2Pan: {r: 0, g: -0.2986085, b: 0, a: 0}
+    - _Noise2PanSpeed: {r: 0, g: -0.001, b: 0, a: 0}
     - _Noise2StaticOffset: {r: 0, g: 0, b: 0, a: 0}
-    - _Noise3PanSpeed: {r: 0, g: -0.002, b: 0, a: 0}
+    - _Noise3PanSpeed: {r: 0, g: -0.001, b: 0, a: 0}
     - _Output_Size: {r: 0, g: 0, b: 0, a: 0}
     - _PanSpeed: {r: 0, g: -0.003, b: 0, a: 0}
     - _ShapeSize: {r: 1920, g: 384, b: 0, a: 0}

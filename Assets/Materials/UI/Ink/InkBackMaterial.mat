@@ -7,14 +7,14 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: InkMiddleMaterial
+  m_Name: InkBackMaterial
   m_Shader: {fileID: -6465566751694194690, guid: 6966eaef7fe292540868010d0bd2f52b, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 4200
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -87,7 +87,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _ExpansionAmount: 0
-    - _FadeNOutoiseScale: 100
+    - _FadeNOutoiseScale: 50
     - _FadeOut: 0
     - _FadeOutNoiseScale: 50
     - _GlossMapScale: 1
@@ -120,9 +120,9 @@ Material:
     - _Noise1Zoom: 0.5
     - _Noise2Scale: 100
     - _Noise2Sharpness: 0.5
-    - _Noise2Strength: 0.25
+    - _Noise2Strength: 0.3
     - _Noise2Zoom: 0.5
-    - _Noise3Scale: 1000
+    - _Noise3Scale: 10
     - _Noise3Sharpness: 0.1
     - _Noise3Strength: 0.5
     - _Noise3Zoom: 0.5
@@ -132,7 +132,7 @@ Material:
     - _OutputSize: 0.5
     - _Output_Size: 0.3
     - _Parallax: 0.02
-    - _QueueControl: 0
+    - _QueueControl: 1
     - _QueueOffset: 0
     - _Shape_Strength: 0.4
     - _Sharpness: 0.5
@@ -149,17 +149,17 @@ Material:
     - Vector2_C3B3BAAC: {r: 0.65, g: 0.06, b: 0, a: 0}
     - _Color: {r: 0.1, g: 0.09, b: 0.09, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _GlobalNoiseOffset: {r: 10, g: 0, b: 0, a: 0}
+    - _GlobalNoiseOffset: {r: 20, g: 0, b: 0, a: 0}
     - _Layer1PanSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _Layer2PanSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _Noies1StaticOffset: {r: 0, g: 0, b: 0, a: 0}
     - _Noise1Pan: {r: 0, g: 0, b: 0, a: 0}
-    - _Noise1PanSpeed: {r: 0, g: -0.01, b: 0, a: 0}
-    - _Noise1StaticOffset: {r: 1, g: 0, b: 0, a: 0}
-    - _Noise2Pan: {r: 0, g: -0.2999999, b: 0, a: 0}
-    - _Noise2PanSpeed: {r: 0, g: -0.002, b: 0, a: 0}
-    - _Noise2StaticOffset: {r: 0, g: 0.05, b: 0, a: 0}
-    - _Noise3PanSpeed: {r: 0, g: -0.002, b: 0, a: 0}
+    - _Noise1PanSpeed: {r: 0, g: -0.005, b: 0, a: 0}
+    - _Noise1StaticOffset: {r: 0, g: 0.1, b: 0, a: 0}
+    - _Noise2Pan: {r: 0, g: -0.2986085, b: 0, a: 0}
+    - _Noise2PanSpeed: {r: 0, g: -0.001, b: 0, a: 0}
+    - _Noise2StaticOffset: {r: 0, g: 0.1, b: 0, a: 0}
+    - _Noise3PanSpeed: {r: 0, g: -0.001, b: 0, a: 0}
     - _Output_Size: {r: 0, g: 0, b: 0, a: 0}
     - _PanSpeed: {r: 0, g: -0.003, b: 0, a: 0}
     - _ShapeSize: {r: 1920, g: 384, b: 0, a: 0}
