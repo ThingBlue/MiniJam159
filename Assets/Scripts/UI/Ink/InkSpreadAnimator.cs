@@ -17,8 +17,9 @@ namespace MiniJam159.UI
         public Image layer3Image;
 
         // Fade in
-        public float fadeInTime;
-        public float fadeOutTime;
+        public float fadeInDuration;
+        public float fadeOutDuration;
+        public float particleFadeOutDuration;
 
         public float maxZoom;
         public float zoomSmoothTime;
@@ -30,15 +31,12 @@ namespace MiniJam159.UI
         public float layer3NoisePan;
         public float layer3NoisePanLerpFactor;
 
+        public float particleEmissionStartTime = 0.2f;
         public float inkSmokeBurstTime = 0.2f;
         public int inkSmokeBurstCount = 4;
 
         // Fade out
         public float fadeOutLerpFactor;
-
-        public float layer1FadeOutTime;
-        public float layer2FadeOutTime;
-        public float layer3FadeOutTime;
 
         #endregion
 
@@ -55,13 +53,12 @@ namespace MiniJam159.UI
         private float currentLayer2NoisePan;
         private float currentLayer3NoisePan;
 
+        private bool particleEmissionStarted = false;
         private bool inkSplashBurstDone = false;
         private bool inkSmokeBurstDone = false;
 
         // Fade out
-        private float currentLayer1FadeOut = 0;
-        private float currentLayer2FadeOut = 0;
-        private float currentLayer3FadeOut = 0;
+        private float currentFadeOutFraction = 0;
 
         private void Update()
         {
@@ -107,19 +104,23 @@ namespace MiniJam159.UI
                 layer2Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer2NoisePan, 0, 0));
                 layer3Material.SetVector("_Noise2Pan", new Vector4(0, currentLayer3NoisePan, 0, 0));
 
+                // Begin particle emission
+                if (fadeInTimer > particleEmissionStartTime && !fadingOut && !particleEmissionStarted)
+                {
+                    inkSplashParticleEmitter.startEmission();
+                    inkSmokeParticleEmitter.startEmission();
+                    particleEmissionStarted = true;
+                }
+
                 // Launch ink smoke burst
-                if (fadeInTimer > inkSmokeBurstTime && !inkSmokeBurstDone)
+                if (fadeInTimer > inkSmokeBurstTime && !fadingOut && !inkSmokeBurstDone)
                 {
                     inkSmokeParticleEmitter.burstEmit(inkSmokeBurstCount);
                     inkSmokeBurstDone = true;
                 }
 
-                if (fadeInTimer > fadeInTime) fadingIn = false;
-            }
-            else
-            {
-                inkSplashBurstDone = false;
-                inkSmokeBurstDone = false;
+                // Fade in complete
+                if (fadeInTimer > fadeInDuration) fadingIn = false;
             }
 
             // Fade out
@@ -129,17 +130,17 @@ namespace MiniJam159.UI
                 Material layer2Material = layer2Image.material;
                 Material layer3Material = layer3Image.material;
 
-                currentLayer1FadeOut = Mathf.MoveTowards(currentLayer1FadeOut, 1, Time.fixedDeltaTime / layer1FadeOutTime);
-                currentLayer2FadeOut = Mathf.MoveTowards(currentLayer2FadeOut, 1, Time.fixedDeltaTime / layer1FadeOutTime);
-                currentLayer3FadeOut = Mathf.MoveTowards(currentLayer3FadeOut, 1, Time.fixedDeltaTime / layer1FadeOutTime);
-                layer1Material.SetFloat("_FadeOut", currentLayer1FadeOut);
-                layer2Material.SetFloat("_FadeOut", currentLayer2FadeOut);
-                layer3Material.SetFloat("_FadeOut", currentLayer3FadeOut);
+                currentFadeOutFraction = Mathf.MoveTowards(currentFadeOutFraction, 1, Time.fixedDeltaTime / fadeOutDuration);
+                layer1Material.SetFloat("_FadeOut", currentFadeOutFraction);
+                layer2Material.SetFloat("_FadeOut", currentFadeOutFraction);
+                layer3Material.SetFloat("_FadeOut", currentFadeOutFraction);
 
-                inkSplashBurstDone = false;
-                inkSmokeBurstDone = false;
-
-                if (fadeOutTimer > fadeOutTime) fadingOut = false;
+                // Fade out complete
+                if (fadeOutTimer > fadeOutDuration)
+                {
+                    fadingOut = false;
+                    fadingIn = false; // Also stop fade in
+                }
             }
         }
 
@@ -147,6 +148,10 @@ namespace MiniJam159.UI
         {
             fadingIn = true;
             fadingOut = false;
+            fadeInTimer = 0;
+            particleEmissionStarted = false;
+            inkSplashBurstDone = false;
+            inkSmokeBurstDone = false;
 
             currentZoom = 0;
             currentLayer1NoisePan = 0;
@@ -166,25 +171,23 @@ namespace MiniJam159.UI
             layer2Material.SetVector("_Noise2Pan", new Vector4());
             layer3Material.SetVector("_Noise2Pan", new Vector4());
 
-
             // Reset fade out
-            currentLayer1FadeOut = 0;
-            currentLayer2FadeOut = 0;
-            currentLayer3FadeOut = 0;
+            currentFadeOutFraction = 0;
             layer1Material.SetFloat("_FadeOut", 0);
             layer2Material.SetFloat("_FadeOut", 0);
             layer3Material.SetFloat("_FadeOut", 0);
-
-            // Start particle system
-            inkSplashParticleEmitter.startEmission();
         }
 
         public void FadeOut()
         {
             fadingOut = true;
+            fadeOutTimer = 0;
             // Continue to fade in if already started, don't want to stop halfway with a half sized ink blot
 
             inkSplashParticleEmitter.stopEmission();
+            inkSmokeParticleEmitter.stopEmission();
+            inkSplashParticleEmitter.fadeOutParticles(particleFadeOutDuration);
+            inkSmokeParticleEmitter.fadeOutParticles(particleFadeOutDuration);
         }
     }
 }

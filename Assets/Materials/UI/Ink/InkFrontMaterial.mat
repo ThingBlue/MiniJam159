@@ -156,7 +156,7 @@ Material:
     - _Noise1Pan: {r: 0, g: -0.9999997, b: 0, a: 0}
     - _Noise1PanSpeed: {r: 0, g: -0.005, b: 0, a: 0}
     - _Noise1StaticOffset: {r: 0, g: 0, b: 0, a: 0}
-    - _Noise2Pan: {r: 0, g: -0.2986085, b: 0, a: 0}
+    - _Noise2Pan: {r: 0, g: -0.29999286, b: 0, a: 0}
     - _Noise2PanSpeed: {r: 0, g: -0.001, b: 0, a: 0}
     - _Noise2StaticOffset: {r: 0, g: 0, b: 0, a: 0}
     - _Noise3PanSpeed: {r: 0, g: -0.001, b: 0, a: 0}
