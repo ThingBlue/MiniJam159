@@ -149,19 +149,26 @@ namespace MiniJam159.UI
             int maxAttempts = 1000;
             for (int i = 0; i < count; i++)
             {
-                EmitParams emitParams = gaussianEmit();
+                EmitParams emitParams = new EmitParams();
 
-                // Ensure spread during burst
-                foreach (float particlePosition in burstParticlePositions)
+                bool positionGood = false;
+                while (!positionGood)
                 {
-                    if (Mathf.Abs(emitParams.position.x - particlePosition) < minBurstSeparation)
+                    emitParams = gaussianEmit();
+                    positionGood = true;
+
+                    // Ensure spread during burst
+                    foreach (float particlePosition in burstParticlePositions)
                     {
-                        // Not spread out far enough, resample
-                        attempts++;
-                        if (attempts < maxAttempts) // Prevent infinite loop if it's too difficult to find a position with adequate spread
+                        if (Mathf.Abs(emitParams.position.x - particlePosition) < minBurstSeparation)
                         {
-                            i--;
-                            continue;
+                            // Not spread out far enough, resample
+                            attempts++;
+                            if (attempts < maxAttempts) // Prevent infinite loop if it's too difficult to find a position with adequate spread
+                            {
+                                positionGood = false;
+                                break;
+                            }
                         }
                     }
                 }
