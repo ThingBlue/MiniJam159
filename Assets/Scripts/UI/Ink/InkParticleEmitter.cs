@@ -95,9 +95,8 @@ namespace MiniJam159.UI
         {
             float u1 = 1.0f - Random.Range(0f, 1f); // Uniform(0,1] random doubles
             float u2 = 1.0f - Random.Range(0f, 1f);
-            float randonStandardNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) *
-                                  Mathf.Sin(2.0f * Mathf.PI * u2); // Standard normal (0, 1)
-            return mean + standardDeviation * randonStandardNormal;
+            float randomStandardNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Sin(2.0f * Mathf.PI * u2); // Standard normal (0, 1)
+            return mean + standardDeviation * randomStandardNormal;
         }
 
         public void startEmission()
@@ -118,11 +117,12 @@ namespace MiniJam159.UI
         IEnumerator FadeOutCoroutine(float fadeOutDuration)
         {
             int maxParticles = particleSystem.main.maxParticles;
-            ParticleSystem.Particle[] particles = new ParticleSystem.Particle[maxParticles];
+            Particle[] particles = new Particle[maxParticles];
 
             float elapsed = 0f;
             while (elapsed < fadeOutDuration)
             {
+                // Lerp alpha of all particles towards 0
                 int count = particleSystem.GetParticles(particles);
                 float alpha = Mathf.Lerp(particleSystem.main.startColor.color.a, 0f, elapsed / fadeOutDuration);
 
@@ -138,7 +138,8 @@ namespace MiniJam159.UI
                 yield return null;
             }
 
-            particleSystem.Clear(); // Optionally clear after fade
+            // Clear particles after fade completed
+            particleSystem.Clear();
         }
 
         public void burstEmit(int count)

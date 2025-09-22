@@ -4,13 +4,6 @@ using UnityEngine;
 
 namespace MiniJam159.EntityCore
 {
-    [SerializeField]
-    public class TrainingData
-    {
-        public GameObject prefab;
-        public float time;
-    }
-
     public class Entity : MonoBehaviour
     {
         #region Inspector members
@@ -18,6 +11,7 @@ namespace MiniJam159.EntityCore
         public int sortPriority = 0;
         public Sprite displayIcon;
         public float maxHealth;
+        public Vector3 trainingSpawnOffset;
 
         #endregion
 
@@ -39,7 +33,9 @@ namespace MiniJam159.EntityCore
             }
         }
 
-        public Queue<TrainingData> trainingQueue = new Queue<TrainingData>();
+        public bool playerOwned = false;
+
+        public Queue<EntityTrainingData> trainingQueue = new Queue<EntityTrainingData>();
         public float trainingTimer;
 
         protected virtual void Start()
@@ -56,6 +52,22 @@ namespace MiniJam159.EntityCore
             if (trainingQueue.Count > 0)
             {
                 trainingTimer += Time.fixedDeltaTime;
+                if (trainingTimer >= trainingQueue.Peek().time)
+                {
+                    // Finish current training job
+                    EntityTrainingData trainingData = trainingQueue.Dequeue();
+
+                    EntityCreationData newEntityCreationData = new EntityCreationData();
+                    newEntityCreationData.prefab = trainingData.prefab;
+                    newEntityCreationData.position = transform.position + trainingSpawnOffset;
+                    newEntityCreationData.rotation = transform.rotation;
+                    newEntityCreationData.targetPosition = newEntityCreationData.position;
+                    newEntityCreationData.playerOwned = playerOwned;
+
+                    EntityManagerBase.instance.CreateEntity(newEntityCreationData);
+
+                    trainingTimer = 0.0f;
+                }
             }
         }
 
