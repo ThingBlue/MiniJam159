@@ -161,7 +161,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &6177613098874641224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,7 +178,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1108352119
 --- !u!114 &6523151610093264364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,12 +191,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208adb05ff15762419ce57ad3d3f2545, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ownerEntity: {fileID: 0}
   healthBarCanvasTransform: {fileID: 4938891945104992329}
   healthBarTransform: {fileID: 5080010457798605838}
-  maxHealth: 100
   minSize: 0.5
   sizeScaling: 0.005
-  health: 0
+  maxHealth: 100
 --- !u!1 &4667917174902803672
 GameObject:
   m_ObjectHideFlags: 0

@@ -61,7 +61,6 @@ namespace MiniJam159.EntityCore
                     newEntityCreationData.prefab = trainingData.prefab;
                     newEntityCreationData.position = transform.position + trainingSpawnOffset;
                     newEntityCreationData.rotation = transform.rotation;
-                    newEntityCreationData.targetPosition = newEntityCreationData.position;
                     newEntityCreationData.playerOwned = playerOwned;
 
                     EntityManagerBase.instance.CreateEntity(newEntityCreationData);

@@ -119,7 +119,7 @@ namespace MiniJam159.Player
             List<GameObject> entitiesInsideBox = new List<GameObject>();
             List<GameObject> entitiesOutsideBox = new List<GameObject>();
             bool unitInBox = false;
-            foreach (GameObject entityObject in EntityManagerBase.instance.playerEntityObjects)
+            foreach (GameObject entityObject in EntityManagerBase.instance.getPlayerEntityObjects())
             {
                 Entity entity = entityObject.GetComponent<Entity>();
                 if (entity.insideCast(castPoints, castNormals))
@@ -270,7 +270,7 @@ namespace MiniJam159.Player
 
             // Loop through all player entities
             bool unitInBox = false;
-            foreach (GameObject entityObject in EntityManagerBase.instance.playerEntityObjects)
+            foreach (GameObject entityObject in EntityManagerBase.instance.getPlayerEntityObjects())
             {
                 Entity entity = entityObject.GetComponent<Entity>();
                 if (entity.insideCast(castPoints, castNormals))

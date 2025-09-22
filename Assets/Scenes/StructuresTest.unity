@@ -174,6 +174,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: playerOwned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (3)
@@ -6870,6 +6874,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: playerOwned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (4)
@@ -7456,6 +7464,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296188, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: playerOwned
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
@@ -17271,6 +17283,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: playerOwned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab
@@ -18086,6 +18102,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: playerOwned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (1)
@@ -18453,6 +18473,10 @@ PrefabInstance:
     - target: {fileID: 9018097853522243624, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: playerOwned
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
@@ -19327,6 +19351,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9018097853522243625, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
+      propertyPath: playerOwned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9018097853522243631, guid: 53375bbcafa8dd245a6dd29e227a1c35, type: 3}
       propertyPath: m_Name
       value: MeleeUnitPrefab (5)
@@ -19426,9 +19454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc243aaf39a584f4ea133dd1658019e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerEntityObjects: []
-  playerUnitObjects: []
-  playerStructureObjects: []
+  entityObjects: []
 --- !u!1001 &2141940810
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19490,6 +19516,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296188, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: playerOwned
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
@@ -19559,6 +19589,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296188, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}
+      propertyPath: playerOwned
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3731014612963296189, guid: c61f2a1d3675e294394c774d8c312780, type: 3}

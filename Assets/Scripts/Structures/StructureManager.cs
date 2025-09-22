@@ -47,9 +47,9 @@ namespace MiniJam159.Structures
             {
                 gridTilesRenderer.enabled = inPlacementMode ? true : false;
                 placementGuideRenderer.enabled = inPlacementMode ? true : false;
-                foreach (GameObject structure in EntityManagerBase.instance.playerStructureObjects)
+                foreach (GameObject structureObject in EntityManagerBase.instance.getPlayerStructureObjects())
                 {
-                    structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = inPlacementMode ? true : false;
+                    structureObject.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = inPlacementMode ? true : false;
                     //structure.transform.Find("BlockedTiles").GetComponent<MeshRenderer>().enabled = true;
                 }
 
@@ -150,25 +150,33 @@ namespace MiniJam159.Structures
             {
                 GridManagerBase.instance.occupyTiles(startPosition, placementStructureSize, TileType.BUILDING);
 
-                // Instantiate strucutre
-                GameObject newStructureObject = null;
+                // Instantiate structure
+                EntityCreationData entityCreationData = new EntityCreationData();
+                entityCreationData.position = snappedPosition;
+                entityCreationData.rotation = Quaternion.identity;
+                entityCreationData.playerOwned = true;
                 switch (placementStructureType)
                 {
                     case StructureType.NEST:
-                        newStructureObject = Instantiate(nestStructurePrefab, snappedPosition, Quaternion.identity);
+                        entityCreationData.prefab = nestStructurePrefab;
+                        //newStructureObject = Instantiate(nestStructurePrefab, snappedPosition, Quaternion.identity);
                         break;
                     case StructureType.WOMB:
-                        newStructureObject = Instantiate(wombStructurePrefab, snappedPosition, Quaternion.identity);
+                        entityCreationData.prefab = wombStructurePrefab;
+                        //newStructureObject = Instantiate(wombStructurePrefab, snappedPosition, Quaternion.identity);
                         break;
 
                     case StructureType.TEST_SQUARE:
-                        newStructureObject = Instantiate(testSquareStructurePrefab, snappedPosition, Quaternion.identity);
+                        entityCreationData.prefab = testSquareStructurePrefab;
+                        //newStructureObject = Instantiate(testSquareStructurePrefab, snappedPosition, Quaternion.identity);
                         break;
 
                     case StructureType.NULL:
-                        newStructureObject = Instantiate(testStructurePrefab, snappedPosition, Quaternion.identity);
+                        entityCreationData.prefab = testStructurePrefab;
+                        //newStructureObject = Instantiate(testStructurePrefab, snappedPosition, Quaternion.identity);
                         break;
                 }
+                GameObject newStructureObject = EntityManagerBase.instance.CreateEntity(entityCreationData);
 
                 // Set start position variable on structure
                 Structure newStructure = newStructureObject.GetComponent<Structure>();
@@ -183,10 +191,6 @@ namespace MiniJam159.Structures
                 // Create duplicate material to fix shader graph weirdness
                 Renderer renderer = newBlockedTilesObject.GetComponent<MeshRenderer>();
                 renderer.material = new Material(renderer.material);
-
-                // Add to structures
-                EntityManagerBase.instance.playerStructureObjects.Add(newStructureObject);
-                EntityManagerBase.instance.playerEntityObjects.Add(newStructureObject);
 
                 // Add to deposit points if new structure is a deposit point
                 if (depositPointStructureTypes.Contains(placementStructureType)) depositPointStructures.Add(newStructureObject);

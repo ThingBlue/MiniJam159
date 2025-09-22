@@ -52,8 +52,7 @@ namespace MiniJam159.Units
             base.Start();
 
             // TEMP
-            EntityManagerBase.instance.playerUnitObjects.Add(gameObject);
-            EntityManagerBase.instance.playerEntityObjects.Add(gameObject);
+            EntityManagerBase.instance.entityObjects.Add(gameObject);
 
             // Start at max health
             health = maxHealth;
@@ -64,7 +63,7 @@ namespace MiniJam159.Units
 
         protected virtual void OnDestroy()
         {
-            EntityManagerBase.instance.playerUnitObjects.Remove(gameObject);
+            EntityManagerBase.instance.removeEntityObject(gameObject);
         }
 
         protected override void Update()

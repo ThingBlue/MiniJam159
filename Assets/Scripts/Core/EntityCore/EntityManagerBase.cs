@@ -9,15 +9,12 @@ namespace MiniJam159.EntityCore
         public GameObject prefab;
         public Vector3 position;
         public Quaternion rotation;
-        public Vector3 targetPosition;
         public bool playerOwned;
     }
 
     public class EntityManagerBase : MonoBehaviour
     {
-        public List<GameObject> playerEntityObjects = new List<GameObject>();
-        public List<GameObject> playerUnitObjects = new List<GameObject>();
-        public List<GameObject> playerStructureObjects = new List<GameObject>();
+        public List<GameObject> entityObjects = new List<GameObject>();
 
         // TODO: Remove objects from above lists on destroy
 
@@ -31,9 +28,23 @@ namespace MiniJam159.EntityCore
             else Destroy(this);
         }
 
-        public virtual void CreateEntity(EntityCreationData entityCreationData)
+        // See implementations in EntityManager
+        public virtual List<GameObject> getEntityObjects() { return new List<GameObject>(); }
+        public virtual List<GameObject> getUnitObjects() { return new List<GameObject>(); }
+        public virtual List<GameObject> getStructureObjects() { return new List<GameObject>(); }
+        public virtual List<GameObject> getPlayerEntityObjects() { return new List<GameObject>(); }
+        public virtual List<GameObject> getPlayerUnitObjects() { return new List<GameObject>(); }
+        public virtual List<GameObject> getPlayerStructureObjects() { return new List<GameObject>(); }
+        public virtual List<GameObject> getNonPlayerEntityObjects() { return new List<GameObject>(); }
+        public virtual List<GameObject> getNonPlayerUnitObjects() { return new List<GameObject>(); }
+        public virtual List<GameObject> getNonPlayerStructureObjects() { return new List<GameObject>(); }
+
+        public virtual void removeEntityObject(GameObject entityObject) { entityObjects.Remove(entityObject); }
+
+        public virtual GameObject CreateEntity(EntityCreationData entityCreationData)
         {
             // See EntityManager::CreateEntity()
+            return null;
         }
     }
 }

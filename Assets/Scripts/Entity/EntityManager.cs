@@ -8,28 +8,29 @@ using MiniJam159.UnitCore;
 
 
 
-namespace MiniJam159.Entity
+namespace MiniJam159.Entities
 {
     public class EntityManager : EntityManagerBase
     {
-        public override void CreateEntity(EntityCreationData entityCreationData)
+
+        public override List<GameObject> getEntityObjects() { return entityObjects; }
+        public override List<GameObject> getUnitObjects() { return entityObjects.FindAll(entityObject => entityObject.GetComponent<UnitBase>()); }
+        public override List<GameObject> getStructureObjects() { return entityObjects.FindAll(entityObject => entityObject.GetComponent<Structure>()); }
+        public override List<GameObject> getPlayerEntityObjects() { return entityObjects.FindAll(entityObject => entityObject.GetComponent<Entity>()?.playerOwned == true); }
+        public override List<GameObject> getPlayerUnitObjects() { return entityObjects.FindAll(entityObject => entityObject.GetComponent<UnitBase>()?.playerOwned == true); }
+        public override List<GameObject> getPlayerStructureObjects() { return entityObjects.FindAll(entityObject => entityObject.GetComponent<Structure>()?.playerOwned == true); }
+        public override List<GameObject> getNonPlayerEntityObjects() { return entityObjects.FindAll(entityObject => entityObject.GetComponent<Entity>()?.playerOwned == false); }
+        public override List<GameObject> getNonPlayerUnitObjects() { return entityObjects.FindAll(entityObject => entityObject.GetComponent<UnitBase>()?.playerOwned == false); }
+        public override List<GameObject> getNonPlayerStructureObjects() { return entityObjects.FindAll(entityObject => entityObject.GetComponent<Structure>()?.playerOwned == false); }
+
+        public override GameObject CreateEntity(EntityCreationData entityCreationData)
         {
             // Create new object from prefab
             GameObject newObject = Instantiate(entityCreationData.prefab, entityCreationData.position, entityCreationData.rotation);
+            newObject.GetComponent<Entity>().playerOwned = entityCreationData.playerOwned;
 
-            // Add to correct list
-            if (entityCreationData.playerOwned)
-            {
-                if (newObject.GetComponent<UnitBase>())
-                {
-                    playerUnitObjects.Add(newObject);
-                }
-                else if (newObject.GetComponent<Structure>())
-                {
-                    playerStructureObjects.Add(newObject);
-                }
-                playerEntityObjects.Add(newObject);
-            }
+            entityObjects.Add(newObject);
+            return newObject;
         }
 
         /* DEBUG
