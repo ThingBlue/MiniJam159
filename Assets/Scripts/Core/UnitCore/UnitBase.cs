@@ -9,11 +9,6 @@ using MiniJam159.EntityCore;
 
 namespace MiniJam159.UnitCore
 {
-    public enum UnitType
-    {
-        NULL = 0
-    }
-
     public abstract class UnitBase : Entity
     {
         #region Inspector members

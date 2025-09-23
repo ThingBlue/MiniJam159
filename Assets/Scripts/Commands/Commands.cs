@@ -1,11 +1,12 @@
-using System;
-using UnityEngine;
-
-using MiniJam159.GameCore;
 using MiniJam159.CommandCore;
+using MiniJam159.EntityCore;
+using MiniJam159.GameCore;
 using MiniJam159.PlayerCore;
 using MiniJam159.StructureCore;
 using MiniJam159.UnitCore;
+using Sirenix.OdinInspector;
+using System;
+using UnityEngine;
 
 namespace MiniJam159.Commands
 {
@@ -17,7 +18,7 @@ namespace MiniJam159.Commands
             tooltip = "<b>Stop</b>\nSelected units will stop moving and attack enemies in range";
         }
 
-        public override void execute()
+        public override void execute(Entity instigator)
         {
             // Invoke command on all selected units
             foreach (GameObject selectedObject in SelectionManager.instance.selectedObjects)
@@ -47,7 +48,7 @@ namespace MiniJam159.Commands
             tooltip = "<b>Attack</b>\nAttacks target enemy unit";
         }
 
-        public override void execute()
+        public override void execute(Entity instigator)
         {
             if (PlayerControllerBase.instance.playerMode == PlayerMode.NORMAL) PlayerControllerBase.instance.playerMode = PlayerMode.ATTACK_TARGET;
         }
@@ -66,7 +67,7 @@ namespace MiniJam159.Commands
             tooltip = "<b>Build</b>\nOpens the build menu";
         }
 
-        public override void execute()
+        public override void execute(Entity instigator)
         {
             // First selected unit must be a worker
             if (SelectionManager.instance.selectedObjects.Count == 0) return;
@@ -94,7 +95,7 @@ namespace MiniJam159.Commands
             tooltip = "<b>Cancel</b>\nCloses the build menu";
         }
 
-        public override void execute()
+        public override void execute(Entity instigator)
         {
             SelectionControllerBase.instance.populateCommands();
         }
@@ -110,7 +111,7 @@ namespace MiniJam159.Commands
     {
         public StructureType structureType;
 
-        public override void execute()
+        public override void execute(Entity instigator)
         {
             if (PlayerControllerBase.instance.playerMode != PlayerMode.NORMAL) return;
             StructureManagerBase.instance.beginPlacement(structureType);
@@ -125,16 +126,28 @@ namespace MiniJam159.Commands
     [Serializable]
     public class TrainUnitCommand : CommandBase
     {
-        public UnitType unitType;
-
-        public override void execute()
+        [ValueDropdown(nameof(GetUnitOptions))]
+        public string unitName;
+        private static string[] GetUnitOptions()
         {
+            // Odin will only allow selection of the following options for unitName
+            return new[]
+            {
+                "Worker",
+                "Warrior",
+            };
+        }
+
+        public override void execute(Entity instigator)
+        {
+            // Add info to training queue of instigator from training data dictionary
+            instigator.AddToTrainingQueue(EntityManagerBase.instance.trainingDictionary.data[unitName]);
             return;
         }
 
         public override CommandBase clone()
         {
-            return new TrainUnitCommand { tooltip = this.tooltip, unitType = this.unitType };
+            return new TrainUnitCommand { tooltip = this.tooltip, unitName = this.unitName };
         }
     }
 

@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 
+using MiniJam159.EntityCore;
+
 namespace MiniJam159.CommandCore
 {
     [Serializable]
@@ -8,7 +10,7 @@ namespace MiniJam159.CommandCore
     {
         public string tooltip = "DEFAULT COMMAND TOOLTIP";
 
-        public virtual void execute()
+        public virtual void execute(Entity instigator)
         {
             Debug.LogWarning("Attempted to execute a null command!");
         }

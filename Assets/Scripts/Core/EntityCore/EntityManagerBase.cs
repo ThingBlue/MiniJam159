@@ -14,6 +14,12 @@ namespace MiniJam159.EntityCore
 
     public class EntityManagerBase : MonoBehaviour
     {
+        #region Inspector members
+
+        public SerializedTrainingDictionary trainingDictionary;
+
+        #endregion
+
         public List<GameObject> entityObjects = new List<GameObject>();
 
         // TODO: Remove objects from above lists on destroy

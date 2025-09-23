@@ -1,9 +1,9 @@
+using MiniJam159.EntityCore;
+using MiniJam159.GameCore;
+using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Sirenix.OdinInspector;
-
-using MiniJam159.GameCore;
 
 namespace MiniJam159.CommandCore
 {

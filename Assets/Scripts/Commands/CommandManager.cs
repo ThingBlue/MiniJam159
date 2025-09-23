@@ -1,11 +1,13 @@
+using MiniJam159.CommandCore;
+using MiniJam159.EntityCore;
+using MiniJam159.GameCore;
+using MiniJam159.PlayerCore;
+using MiniJam159.StructureCore;
+using MiniJam159.UICore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-using MiniJam159.CommandCore;
-using MiniJam159.UICore;
-using MiniJam159.StructureCore;
 
 namespace MiniJam159.Commands
 {
@@ -22,10 +24,17 @@ namespace MiniJam159.Commands
 
         public override void executeCommand(int index)
         {
-            Debug.Log("Executing command: " + activeCommands[index]);
             if (activeCommands[index] == null) return;
 
-            activeCommands[index].execute();
+            // Set command instigator to current focused entity
+            int focusIndex = SelectionManager.instance.getFocusIndex();
+            if (focusIndex == -1) return;
+            Entity instigator = SelectionManager.instance.selectedObjects[focusIndex].GetComponent<Entity>();
+            if (!instigator) return;
+
+            // Execute command
+            Debug.Log("Executing command: " + activeCommands[index] + ", with instigator: " + instigator.gameObject.name);
+            activeCommands[index].execute(instigator);
         }
 
         public override void clearCommands()

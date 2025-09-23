@@ -186,6 +186,11 @@ namespace MiniJam159.EntityCore
             return normalized * d;
         }
 
+        public void AddToTrainingQueue(EntityTrainingData entityTrainingData)
+        {
+            trainingQueue.Enqueue(entityTrainingData);
+        }
+
     }
 
     // Custom comparer class for entities

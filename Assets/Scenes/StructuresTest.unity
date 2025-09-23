@@ -19454,6 +19454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc243aaf39a584f4ea133dd1658019e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trainingDictionary: {fileID: 11400000, guid: 0201ffd59dbbbe24e8cd31d8a19f4c05, type: 2}
   entityObjects: []
 --- !u!1001 &2141940810
 PrefabInstance:
